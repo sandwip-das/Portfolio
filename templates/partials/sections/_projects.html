@@ -1,0 +1,27 @@
+{% load static core_tags %}
+<!-- Projects Section -->
+<section id="{% if menu %}{{ menu.section_id }}{% else %}projects{% endif %}"
+    class="py-4 bg-gradient-to-r from-[#1a1a2e] via-[#2e1a3d] to-[#4a3526] scroll-mt-12 md:scroll-mt-14">
+    <div class="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16">
+        <div class="text-center mb-6">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">Featured <span class="text-primary">Projects</span></h2>
+            <div class="w-24 h-1 bg-gradient-to-r from-indigo-500 to-pink-500 mx-auto rounded-full mb-8"></div>
+            {% if settings.projects_description %}
+            <p class="text-gray-400 text-lg mx-auto leading-relaxed break-words">
+                {{ settings.projects_description|linebreaksbr }}
+            </p>
+            {% endif %}
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for project in projects %}
+            {% include 'partials/_project_card.html' %}
+            {% empty %}
+            <div class="col-span-full text-center text-gray-500 py-8">
+                <p>No projects added yet.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+

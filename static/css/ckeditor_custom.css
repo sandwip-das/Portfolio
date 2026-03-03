@@ -1,0 +1,14 @@
+body {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+}
+
+.cke_editable {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+}
+
+/* For links and other things that might be dark */
+a {
+    color: #007bff;
+}

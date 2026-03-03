@@ -1,0 +1,159 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    /* Dark Theme Override for this page only */
+    body.change-list,
+    #content,
+    #content-main {
+        background-color: #121212 !important;
+        color: #e0e0e0 !important;
+    }
+
+    /* Breadcrumbs */
+    .breadcrumbs {
+        background-color: #1e1e1e !important;
+        color: #e0e0e0 !important;
+    }
+
+    .breadcrumbs a {
+        color: #bb86fc !important;
+    }
+
+    /* Main Container */
+    #changelist {
+        background-color: transparent !important;
+    }
+
+    /* Result List Table */
+    #result_list {
+        background-color: #1e1e1e !important;
+        color: #e0e0e0 !important;
+    }
+
+    #result_list thead th {
+        background-color: #2d2d2d !important;
+        color: #ffffff !important;
+    }
+
+    #result_list tbody tr {
+        background-color: #1e1e1e !important;
+        color: #e0e0e0 !important;
+        border-bottom: 1px solid #333 !important;
+    }
+
+    #result_list tbody tr.row1 {
+        background-color: #1e1e1e !important;
+    }
+
+    #result_list tbody tr.row2 {
+        background-color: #252525 !important;
+    }
+
+    #result_list tbody tr:hover {
+        background-color: #333333 !important;
+    }
+
+    #result_list a {
+        color: #bb86fc !important;
+    }
+
+    /* Filters */
+    #changelist-filter {
+        background-color: #1e1e1e !important;
+        border-left: 1px solid #333 !important;
+    }
+
+    #changelist-filter h2 {
+        background-color: #2d2d2d !important;
+        color: #ffffff !important;
+    }
+
+    #changelist-filter ul li a {
+        color: #bb86fc !important;
+    }
+
+    #changelist-filter li.selected {
+        border-left: 5px solid #bb86fc !important;
+    }
+
+    /* Default Headers */
+    h1,
+    h2,
+    h3,
+    label {
+        color: #e0e0e0 !important;
+    }
+
+    /* Toolbar */
+    #toolbar {
+        background-color: #1e1e1e !important;
+        border: 1px solid #333 !important;
+    }
+
+    #toolbar form input[type="submit"] {
+        background-color: #3700b3 !important;
+        color: white !important;
+    }
+
+    /* Actions */
+    .actions {
+        background-color: #1e1e1e !important;
+        border-top: 1px solid #333 !important;
+        border-bottom: 1px solid #333 !important;
+        color: #e0e0e0 !important;
+    }
+
+    /* Object Tools (Add button) */
+    .object-tools a.addlink {
+        background-color: #3700b3 !important;
+    }
+</style>
+{% endblock %}
+
+{% block result_list %}
+<div
+    style="margin-bottom: 20px; padding: 20px; background: #000000; border: 1px solid #333; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+    <h2
+        style="margin-top: 0; font-size: 18px; color: #ffffff !important; padding-bottom: 10px; border-bottom: 1px solid #333;">
+        Technical Skills Section Description</h2>
+    <form method="post" action="." style="margin-top: 15px;">
+        {% csrf_token %}
+        <div class="form-row" style="padding: 0; border: none !important;">
+            <label for="id_technical_skills_description"
+                style="display: block; margin-bottom: 8px; font-weight: bold; color: #ffffff !important;">Description
+                Text:</label>
+            {{ description_form.technical_skills_description }}
+            <p class="help" style="margin-top: 8px; color: #cccccc !important; font-size: 12px;">This text will appear
+                under the
+                "Technical Skills" heading on the homepage.</p>
+        </div>
+        <div class="submit-row"
+            style="margin-top: 20px; padding: 0; text-align: left; background: none; border: none !important;">
+            <input type="submit" value="Update Description" class="default" name="update_description"
+                style="background: #3700b3 !important; color: white !important; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; transition: background 0.3s; font-weight: bold;">
+        </div>
+    </form>
+</div>
+
+<!-- Explicitly style the textarea inside the form -->
+<style>
+    #id_technical_skills_description {
+        background: #2d2d2d !important;
+        color: #ffffff !important;
+        border: 1px solid #444 !important;
+        padding: 10px;
+        border-radius: 4px;
+        font-family: monospace;
+    }
+
+    #id_technical_skills_description:focus {
+        border-color: #bb86fc !important;
+        outline: none;
+    }
+</style>
+
+{{ block.super }}
+{% endblock %}

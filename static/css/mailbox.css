@@ -1,0 +1,13 @@
+/* Mailbox Animation Styles */
+.mailbox-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.mailbox-animation {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+}

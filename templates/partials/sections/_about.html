@@ -1,0 +1,88 @@
+{% load core_tags %}
+<!-- About Section -->
+<section id="{% if menu %}{{ menu.section_id }}{% else %}about{% endif %}"
+    class="py-4 bg-gradient-to-r from-[#1a1a2e] via-[#2e1a3d] to-[#4a3526] relative scroll-mt-12 md:scroll-mt-14">
+    <div class="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16">
+        <div class="text-center mb-6">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">About <span class="text-primary">Me</span></h2>
+            <div class="w-24 h-1 bg-gradient-to-r from-indigo-500 to-pink-500 mx-auto rounded-full"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+            <!-- Left Side: Who Am I, Academic, Focus/Skills/Roles -->
+            <div class="space-y-8">
+                <!-- Who Am I -->
+                <div>
+                    <h3 class="text-3xl font-bold text-primary mb-3">Who am I?</h3>
+                    <p class="text-gray-300 leading-relaxed">{{ settings.about_who_am_i|linebreaksbr }}</p>
+                </div>
+
+                <div class="bg-transparent border border-white/20 rounded-2xl p-6 backdrop-blur-sm space-y-8">
+
+                    <div>
+                        <!-- Academic Background -->
+                        <div>
+                            <h3 class="text-xl font-bold text-primary mb-4">Academic Background</h3>
+                            <div class="space-y-4">
+                                {% for academic in academic_background %}
+                                <div
+                                    class="border border-white/40 border-l-2 border-l-primary pl-4 hover:bg-white/5 transition-all duration-300 p-3 rounded-lg group hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/20">
+                                    <div class="flex items-start gap-3">
+                                        {% if academic.institution_logo %}
+                                        <div
+                                            class="w-16 h-16 rounded-xl bg-white/10 flex items-center justify-center overflow-hidden shrink-0 border border-white/20 p-1">
+                                            <img src="{{ academic.institution_logo.url }}"
+                                                alt="{{ academic.institution_name }}"
+                                                class="w-full h-full object-contain">
+                                        </div>
+                                        {% endif %}
+                                        <div class="flex-grow">
+                                            <h4 class="text-white font-bold flex items-center gap-2 text-lg">
+                                                {% if academic.institution_link %}
+                                                <a href="{{ academic.institution_link }}" target="_blank"
+                                                    class="group-hover:text-[#be2edd] transition flex items-center gap-1.5">
+                                                    {{ academic.institution_name }}
+                                                </a>
+                                                {% else %}
+                                                <span class="group-hover:text-[#be2edd] transition">
+                                                    {{ academic.institution_name }}
+                                                </span>
+                                                {% endif %}
+                                            </h4>
+                                            <p
+                                                class="text-gray-400 text-sm mb-1 group-hover:text-white transition-colors duration-300 font-normal">
+                                                {{ academic.degree_name }}</p>
+                                            {% if academic.description_list %}
+                                            <ul
+                                                class="flex flex-wrap gap-x-5 text-xs text-gray-500 mt-2 transition-colors duration-300 group-hover:text-white">
+                                                {% for point in academic.description_list %}
+                                                <li class="flex items-center gap-2">
+                                                    <span
+                                                        class="w-1.5 h-1.5 rounded-full bg-primary shrink-0 group-hover:bg-[#be2edd] transition-colors"></span>
+                                                    {{ point }}
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <p class="text-gray-500 italic">No academic info added.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <!-- Right Side: Description & Contact -->
+            <div class="bg-transparent border border-white/20 rounded-2xl p-6 backdrop-blur-sm">
+                <div class="mb-6">{{ settings.about_description|paragraphs_with_divider }}</div>
+
+            </div>
+        </div>
+    </div>
+</section>

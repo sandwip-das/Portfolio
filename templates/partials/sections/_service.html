@@ -1,0 +1,185 @@
+{% load static core_tags %}
+<!-- Service Section -->
+<section id="{% if menu %}{{ menu.section_id }}{% else %}service{% endif %}"
+    class="py-4 bg-gradient-to-r from-[#1a1a2e] via-[#2e1a3d] to-[#4a3526] relative scroll-mt-12 md:scroll-mt-14">
+    <div class="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 relative z-10">
+        <div class="text-center mb-6">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">My <span class="text-primary">Services</span></h2>
+            <div class="w-24 h-1 bg-gradient-to-r from-indigo-500 to-pink-500 mx-auto rounded-full mb-8"></div>
+            {% if settings.services_description %}
+            <p class="text-gray-400 text-lg mx-auto leading-relaxed break-words">
+                {{ settings.services_description|linebreaksbr }}
+            </p>
+            {% endif %}
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+            {% for service in services %}
+            <div
+                class="group relative bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-primary/50 transition-all duration-500 hover:-translate-y-2 backdrop-blur-sm hover:shadow-[0_20px_50px_rgba(194,30,86,0.3),0_10px_30px_rgba(255,77,0,0.2)] flex flex-col">
+                <div class="flex items-center gap-4 mb-6">
+                    <div
+                        class="w-14 h-14 bg-rose-500/10 rounded-xl flex items-center justify-center border border-rose-500/20 group-hover:scale-110 group-hover:border-primary/50 transition duration-300 shrink-0">
+                        <i class="{{ service.icon_class }} text-2xl text-primary group-hover:text-secondary"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white group-hover:text-primary transition">{{ service.title }}
+                    </h3>
+                </div>
+
+                <ul class="space-y-3 mb-8 flex-grow">
+                    {% for feature in service.feature_list %}
+                    <li class="flex items-start text-white">
+                        <span class="text-primary group-hover:text-secondary transition mr-3"><i
+                                class="fas fa-check-circle"></i></span>
+                        {{ feature }}
+                    </li>
+                    {% endfor %}
+                </ul>
+
+                <div class="mt-auto flex justify-end">
+                    <button onclick="openBookingModal('{{ service.id }}', '{{ service.title|escapejs }}')"
+                        class="bg-gradient-to-r from-primary to-secondary text-white px-6 py-2 rounded-full font-bold hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 transform hover:-translate-y-1">
+                        Book Now
+                    </button>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center text-gray-500 py-8">
+                <p>No services added yet.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Booking Modal -->
+<style>
+    #bookingModal select option {
+        background-color: #000000 !important;
+        color: #ffffff !important;
+    }
+</style>
+<div id="bookingModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center px-4 overflow-y-auto">
+    <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" onclick="closeBookingModal()"></div>
+    <div class="relative bg-black border border-white/20 rounded-2xl w-full max-w-lg px-6 py-4 md:px-8 md:py-4 shadow-2xl transform transition-all duration-300 scale-95 opacity-0"
+        id="modalContainer">
+        <!-- Close Button -->
+        <button onclick="closeBookingModal()"
+            class="absolute top-4 right-5 text-[#FF4D00] hover:text-white transition-all duration-300">
+            <i class="fas fa-times text-xl"></i>
+        </button>
+
+        <h2 class="text-xl font-bold text-[#FF4D00] mb-3">Book a Session</h2>
+
+        <form method="POST" class="space-y-4" id="booking-form-dynamic">
+            {% csrf_token %}
+            <input type="hidden" name="service_id" id="service_id_input">
+
+            <!-- Service Field (Single line, name content deep orange) -->
+            <div>
+                <label class="block text-sm font-medium text-white mb-2">Service</label>
+                <div class="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-2 text-[#FF4D00] text-sm font-medium"
+                    id="selectedServiceNameDisplay"></div>
+            </div>
+
+            <!-- Name and Phone on one line -->
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-white mb-2">Full Name <span
+                            class="text-red-500">*</span></label>
+                    {{ booking_form.name }}
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-white mb-2">Phone Number <span
+                            class="text-red-500">*</span></label>
+                    {{ booking_form.phone }}
+                </div>
+            </div>
+
+            <!-- Email on one line -->
+            <div>
+                <label class="block text-sm font-medium text-white mb-2">Email Address <span
+                        class="text-red-500">*</span></label>
+                {{ booking_form.email }}
+            </div>
+
+            <!-- Preferred Date Range -->
+            <div>
+                <label class="block text-sm font-medium text-white mb-2">Preferred Date <span
+                        class="text-red-500">*</span></label>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-gray-400 shrink-0">From <span class="text-red-500">*</span>:</span>
+                        {{ booking_form.date_from }}
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-gray-400 shrink-0">To <span class="text-red-500">*</span>:</span>
+                        {{ booking_form.date_to }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preferred Time Range -->
+            <div>
+                <label class="block text-sm font-medium text-white mb-2">Preferred Time <span
+                        class="text-red-500">*</span></label>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-gray-400 shrink-0">From <span class="text-red-500">*</span>:</span>
+                        {{ booking_form.time_from }}
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-gray-400 shrink-0">To <span class="text-red-500">*</span>:</span>
+                        {{ booking_form.time_to }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Message -->
+            <div>
+                <label class="block text-sm font-medium text-white mb-2">Additional Message</label>
+                {{ booking_form.additional_message }}
+            </div>
+
+            <!-- Submit Button (Further reduced height) -->
+            <button type="submit"
+                class="w-full bg-gradient-to-r from-primary to-secondary text-white py-2 rounded-lg font-bold hover:shadow-xl hover:shadow-primary/30 transition duration-300 transform hover:-translate-y-0.5">
+                Submit Request
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openBookingModal(id, name) {
+        document.getElementById('service_id_input').value = id;
+        document.getElementById('selectedServiceNameDisplay').innerText = name;
+        const modal = document.getElementById('bookingModal');
+        const container = document.getElementById('modalContainer');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            container.classList.remove('scale-95', 'opacity-0');
+            container.classList.add('scale-100', 'opacity-100');
+        }, 10);
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeBookingModal() {
+        const modal = document.getElementById('bookingModal');
+        const container = document.getElementById('modalContainer');
+        container.classList.add('scale-95', 'opacity-0');
+        container.classList.remove('scale-100', 'opacity-100');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+        document.body.style.overflow = 'auto';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof handleDynamicForm === 'function') {
+            handleDynamicForm('booking-form-dynamic', (data) => {
+                closeBookingModal();
+            });
+        }
+    });
+</script>

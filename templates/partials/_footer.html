@@ -1,0 +1,43 @@
+<!-- Footer -->
+<footer class="bg-gray-900 border-t border-gray-800 py-3">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 flex flex-col md:flex-row justify-center items-center gap-4">
+        <div
+            class="text-white text-sm font-bold transition-all duration-300 hover:text-primary hover:scale-105 cursor-default text-center">
+            &copy; {% now "Y" %} {{ settings.footer_copyright }}
+        </div>
+        {% if '/blog/' not in request.path and '/profile/' not in request.path %}
+        <div class="flex space-x-3">
+            {% if settings.linkedin_url %}
+            <a href="{{ settings.linkedin_url }}" target="_blank"
+                class="text-white hover:text-primary transition-all duration-300 hover:scale-110 text-xl">
+                <i class="fab fa-linkedin-in"></i>
+            </a>
+            {% endif %}
+            {% if settings.github_url %}
+            <a href="{{ settings.github_url }}" target="_blank"
+                class="text-white hover:text-primary transition-all duration-300 hover:scale-110 text-xl">
+                <i class="fab fa-github"></i>
+            </a>
+            {% endif %}
+            {% if settings.facebook_url %}
+            <a href="{{ settings.facebook_url }}" target="_blank"
+                class="text-white hover:text-primary transition-all duration-300 hover:scale-110 text-xl">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            {% endif %}
+            {% if settings.instagram_url %}
+            <a href="{{ settings.instagram_url }}" target="_blank"
+                class="text-white hover:text-primary transition-all duration-300 hover:scale-110 text-xl">
+                <i class="fab fa-instagram"></i>
+            </a>
+            {% endif %}
+            {% if settings.x_url %}
+            <a href="{{ settings.x_url }}" target="_blank"
+                class="text-white hover:text-primary transition-all duration-300 hover:scale-110 text-xl">
+                <i class="fab fa-x-twitter"></i>
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</footer>

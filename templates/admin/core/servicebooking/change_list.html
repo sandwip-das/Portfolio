@@ -1,0 +1,106 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls %}
+
+{% block content %}
+<!-- Service Booking Analytics Dashboard - Compact & Dark Mode Optimized -->
+<div class="module dashboard-wrapper"
+    style="display: inline-block; margin-bottom: 25px; border: 1px solid var(--border-color, #ccc); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.15); background: var(--body-bg, #fff);">
+    <h2
+        style="margin: 0; padding: 10px 15px; background: #2c3e50; color: #ffffff !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; display: flex; align-items: center; gap: 8px;">
+        <i class="fas fa-chart-pie"></i> Booking Analytics
+    </h2>
+    <div style="overflow-x: auto;">
+        <table style="border-collapse: collapse; margin: 0; min-width: 500px;">
+            <thead>
+                <tr
+                    style="background: var(--darkened-bg, #f4f7f9); border-bottom: 2px solid var(--border-color, #dfe6e9);">
+                    <th
+                        style="padding: 10px 15px; text-align: left; font-weight: 800; color: var(--body-fg, #2d3436); border-right: 1px solid var(--border-color, #dfe6e9); font-size: 12px; text-transform: uppercase;">
+                        Service</th>
+                    <th
+                        style="padding: 10px 15px; text-align: center; font-weight: 800; color: var(--body-fg, #2d3436); border-right: 1px solid var(--border-color, #dfe6e9); font-size: 12px; text-transform: uppercase;">
+                        Total</th>
+                    <th
+                        style="padding: 10px 15px; text-align: center; font-weight: 800; color: #27ae60; border-right: 1px solid var(--border-color, #dfe6e9); font-size: 12px; text-transform: uppercase;">
+                        Accepted</th>
+                    <th
+                        style="padding: 10px 15px; text-align: center; font-weight: 800; color: #f1c40f; border-right: 1px solid var(--border-color, #dfe6e9); font-size: 12px; text-transform: uppercase;">
+                        Pending</th>
+                    <th
+                        style="padding: 10px 15px; text-align: center; font-weight: 800; color: #e74c3c; font-size: 12px; text-transform: uppercase;">
+                        Cancelled</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in summary_data %}
+                <tr
+                    style="border-bottom: 1px solid var(--border-color, #eee); {% if row.is_summary %}background: var(--selected-row, rgba(0,0,0,0.03)); font-weight: 800;{% endif %}">
+                    <td
+                        style="padding: 8px 15px; text-align: left; border-right: 1px solid var(--border-color, #eee); color: var(--body-fg, #2d3436); font-size: 13px;">
+                        {{ row.name }}</td>
+                    <td
+                        style="padding: 8px 15px; text-align: center; border-right: 1px solid var(--border-color, #eee); color: var(--body-fg, #2d3436); font-family: 'Monaco', 'Menlo', monospace; font-size: 14px;">
+                        {{ row.total }}</td>
+                    <td
+                        style="padding: 8px 15px; text-align: center; border-right: 1px solid var(--border-color, #eee); color: #27ae60; font-family: 'Monaco', 'Menlo', monospace; font-size: 14px;">
+                        {{ row.accepted }}</td>
+                    <td
+                        style="padding: 8px 15px; text-align: center; border-right: 1px solid var(--border-color, #eee); color: #f39c12; font-family: 'Monaco', 'Menlo', monospace; font-size: 14px;">
+                        {{ row.pending }}</td>
+                    <td
+                        style="padding: 8px 15px; text-align: center; color: #e74c3c; font-family: 'Monaco', 'Menlo', monospace; font-size: 14px;">
+                        {{ row.cancelled }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{{ block.super }}
+
+<style>
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+
+    /* Global fixes for Dark Mode visibility */
+    :root {
+        --dash-text: #2d3436;
+        --dash-bg: #ffffff;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .dashboard-wrapper {
+            background: #1a1a1b !important;
+            border-color: #333 !important;
+        }
+
+        .dashboard-wrapper td,
+        .dashboard-wrapper th {
+            color: #f1f2f6 !important;
+            border-color: #333 !important;
+        }
+
+        .dashboard-wrapper tr[style*="background: var(--selected-row"] {
+            background: #2d2d2e !important;
+        }
+    }
+
+    .status-btn {
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    }
+
+    .status-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        filter: brightness(1.1);
+    }
+
+    .status-btn:active {
+        transform: translateY(0);
+    }
+</style>
+{% endblock %}

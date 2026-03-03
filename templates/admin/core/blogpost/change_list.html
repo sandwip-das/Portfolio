@@ -1,0 +1,83 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls %}
+
+{% block object-tools-items %}
+{% if has_add_permission %}
+<li>
+    {% url cl.opts|admin_urlname:'add' as add_url %}
+    <a href="{% add_preserved_filters add_url is_popup to_field %}" class="addlink">
+        Add Blog Post
+    </a>
+</li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Blog Section Description Editor -->
+<div
+    style="margin-bottom: 20px; padding: 20px; border: 1px solid var(--border-color, #eee); border-radius: 4px; background: var(--darkened-bg, rgba(0,0,0,0.02));">
+    <form method="post">
+        {% csrf_token %}
+        <h2 style="margin-bottom: 10px; font-size: 16px;">Blog Section Description</h2>
+        <p style="font-size: 13px; color: var(--body-quiet-fg, #666); margin-bottom: 10px;">This text appears on the
+            public blog section of your website.</p>
+        <textarea name="blog_section_description"
+            style="width: 100%; min-height: 80px; margin-bottom: 15px; padding: 12px; border-radius: 4px; border: 1px solid var(--border-color, #ccc); background: var(--body-bg); color: var(--body-fg);"
+            placeholder="Enter description here...">{{ blog_section_description }}</textarea>
+        <button type="submit" name="update_blog_description" class="button" style="padding: 10px 20px;">Update
+            Description</button>
+    </form>
+</div>
+
+<!-- Summary at a Glance Card -->
+<div class="module"
+    style="margin-bottom: 30px; border: 1px solid var(--border-color, #eee); border-radius: 4px; overflow: hidden;">
+    <h2
+        style="margin: 0; padding: 10px 15px; background: var(--secondary, #79aec8); color: #fff; font-size: 14px; font-weight: 600;">
+        Summary at a Glance</h2>
+    <div style="padding: 0; overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; margin: 0; background: var(--body-bg);">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-color, #eee);">
+                    <th
+                        style="padding: 12px 15px; text-align: center; background: var(--darkened-bg, #f8f8f8); color: var(--body-quiet-fg); font-size: 11px; text-transform: uppercase;">
+                        Total Posts</th>
+                    <th
+                        style="padding: 12px 15px; text-align: center; background: var(--darkened-bg, #f8f8f8); color: var(--body-quiet-fg); font-size: 11px; text-transform: uppercase;">
+                        Total Views</th>
+                    <th
+                        style="padding: 12px 15px; text-align: center; background: var(--darkened-bg, #f8f8f8); color: var(--body-quiet-fg); font-size: 11px; text-transform: uppercase;">
+                        Likes</th>
+                    <th
+                        style="padding: 12px 15px; text-align: center; background: var(--darkened-bg, #f8f8f8); color: var(--body-quiet-fg); font-size: 11px; text-transform: uppercase;">
+                        Dislikes</th>
+                    <th
+                        style="padding: 12px 15px; text-align: center; background: var(--darkened-bg, #f8f8f8); color: var(--body-quiet-fg); font-size: 11px; text-transform: uppercase;">
+                        Comments</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td
+                        style="padding: 20px 15px; text-align: center; font-size: 20px; font-weight: bold; color: var(--body-fg);">
+                        {{ cl.result_count }}</td>
+                    <td
+                        style="padding: 20px 15px; text-align: center; font-size: 20px; font-weight: bold; color: var(--body-fg);">
+                        {{ total_website_views }}</td>
+                    <td
+                        style="padding: 20px 15px; text-align: center; font-size: 20px; font-weight: bold; color: #2ecc71;">
+                        {{ total_likes }}</td>
+                    <td
+                        style="padding: 20px 15px; text-align: center; font-size: 20px; font-weight: bold; color: #e74c3c;">
+                        {{ total_dislikes }}</td>
+                    <td
+                        style="padding: 20px 15px; text-align: center; font-size: 20px; font-weight: bold; color: #3498db;">
+                        {{ total_comments }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{{ block.super }}
+{% endblock %}

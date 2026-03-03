@@ -1,0 +1,194 @@
+{% load static core_tags %}
+<!-- Skills Section -->
+<section id="{% if menu %}{{ menu.section_id }}{% else %}skills{% endif %}" class="relative bg-gray-900 scroll-mt-12 md:scroll-mt-14">
+    <!-- Top Wave Divider -->
+    <div class="absolute top-0 left-0 w-full overflow-hidden leading-none">
+        <svg class="relative block w-full h-20" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path
+                d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
+                class="fill-dark"></path>
+        </svg>
+    </div>
+
+    <!-- Content Wrapper -->
+    <div class="relative py-4 bg-gradient-to-r from-[#1a1a2e] via-[#2e1a3d] to-[#4a3526]">
+        <!-- Background decoration -->
+        <div class="absolute inset-0 opacity-5">
+            <div class="absolute top-20 left-10 w-72 h-72 bg-primary rounded-full filter blur-3xl"></div>
+            <div class="absolute bottom-20 right-10 w-96 h-96 bg-secondary rounded-full filter blur-3xl"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 relative z-10">
+            <!-- Section Header: My Expertise title at the very top -->
+            <div class="text-center mb-6">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white">My <span
+                        class="text-primary">Expertise</span></h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-indigo-500 to-pink-500 mx-auto rounded-full"></div>
+            </div>
+
+            <!-- Row 1: Professional Training & Global Certifications -->
+            <div class="flex flex-col lg:flex-row gap-[50px] mb-12">
+                <!-- Professional Training -->
+                <div class="lg:w-1/2 flex flex-col">
+                    <h3 class="text-2xl md:text-3xl font-bold mb-6 text-white text-center">Professional <span
+                            class="text-primary">Trainings</span></h3>
+                    <div class="bg-white/5 p-0.5 rounded-[22px] flex-grow">
+                        <div
+                            class="border border-white/10 rounded-2xl bg-white/5 backdrop-blur-md p-6 space-y-4 h-full">
+                            {% for training in professional_trainings %}
+                            <div class="relative rounded-2xl p-5 w-full border transition-all duration-500 hover:-translate-y-1 hover:shadow-xl backdrop-blur-sm group"
+                                style="background: linear-gradient(135deg, rgba(26,31,53,0.3), rgba(15,20,32,0.18), rgba(15,20,32,0.9)); border-color: rgba(55,65,81,0.4);"
+                                onmouseover="this.style.borderColor='rgba(249,115,22,0.9)'; this.style.boxShadow='0 10px 30px rgba(249,115,22,0.3)';"
+                                onmouseout="this.style.borderColor='rgba(55,65,81,0.4)'; this.style.boxShadow='none';">
+                                <div class="flex flex-col gap-4">
+                                    <div class="flex items-center gap-4">
+                                        {% if training.image %}
+                                        <div class="w-auto h-auto flex items-center justify-center shrink-0 p-2">
+                                            <img src="{{ training.image.url }}" alt="{{ training.course_name }}"
+                                                class="h-20 w-auto object-contain group-hover:scale-110 transition duration-300">
+                                        </div>
+                                        {% endif %}
+                                        <div class="flex-grow">
+                                            <h4
+                                                class="text-lg font-bold text-gray-200 group-hover:text-white transition duration-300 mb-1 leading-tight">
+                                                {{ training.course_name }}
+                                            </h4>
+                                            <p class="text-gray-400 text-sm mb-2">{{ training.organization_name }}</p>
+                                            <div class="flex items-center gap-2">
+                                                <span
+                                                    class="inline-flex items-center justify-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border h-7 {% if training.mode == 'Online' %}bg-blue-500/10 text-blue-400 border-blue-500/10{% else %}bg-green-500/10 text-green-400 border-green-500/10{% endif %}">
+                                                    {{ training.mode }}
+                                                </span>
+                                                {% if training.certification_link %}
+                                                <a href="{{ training.certification_link }}" target="_blank"
+                                                    class="inline-flex items-center justify-center px-4 py-1 rounded-full font-bold text-[10px] uppercase tracking-wider bg-gradient-to-r from-primary to-secondary text-white hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 h-7 border border-transparent">
+                                                    <i class="fas fa-certificate mr-1.5"></i> Certificate
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p class="text-gray-500 italic text-center">No professional training added yet.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Global Certification -->
+                <div class="lg:w-1/2 flex flex-col">
+                    <h3 class="text-2xl md:text-3xl font-bold mb-6 text-white text-center">Global <span
+                            class="text-primary">Certifications</span></h3>
+                    <div class="bg-white/5 p-0.5 rounded-[22px] flex-grow">
+                        <div
+                            class="border border-white/10 rounded-2xl bg-white/5 backdrop-blur-md p-6 space-y-4 h-full">
+                            {% for cert in global_certifications %}
+                            <div class="relative rounded-2xl p-5 w-full border transition-all duration-500 hover:-translate-y-1 hover:shadow-xl backdrop-blur-sm group"
+                                style="background: linear-gradient(135deg, rgba(26,31,53,0.3), rgba(15,20,32,0.18), rgba(15,20,32,0.9)); border-color: rgba(55,65,81,0.4);"
+                                onmouseover="this.style.borderColor='rgba(249,115,22,0.9)'; this.style.boxShadow='0 10px 30px rgba(249,115,22,0.3)';"
+                                onmouseout="this.style.borderColor='rgba(55,65,81,0.4)'; this.style.boxShadow='none';">
+                                <div class="flex flex-col gap-4">
+                                    <div class="flex items-center gap-4">
+                                        {% if cert.image %}
+                                        <div class="w-auto h-auto flex items-center justify-center shrink-0 p-2">
+                                            <img src="{{ cert.image.url }}" alt="{{ cert.course_name }}"
+                                                class="h-20 w-auto object-contain group-hover:scale-110 transition duration-300">
+                                        </div>
+                                        {% endif %}
+                                        <div class="flex-grow">
+                                            <h4
+                                                class="text-lg font-bold text-gray-200 group-hover:text-white transition duration-300 mb-1 leading-tight">
+                                                {{ cert.course_name }}</h4>
+                                            <p class="text-gray-400 text-sm mb-2">{{ cert.organization_name }}</p>
+                                            <div class="flex items-center gap-2">
+                                                <span
+                                                    class="inline-flex items-center justify-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border h-7 {% if cert.mode == 'Online' %}bg-blue-500/10 text-blue-400 border-blue-500/10{% else %}bg-green-500/10 text-green-400 border-green-500/10{% endif %}">
+                                                    {{ cert.mode }}
+                                                </span>
+                                                {% if cert.certification_link %}
+                                                <a href="{{ cert.certification_link }}" target="_blank"
+                                                    class="inline-flex items-center justify-center px-4 py-1 rounded-full font-bold text-[10px] uppercase tracking-wider bg-gradient-to-r from-primary to-secondary text-white hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 h-7 border border-transparent">
+                                                    <i class="fas fa-certificate mr-1.5"></i> Verify
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p class="text-gray-500 italic text-center">No global certifications added yet.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Technical Skills & Skill Cards -->
+            <div class="flex flex-col lg:flex-row gap-[50px] pb-4">
+                <!-- Left Div: Technical Skills -->
+                <div class="lg:w-1/2 flex flex-col">
+                    <h3 class="text-2xl md:text-3xl font-bold mb-4 text-white">Technical <span
+                            class="text-primary">Skills</span></h3>
+                    <div class="text-gray-300 leading-relaxed text-lg mb-6 break-words">
+                        {% if settings.technical_skills_description %}
+                        {{ settings.technical_skills_description|safe }}
+                        {% else %}
+                        I possess a diverse set of technical skills for building robust applications.
+                        {% endif %}
+                    </div>
+
+                    <div class="border border-white/20 rounded-2xl bg-white/5 backdrop-blur-sm p-6 space-y-6">
+                        {% for category in skill_categories %}
+                        <div class="space-y-3">
+                            <h4 class="text-lg font-bold text-white flex items-center mb-3">
+                                <span
+                                    class="w-1.5 h-5 bg-gradient-to-b from-primary to-secondary rounded-full mr-3"></span>
+                                {{ category.name }}
+                            </h4>
+                            <div class="flex flex-wrap gap-2">
+                                {% for item in category.items.all %}
+                                <span
+                                    class="px-4 py-2 bg-transparent text-gray-300 rounded-lg text-sm font-medium transition-all duration-300 border border-gray-600 hover:border-primary hover:text-white hover:bg-white/5 hover:shadow-lg hover:shadow-primary/20 cursor-default hover:-translate-y-0.5 whitespace-nowrap">
+                                    {{ item }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% if not forloop.last %}
+                        <div class="h-px bg-white/10 w-full"></div>
+                        {% endif %}
+                        {% empty %}
+                        <p class="text-gray-500 italic">Add skill categories in admin panel.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Right Div: Skill Cards -->
+                <div class="lg:w-1/2 border border-white/20 rounded-2xl bg-white/5 backdrop-blur-sm p-6">
+                    <div class="grid grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-3">
+                        {% for skill in skills %}
+                        {% include 'partials/_skill_card.html' %}
+                        {% empty %}
+                        <div class="col-span-full text-center text-gray-500 py-8">
+                            <p>No expertise cards added yet.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Wave Divider -->
+    <div class="absolute bottom-0 left-0 w-full overflow-hidden leading-none rotate-180">
+        <svg class="relative block w-full h-20" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path
+                d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
+                class="fill-dark"></path>
+        </svg>
+    </div>
+</section>
+

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Forgot Password{% endblock %}
+
+{% block content %}
+<div class="pt-32 pb-24 min-h-screen flex items-center justify-center relative">
+    <div class="absolute inset-0 bg-[#0a0a0f] pointer-events-none"></div>
+    <div class="glass-card p-10 max-w-md w-full mx-4 relative z-10 border border-white/10 rounded-2xl shadow-2xl">
+        <div class="text-center mb-8">
+            <i class="fas fa-key text-4xl text-[#2ecc71] mb-4"></i>
+            <h2 class="text-2xl font-bold text-white mb-2">Reset Password</h2>
+            <p class="text-gray-400 text-sm">Enter your email address to receive a 6-digit OTP valid for 2 minutes.</p>
+        </div>
+
+        {% if messages %}
+        {% for message in messages %}
+        <div class="mb-4 p-3 rounded bg-red-500/20 border border-red-500/50 text-red-200 text-sm text-center">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <form method="POST" action="{% url 'send_otp' %}">
+            {% csrf_token %}
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                        <i class="fas fa-envelope"></i>
+                    </span>
+                    <input type="email" name="email" required
+                        class="w-full bg-[#1e1e2d] border border-white/10 rounded-lg py-3 pl-10 pr-4 text-white focus:outline-none focus:border-[#2ecc71] focus:ring-1 focus:ring-[#2ecc71] transition-colors"
+                        placeholder="you@example.com">
+                </div>
+            </div>
+
+            <button type="submit"
+                class="w-full py-3 bg-gradient-to-r from-[#2ecc71] to-[#27ae60] text-white font-bold rounded-lg hover:shadow-[0_0_20px_rgba(46,204,113,0.4)] transition-all flex justify-center items-center gap-2">
+                Send OTP <i class="fas fa-paper-plane"></i>
+            </button>
+        </form>
+
+        <div class="mt-6 text-center text-sm">
+            <a href="{% url 'account_login' %}" class="text-gray-400 hover:text-white transition-colors">Back to
+                Login</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

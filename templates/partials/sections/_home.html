@@ -1,0 +1,171 @@
+{% load static core_tags %}
+<!-- Hero Section -->
+<section id="{% if menu %}{{ menu.section_id }}{% else %}home{% endif %}"
+    class="min-h-screen flex items-center justify-center relative overflow-hidden pt-20 md:pt-28 bg-gradient-to-r from-[#1a1a2e] via-[#2e1a3d] to-[#4a3526] scroll-mt-12 md:scroll-mt-14">
+    <!-- Background Effects -->
+    <div
+        class="absolute top-0 left-0 w-96 h-96 bg-primary/20 rounded-full blur-3xl opacity-50 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+    </div>
+    <div
+        class="absolute bottom-0 right-0 w-96 h-96 bg-secondary/20 rounded-full blur-3xl opacity-50 transform translate-x-1/2 translate-y-1/2 pointer-events-none">
+    </div>
+
+    <div class="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 relative z-10 w-full">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+
+            <!-- Left: Text -->
+            <div class="text-center md:text-left order-2 md:order-1 space-y-6">
+                <p class="text-primary font-bold tracking-[3px] text-xls mb-3">Welcome to My World</p>
+                <h1 class="text-3xl md:text-5xl font-bold leading-tight">
+                    <span class="block">Hi, I'm</span>
+                    <span class="gradient-text">{{ settings.hero_name }}</span>
+                </h1>
+
+                <!-- Dynamic Skills -->
+                <div class="text-2xl md:text-3xl font-bold text-gray-200 h-10">
+                    I have expertise in <span class="gradient-text" id="typewriter"></span>
+                </div>
+
+                <!-- Interactive Description -->
+                {% if settings.hero_description %}
+                <div
+                    class="border border-white/10 bg-white/5 p-6 rounded-xl hover:bg-white/10 transition duration-300 backdrop-blur-md group cursor-default shadow-lg hover:shadow-primary/10">
+                    <p class="text-gray-200 leading-relaxed group-hover:text-white transition">
+                        {{ settings.hero_description|linebreaksbr }}
+                    </p>
+                </div>
+                {% endif %}
+
+                <div class="flex gap-4 justify-center md:justify-start pt-2">
+                    {% if settings.linkedin_url %}
+                    <a href="{{ settings.linkedin_url }}" target="_blank"
+                        class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center hover:border-[#0077b5] hover:bg-[#0077b5]/10 transition-all duration-300 group">
+                        {% if settings.linkedin_logo %}
+                        <img src="{{ settings.linkedin_logo.url }}" alt="LinkedIn"
+                            class="w-6 h-6 object-contain group-hover:scale-125 transition-transform duration-300">
+                        {% else %}
+                        <i
+                            class="fab fa-linkedin-in text-lg text-gray-400 group-hover:text-[#0077b5] group-hover:scale-125 transition-all duration-300"></i>
+                        {% endif %}
+                    </a>
+                    {% endif %}
+
+                    {% if settings.github_url %}
+                    <a href="{{ settings.github_url }}" target="_blank"
+                        class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center hover:border-white hover:bg-white/10 transition-all duration-300 group">
+                        {% if settings.github_logo %}
+                        <img src="{{ settings.github_logo.url }}" alt="GitHub"
+                            class="w-6 h-6 object-contain group-hover:scale-125 transition-transform duration-300">
+                        {% else %}
+                        <i
+                            class="fab fa-github text-lg text-gray-400 group-hover:text-white group-hover:scale-125 transition-all duration-300"></i>
+                        {% endif %}
+                    </a>
+                    {% endif %}
+
+                    {% if settings.facebook_url %}
+                    <a href="{{ settings.facebook_url }}" target="_blank"
+                        class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center hover:border-[#1877F2] hover:bg-[#1877F2]/10 transition-all duration-300 group">
+                        {% if settings.facebook_logo %}
+                        <img src="{{ settings.facebook_logo.url }}" alt="Facebook"
+                            class="w-6 h-6 object-contain group-hover:scale-125 transition-transform duration-300">
+                        {% else %}
+                        <i
+                            class="fab fa-facebook-f text-lg text-gray-400 group-hover:text-[#1877F2] group-hover:scale-125 transition-all duration-300"></i>
+                        {% endif %}
+                    </a>
+                    {% endif %}
+
+                    {% if settings.instagram_url %}
+                    <a href="{{ settings.instagram_url }}" target="_blank"
+                        class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center hover:border-[#E4405F] hover:bg-[#E4405F]/10 transition-all duration-300 group">
+                        {% if settings.instagram_logo %}
+                        <img src="{{ settings.instagram_logo.url }}" alt="Instagram"
+                            class="w-6 h-6 object-contain group-hover:scale-125 transition-transform duration-300">
+                        {% else %}
+                        <i
+                            class="fab fa-instagram text-lg text-gray-400 group-hover:text-[#E4405F] group-hover:scale-125 transition-all duration-300"></i>
+                        {% endif %}
+                    </a>
+                    {% endif %}
+
+                    {% if settings.x_url %}
+                    <a href="{{ settings.x_url }}" target="_blank"
+                        class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center hover:border-white hover:bg-white/10 transition-all duration-300 group">
+                        {% if settings.x_logo %}
+                        <img src="{{ settings.x_logo.url }}" alt="X"
+                            class="w-5 h-5 object-contain group-hover:scale-125 transition-transform duration-300">
+                        {% else %}
+                        <i
+                            class="fab fa-x-twitter text-lg text-gray-400 group-hover:text-white group-hover:scale-125 transition-all duration-300"></i>
+                        {% endif %}
+                    </a>
+                    {% endif %}
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4 items-center">
+                    <a href="#contact"
+                        class="px-8 py-3 bg-gradient-to-r from-primary to-secondary rounded-full text-white font-semibold hover:shadow-lg hover:shadow-primary/30 transition transform hover:-translate-y-1">
+                        Hire Me
+                    </a>
+                    <a href="{% if settings.resume_file %}{{ settings.resume_file.url }}{% else %}#{% endif %}"
+                        target="_blank"
+                        class="px-8 py-3 border border-gray-600 rounded-full text-gray-300 font-semibold hover:border-primary hover:text-primary transition transform hover:-translate-y-1 flex items-center gap-2 bg-transparent">
+                        <i class="fas fa-download"></i> My Resume
+                    </a>
+                </div>
+            </div>
+
+            <!-- Skills data for typewriter -->
+            <script id="skills-data" type="application/json">
+                [{% for skill in skills %}"{{ skill.name|escapejs }}"{% if not forloop.last %},{% endif %}{% empty %}"Web Development","Data Analysis","Python"{% endfor %}]
+            </script>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var rawEl = document.getElementById('skills-data');
+                    var skills = [];
+                    try { skills = JSON.parse(rawEl.textContent); } catch (e) { skills = ["Web Development", "Data Analysis", "Python"]; }
+                    var el = document.getElementById('typewriter');
+                    if (!el || skills.length === 0) return;
+                    var si = 0, ci = 0, del = false, speed = 100;
+                    function type() {
+                        var cur = skills[si];
+                        if (del) { el.textContent = cur.substring(0, ci - 1); ci--; speed = 50; }
+                        else { el.textContent = cur.substring(0, ci + 1); ci++; speed = 100; }
+                        if (!del && ci === cur.length) { del = true; speed = 2000; }
+                        else if (del && ci === 0) { del = false; si = (si + 1) % skills.length; speed = 500; }
+                        setTimeout(type, speed);
+                    }
+                    type();
+                });
+            </script>
+
+            <!-- Right: Image -->
+            <div class="relative flex justify-center md:justify-start order-1 md:order-2 mb-10 md:mb-0">
+                <div class="relative md:ml-[110px] group inline-block">
+                    <!-- Blur Glow -->
+                    <div
+                        class="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-3xl blur-2xl opacity-30 animate-pulse">
+                    </div>
+                    <!-- Gradient Border -->
+                    <div
+                        class="absolute -inset-[3px] rounded-[30px] bg-gradient-to-r from-primary via-[#FF8E53] to-secondary opacity-80 transition duration-500 group-hover:scale-105 shadow-[0_0_30px_rgba(249,115,22,0.4)]">
+                    </div>
+                    <!-- Main Image -->
+                    {% if settings.hero_profile_image %}
+                    <img src="{{ settings.hero_profile_image.url }}" alt="Profile"
+                        class="relative block w-full max-w-[85vw] sm:max-w-[350px] md:max-w-[450px] aspect-[4/5] object-cover rounded-3xl z-10 transition duration-500 group-hover:scale-105 bg-gray-900/30 backdrop-blur-sm border border-white/10">
+                    {% else %}
+                    <div
+                        class="relative block w-[85vw] sm:w-[350px] h-auto aspect-square rounded-3xl bg-gray-900 flex items-center justify-center text-gray-600 z-10 transition duration-500 group-hover:scale-105 border border-white/20">
+                        <i class="fas fa-user text-6xl"></i>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+

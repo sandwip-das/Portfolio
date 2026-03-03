@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}Verify Registration OTP{% endblock %}
+
+{% block content %}
+<div
+    class="pt-24 pb-24 min-h-screen relative bg-gradient-to-br from-[#079992] via-[#3B3B98] to-[#6D214F] flex items-center justify-center">
+    <div class="glass-card p-10 max-w-md w-full mx-4 relative z-10 border border-white/10 rounded-2xl shadow-2xl">
+        <div class="text-center mb-8">
+            <i class="fas fa-user-check text-4xl text-[#2ecc71] mb-4"></i>
+            <h2 class="text-2xl font-bold text-white mb-2">Verify Account</h2>
+            <p class="text-gray-400 text-sm">Please enter the 6-digit code sent to <strong>{{ email }}</strong></p>
+        </div>
+
+        {% if messages %}
+        {% for message in messages %}
+        <div class="mb-4 p-3 rounded bg-red-500/20 border border-red-500/50 text-red-200 text-sm text-center">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <form method="POST" action="{% url 'verify_registration_otp' %}" id="verifyForm">
+            {% csrf_token %}
+            <input type="hidden" name="email" value="{{ email }}" id="emailInput">
+
+            <div class="mb-6 flex justify-center">
+                <input type="text" name="otp" required maxlength="6"
+                    class="w-2/3 bg-[#1e1e2d] border border-white/10 rounded-lg py-3 px-4 text-center text-2xl font-mono text-white tracking-widest focus:outline-none focus:border-[#2ecc71] focus:ring-1 focus:ring-[#2ecc71] transition-colors"
+                    placeholder="------">
+            </div>
+
+            <button type="submit"
+                class="w-full py-3 bg-gradient-to-r from-[#2ecc71] to-[#27ae60] text-white font-bold rounded-lg hover:shadow-[0_0_20px_rgba(46,204,113,0.4)] transition-all flex justify-center items-center gap-2 mb-4">
+                Verify <i class="fas fa-check"></i>
+            </button>
+            <div class="text-center">
+                <button type="button" id="resendBtn" onclick="resendOtp()"
+                    class="text-[#2ecc71] text-sm hover:underline hover:text-white transition-colors">
+                    Resend OTP
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function resendOtp() {
+        const email = document.getElementById('emailInput').value;
+        const btn = document.getElementById('resendBtn');
+
+        btn.disabled = true;
+        btn.innerText = 'Resending...';
+
+        fetch('{% url "resend_registration_otp" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: 'email=' + encodeURIComponent(email)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(data.message);
+                    btn.innerText = 'Resend OTP';
+                    btn.disabled = false;
+                } else {
+                    alert(data.message);
+                    btn.innerText = 'Resend OTP';
+                    btn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                btn.innerText = 'Resend OTP';
+                btn.disabled = false;
+            });
+    }
+</script>
+{% endblock %}

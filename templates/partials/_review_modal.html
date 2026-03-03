@@ -1,0 +1,186 @@
+﻿<!-- Review UI Modal -->
+<div id="reviewModal" class="fixed inset-0 z-[70] hidden flex items-center justify-center px-4">
+    <div class="fixed inset-0 bg-black/90 backdrop-blur-sm" onclick="closeReviewModal()"></div>
+    <div class="relative bg-[#1a1a2e] border border-white/20 rounded-2xl w-full p-6 shadow-2xl transform transition-all duration-300 scale-95 opacity-0"
+        style="max-width: 556px;" id="reviewModalContent">
+        <button onclick="closeReviewModal()"
+            class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+            <i class="fas fa-times text-xl"></i>
+        </button>
+
+        <h3 class="text-xl font-bold text-white mb-6 text-center">Share Your Experience</h3>
+
+        <form method="POST" enctype="multipart/form-data" class="space-y-6" id="review-form-dynamic">
+            {% csrf_token %}
+            <input type="hidden" name="review_form" value="1">
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-normal text-white uppercase mb-1">Name</label>
+                    {{ review_form.name }}
+                </div>
+                <div>
+                    <label class="block text-xs font-normal text-white uppercase mb-1">Email</label>
+                    {{ review_form.email }}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-normal text-white uppercase mb-1">Profession</label>
+                    {{ review_form.profession }}
+                </div>
+                <div>
+                    <label class="block text-xs font-normal text-white uppercase mb-1">Location</label>
+                    {{ review_form.location }}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-normal text-white uppercase mb-1">Your Picture (Optional)</label>
+                    {{ review_form.picture }}
+                </div>
+                <div>
+                    <label class="block text-xs font-normal text-white uppercase mb-1">Rating</label>
+                    <div class="flex items-center gap-2 bg-white/5 border border-white/20 rounded-lg px-3 py-1">
+                        <div class="flex gap-1" id="star-rating-container">
+                            {% for i in "12345"|make_list %}
+                            <i class="fas fa-star text-lg cursor-pointer text-green-500 transition-colors"
+                                data-value="{{ i }}"></i>
+                            {% endfor %}
+                        </div>
+                        <span id="rating-value-display" class="text-green-400 font-bold text-xs truncate">5 Stars</span>
+                        {{ review_form.rating }}
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="flex justify-between items-center mb-1">
+                    <label class="block text-xs font-normal text-white uppercase">Comment</label>
+                    <div class="flex gap-3 text-[10px] text-gray-400">
+                        <span id="comment-word-count">Words: 0</span>
+                        <span id="comment-char-count">0 / 70</span>
+                    </div>
+                </div>
+                {{ review_form.comment }}
+            </div>
+
+            <button type="submit"
+                class="w-full bg-gradient-to-r from-primary to-secondary text-white py-2 rounded-lg font-bold hover:shadow-lg hover:shadow-primary/25 transition-all duration-300">
+                Submit Review
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openReviewModal() {
+        const modal = document.getElementById('reviewModal');
+        const content = document.getElementById('reviewModalContent');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            content.classList.remove('scale-95', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }, 10);
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeReviewModal() {
+        const modal = document.getElementById('reviewModal');
+        const content = document.getElementById('reviewModalContent');
+        content.classList.remove('scale-100', 'opacity-100');
+        content.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+        document.body.style.overflow = 'auto';
+    }
+
+    // Star Rating & Character Count Logic
+    document.addEventListener('DOMContentLoaded', function () {
+        const starContainer = document.getElementById('star-rating-container');
+        if (!starContainer) return;
+
+        const stars = starContainer.querySelectorAll('i');
+        const ratingInput = document.querySelector('input[name="rating"]');
+        const ratingText = document.getElementById('rating-value-display');
+
+        function updateStars(val) {
+            stars.forEach(s => {
+                if (parseInt(s.getAttribute('data-value')) <= parseInt(val)) {
+                    s.classList.remove('text-gray-600');
+                    s.classList.add('text-green-500');
+                } else {
+                    s.classList.remove('text-green-500');
+                    s.classList.add('text-gray-600');
+                }
+            });
+            if (ratingText) ratingText.innerText = val + (val == 1 ? ' Star' : ' Stars');
+        }
+
+        if (!ratingInput.value) ratingInput.value = 5;
+        updateStars(ratingInput.value);
+
+        stars.forEach(star => {
+            star.addEventListener('click', function () {
+                const val = this.getAttribute('data-value');
+                ratingInput.value = val;
+                updateStars(val);
+            });
+            star.addEventListener('mouseover', function () {
+                const val = this.getAttribute('data-value');
+                stars.forEach(s => {
+                    if (parseInt(s.getAttribute('data-value')) <= parseInt(val)) {
+                        s.classList.remove('text-green-500');
+                        s.classList.add('text-green-400');
+                    } else {
+                        s.classList.remove('text-green-400');
+                    }
+                });
+            });
+        });
+
+        starContainer.addEventListener('mouseleave', function () {
+            updateStars(ratingInput.value);
+        });
+
+        const commentArea = document.querySelector('textarea[name="comment"]');
+        const wordCountDisp = document.getElementById('comment-word-count');
+        const charCountDisp = document.getElementById('comment-char-count');
+
+        if (commentArea) {
+            commentArea.addEventListener('input', function () {
+                const text = this.value.trim();
+                const words = text ? text.split(/\s+/).length : 0;
+                const chars = this.value.length;
+
+                if (wordCountDisp) wordCountDisp.innerText = `Words: ${words}`;
+                if (charCountDisp) {
+                    charCountDisp.innerText = `${chars} / 70`;
+                    if (chars >= 65) charCountDisp.classList.add('text-orange-500');
+                    else charCountDisp.classList.remove('text-orange-500', 'text-red-500');
+                }
+            });
+        }
+
+        // Initialize AJAX for Review Form
+        handleDynamicForm('review-form-dynamic', (data) => {
+            closeReviewModal();
+            const reviewSection = document.getElementById('reviews');
+            if (reviewSection) {
+                fetch(window.location.href)
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newReviews = doc.getElementById('reviews');
+                        if (newReviews) {
+                            reviewSection.innerHTML = newReviews.innerHTML;
+                        }
+                    });
+            }
+        });
+    });
+</script>

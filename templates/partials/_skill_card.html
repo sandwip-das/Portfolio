@@ -1,0 +1,21 @@
+{% load core_tags %}
+<!-- Skill Card - Auto-colored from image - ENLARGED -->
+<div class="group relative w-full aspect-square">
+    <div class="absolute inset-0 rounded-2xl p-2 flex flex-col items-center justify-center text-center border transition-all duration-500 hover:-translate-y-2 hover:shadow-xl backdrop-blur-sm"
+        style="background: linear-gradient(135deg, {{ skill.dominant_color|default:'#1a1f35' }}30, {{ skill.dominant_color|default:'#0f1420' }}18, #0f142090); border-color: {{ skill.dominant_color|default:'#374151' }}40;"
+        onmouseover="this.style.borderColor='{{ skill.dominant_color|default:'#f97316' }}90'; this.style.boxShadow='0 10px 30px {{ skill.dominant_color|default:'#f97316' }}30';"
+        onmouseout="this.style.borderColor='{{ skill.dominant_color|default:'#374151' }}40'; this.style.boxShadow='none';">
+        <!-- Skill Image -->
+        <div
+            class="w-full h-2/3 mb-2 flex items-center justify-center group-hover:scale-110 transition duration-300 overflow-hidden">
+            {% if skill.image %}
+            <img src="{{ skill.image.url }}" alt="{{ skill.name }}" class="w-full h-full p-2 object-contain">
+            {% else %}
+            <span class="text-3xl font-bold text-gray-500">{{ skill.name|truncatechars:2 }}</span>
+            {% endif %}
+        </div>
+        <!-- Skill Name -->
+        <h3 class="text-sm font-bold text-gray-300 group-hover:text-white transition duration-300">
+            {{ skill.name }}</h3>
+    </div>
+</div>

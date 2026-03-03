@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ settings.site_title|default:"Portfolio" }}{% endblock %}</title>
+    <link rel="icon" type="image/png"
+        href="{% if settings.favicon %}{{ settings.favicon.url }}{% else %}{% static 'img/favicon_placeholder.png' %}{% endif %}">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800;900&family=Dancing+Script:wght@700&family=Outfit:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <script src="{% static 'js/main.js' %}"></script>
+
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+</head>
+
+<body class="bg-dark text-gray-200 antialiased overflow-x-hidden min-h-screen">
+
+    {% include 'partials/_navbar.html' %}
+
+    {% if messages %}
+    <div id="message-container" class="fixed top-24 right-4 z-[1000] space-y-4 max-w-sm w-full">
+        {% for message in messages %}
+        <div
+            class="px-6 py-4 rounded-xl shadow-2xl backdrop-blur-md border {% if message.tags == 'success' %}bg-green-500/90 border-green-500 text-white shadow-green-500/20{% else %}bg-red-500/90 border-red-500 text-white shadow-red-500/20{% endif %} flex items-center justify-between transform transition-all duration-500 hover:scale-[1.02] relative pr-10">
+            <div class="flex items-center">
+                <i
+                    class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} mr-3 text-xl"></i>
+                <p class="font-medium">{{ message }}</p>
+            </div>
+            <button onclick="this.parentElement.remove()"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors">
+                <i class="fas fa-times text-lg"></i>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <script>
+        // Global Toast Notification System
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-[#2ecc71]' : (type === 'error' ? 'bg-red-500' : 'bg-blue-500');
+            toast.className = `fixed bottom-5 right-5 ${bgColor} text-white px-6 py-3 rounded-xl shadow-2xl z-[1000] transition-all transform duration-300 translate-y-20 opacity-0`;
+            toast.style.minWidth = '250px';
+            toast.innerHTML = `<div class="flex items-center gap-3"><i class="fas ${type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle')} text-xl"></i> <span class="font-medium">${message}</span></div>`;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.classList.remove('translate-y-20', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 20000);
+        }
+
+        // Global AJAX Form Handler
+        async function handleDynamicForm(formId, onSuccess = null) {
+            const form = document.getElementById(formId);
+            if (!form) return;
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalBtnText = submitBtn ? submitBtn.innerHTML : '';
+
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
+                }
+
+                const formData = new FormData(form);
+                try {
+                    const response = await fetch(form.action || window.location.href, {
+                        method: 'POST',
+                        body: formData,
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+                    const data = await response.json();
+
+                    if (data.status === 'success') {
+                        showToast(data.message || 'Action successful!', 'success');
+                        form.reset();
+                        if (onSuccess) onSuccess(data);
+                    } else {
+                        showToast(data.message || 'Something went wrong.', 'error');
+                    }
+                } catch (error) {
+                    console.error('AJAX Error:', error);
+                    showToast('Failed to connect to server.', 'error');
+                } finally {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnText;
+                    }
+                }
+            });
+        }
+
+        // Auto-dismiss Django messages
+        document.addEventListener('DOMContentLoaded', function () {
+            const container = document.getElementById('message-container');
+            if (container) {
+                setTimeout(function () {
+                    container.style.transition = 'opacity 0.5s ease-out';
+                    container.style.opacity = '0';
+                    setTimeout(() => container.remove(), 500);
+                }, 20000);
+            }
+        });
+    </script>
+
+    {% block content %}{% endblock %}
+
+    {% include 'partials/_footer.html' %}
+
+</body>
+
+</html>
