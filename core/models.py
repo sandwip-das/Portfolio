@@ -14,6 +14,7 @@ import random
 from allauth.account.signals import user_signed_up
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
+from django.db import connection
 
 @receiver(pre_delete, sender=User)
 def clean_user_data(sender, instance, **kwargs):
@@ -36,6 +37,8 @@ class UserManagement(User):
         verbose_name_plural = 'User Management'
 
 class UserProfile(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     profile_picture = models.ImageField(upload_to='profiles/', default='default_profile.png', blank=True, null=True)
     contact_number = models.CharField(max_length=20, blank=True, null=True)
@@ -77,6 +80,7 @@ def create_or_save_user_profile(sender, instance, created, **kwargs):
             UserProfile.objects.create(user=instance)
 
 class PendingRegistration(models.Model):
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     username = models.CharField(max_length=150)
     email = models.EmailField()
     password = models.CharField(max_length=255) # Store hashed password
@@ -94,6 +98,8 @@ class PendingRegistration(models.Model):
         return f"Pending: {self.username} ({self.email})"
 
 class SingletonModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     class Meta:
         abstract = True
 
@@ -109,6 +115,8 @@ class SingletonModel(models.Model):
         return obj
 
 class HomeSettings(SingletonModel):
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     # Site Config
     site_title = models.CharField(max_length=100, default="Portfolio", help_text="Shown in the browser tab")
     nav_name = models.CharField(max_length=100, default="Portfolio", help_text="The name shown in the navigation bar")
@@ -166,6 +174,8 @@ class HomeSettings(SingletonModel):
         verbose_name_plural = "Home Page Content"
 
 class NavbarMenu(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     settings = models.ForeignKey(HomeSettings, on_delete=models.CASCADE, default=1, related_name='navbar_menus')
     name = models.CharField(max_length=50, verbose_name="Menu Name")
     section_id = models.CharField(max_length=50, blank=True, help_text="HTML ID (auto-generated if empty). Use: 'home', 'about', 'experience', 'skills', 'projects', 'service', 'blog', 'contact' for existing sections.")
@@ -222,6 +232,7 @@ class FooterSettings(HomeSettings):
 # --- REAL MODELS & INLINES ---
 
 class Experience(models.Model):
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     company_name = models.CharField(max_length=200)
     company_logo = models.ImageField(upload_to='core/company_logos/', blank=True, null=True)
     designation = models.CharField(max_length=200)
@@ -249,6 +260,7 @@ class Experience(models.Model):
         return [line.strip() for line in self.description.split('\n') if line.strip()]
 
 class Project(models.Model):
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     title = models.CharField(max_length=100)
     description = models.TextField()
     image = models.ImageField(upload_to='core/projects/', help_text="Cover Image")
@@ -268,6 +280,8 @@ class Project(models.Model):
         return self.title
 
 class ProjectImage(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     project = models.ForeignKey(Project, related_name='images', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='core/projects/gallery/')
     
@@ -275,6 +289,8 @@ class ProjectImage(models.Model):
         return f"{self.project.title} Image"
 
 class Service(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     title = models.CharField(max_length=100)
     icon_class = models.CharField(max_length=50, default="fas fa-layer-group", help_text="Font Awesome class")
     features = models.TextField(help_text="One feature per line")
@@ -291,6 +307,7 @@ class Service(models.Model):
         return [f.strip() for f in self.features.split('\n') if f.strip()]
 
 class ServiceBooking(models.Model):
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='bookings')
     name = models.CharField(max_length=100)
     email = models.EmailField()
@@ -318,6 +335,8 @@ class ServiceBooking(models.Model):
 # INLINED MODELS (Linked to HomeSettings for grouping)
 
 class AcademicBackground(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     # Link to AboutSectionSettings (which is HomeSettings)
     settings = models.ForeignKey(HomeSettings, on_delete=models.CASCADE, default=1, related_name='academic_backgrounds')
     institution_name = models.CharField(max_length=200)
@@ -339,6 +358,8 @@ class AcademicBackground(models.Model):
         return [line.strip() for line in self.description.split('\n') if line.strip()]
 
 class SkillCategory(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     settings = models.ForeignKey(HomeSettings, on_delete=models.CASCADE, default=1, related_name='skill_categories')
     name = models.CharField(max_length=100)
     order = models.IntegerField(default=0)
@@ -353,6 +374,8 @@ class SkillCategory(models.Model):
 
 
 class SkillItem(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     category = models.ForeignKey(SkillCategory, related_name='items', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     order = models.IntegerField(default=0)
@@ -366,6 +389,8 @@ class SkillItem(models.Model):
         return self.name
 
 class ProfessionalTraining(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     settings = models.ForeignKey(HomeSettings, on_delete=models.CASCADE, default=1, related_name='professional_trainings')
     MODE_CHOICES = [('Online', 'Online'), ('Offline', 'Offline')]
     CATEGORY_CHOICES = [('TRAINING', 'Professional Training'), ('CERTIFICATION', 'Global Certification')]
@@ -398,6 +423,7 @@ class GlobalCertificationModel(ProfessionalTraining): # Proxy Model
         verbose_name_plural = "Global Certifications"
 
 class BlogPost(models.Model):
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     settings = models.ForeignKey(HomeSettings, on_delete=models.CASCADE, default=1, related_name='blog_posts')
     title = models.CharField(max_length=200)
     category = models.CharField(max_length=100)
@@ -444,6 +470,8 @@ class BlogPost(models.Model):
         return self.view_tracks.count()
 
 class BlogPostImage(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     post = models.ForeignKey(BlogPost, related_name='images', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='core/blog/gallery/')
     caption = models.CharField(max_length=200, blank=True)
@@ -456,6 +484,7 @@ class BlogPostImage(models.Model):
         return f"Image {self.id}"
 
 class BlogComment(models.Model):
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     post = models.ForeignKey(BlogPost, related_name='comments', on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
@@ -474,6 +503,7 @@ class BlogComment(models.Model):
         return self.comment_reactions.filter(reaction='dislike').count()
 
 class CommentReaction(models.Model):
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     REACTION_CHOICES = (
         ('like', 'Like'),
         ('dislike', 'Dislike')
@@ -490,6 +520,7 @@ class CommentReaction(models.Model):
         return f"{self.user.username} {self.reaction} comment {self.comment.id}"
 
 class BlogReaction(models.Model):
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     REACTION_CHOICES = (
         ('like', 'Like'),
         ('dislike', 'Dislike')
@@ -506,6 +537,7 @@ class BlogReaction(models.Model):
         return f"{self.user.username}: {self.reaction}"
 
 class BlogViewTrack(models.Model):
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     post = models.ForeignKey(BlogPost, related_name='view_tracks', on_delete=models.CASCADE)
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
@@ -520,6 +552,7 @@ class BlogViewTrack(models.Model):
 
 
 class ContactMessage(models.Model):
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     name = models.CharField(max_length=100)
     email = models.EmailField()
     phone = models.CharField(max_length=20, blank=True, null=True)
@@ -532,6 +565,8 @@ class ContactMessage(models.Model):
 
 # Legacy Models
 class Skill(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     settings = models.ForeignKey(HomeSettings, on_delete=models.CASCADE, default=1, related_name='skills')
     name = models.CharField(max_length=50, verbose_name="Technology Name")
     image = models.ImageField(upload_to='core/skills/', verbose_name="Image")
@@ -556,6 +591,7 @@ class TechnicalSkillsSection(HomeSettings):
 
 
 class Review(models.Model):
+    created_by = models.CharField(max_length=150, null=True, blank=True)
     name = models.CharField(max_length=50)
     email = models.EmailField()
     profession = models.CharField(max_length=50)

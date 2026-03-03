@@ -18,6 +18,45 @@ from .models import (
     UserProfile, UserManagement
 )
 
+# Global Monkey-Patch to automatically set 'created_by' on all models when created via Admin
+original_save_model = admin.ModelAdmin.save_model
+def custom_save_model(self, request, obj, form, change):
+    if not change and hasattr(obj, 'created_by') and not obj.created_by:
+        obj.created_by = request.user.username
+    original_save_model(self, request, obj, form, change)
+admin.ModelAdmin.save_model = custom_save_model
+
+original_save_formset = admin.ModelAdmin.save_formset
+def custom_save_formset(self, request, form, formset, change):
+    instances = formset.save(commit=False)
+    for instance in instances:
+        if not instance.pk and hasattr(instance, 'created_by') and not getattr(instance, 'created_by', None):
+            instance.created_by = request.user.username
+        instance.save()
+    for obj in formset.deleted_objects:
+        obj.delete()
+    formset.save_m2m()
+admin.ModelAdmin.save_formset = custom_save_formset
+
+original_nested_save_model = NestedModelAdmin.save_model
+def custom_nested_save_model(self, request, obj, form, change):
+    if not change and hasattr(obj, 'created_by') and not obj.created_by:
+        obj.created_by = request.user.username
+    original_nested_save_model(self, request, obj, form, change)
+NestedModelAdmin.save_model = custom_nested_save_model
+
+original_nested_save_formset = NestedModelAdmin.save_formset
+def custom_nested_save_formset(self, request, form, formset, change):
+    instances = formset.save(commit=False)
+    for instance in instances:
+        if not instance.pk and hasattr(instance, 'created_by') and not getattr(instance, 'created_by', None):
+            instance.created_by = request.user.username
+        instance.save()
+    for obj in formset.deleted_objects:
+        obj.delete()
+    formset.save_m2m()
+NestedModelAdmin.save_formset = custom_nested_save_formset
+
 # Base Admin for settings (Singleton behavior)
 class BaseSettingsAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
@@ -526,6 +565,7 @@ class UserProfileInline(admin.StackedInline):
     
 class UserBlogCommentInline(admin.TabularInline):
     model = BlogComment
+    fk_name = 'user'
     extra = 0
     readonly_fields = ['post', 'content', 'created_at']
     fields = ['post', 'content', 'created_at']
@@ -535,6 +575,7 @@ class UserBlogCommentInline(admin.TabularInline):
 
 class UserBlogReactionInline(admin.TabularInline):
     model = BlogReaction
+    fk_name = 'user'
     extra = 0
     readonly_fields = ['post', 'reaction', 'created_at']
     fields = ['post', 'reaction', 'created_at']
@@ -544,6 +585,7 @@ class UserBlogReactionInline(admin.TabularInline):
 
 class UserBlogViewTrackInline(admin.TabularInline):
     model = BlogViewTrack
+    fk_name = 'user'
     extra = 0
     readonly_fields = ['post', 'ip_address', 'user_agent', 'browsing_source', 'created_at']
     fields = ['post', 'ip_address', 'user_agent', 'browsing_source', 'created_at']

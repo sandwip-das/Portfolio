@@ -157,53 +157,81 @@ def render_interleaved_content(post):
         paras = [f'<p>{p}</p>' for p in paras]
         
     images = list(post.images.all())
+    # Only skip the first image (feature image)
+    content_images = images[1:] if len(images) > 1 else []
     
-    # We skip the first 2 images because they are shown at the top
-    interleave_images = images[2:] if len(images) > 2 else []
+    # Group images by their order
+    from collections import defaultdict
+    groups_dict = defaultdict(list)
+    for img in content_images:
+        groups_dict[img.order].append(img)
+    
+    # Sort orders to ensure they appear correctly
+    sorted_orders = sorted(groups_dict.keys())
+    image_groups = [groups_dict[order] for order in sorted_orders]
     
     result = []
     
     for i, para in enumerate(paras):
         result.append(para)
         
-        # If we have an image for this paragraph, inject it
-        if i < len(interleave_images):
-            img = interleave_images[i]
-            img_url = img.image.url if img.image else ''
-            caption_text = img.caption if img.caption else getattr(post, 'title', '')
+        # If we have an image group for this index, inject it
+        if i < len(image_groups):
+            group = image_groups[i]
             
-            caption_html = ''
-            if img.caption:
-                caption_html = f'<p class="text-center text-sm text-gray-400 p-3 bg-white/5 m-0 border-t border-white/10">{img.caption}</p>'
+            # Determine width based on number of images in group
+            # If 1 image: w-full or md:w-3/4
+            # If 2+ images: flex-row with shared width
+            
+            group_html = '<div class="flex flex-wrap justify-center gap-4 my-2">'
+            for img in group:
+                img_url = img.image.url if img.image else ''
+                caption_text = img.caption if img.caption else ''
                 
-            img_html = f'''
-            <div class="flex justify-center my-10">
-                <div class="rounded-2xl overflow-hidden border border-white/10 shadow-xl w-full md:w-1/4 hover:shadow-[#2ecc71]/20 transition-shadow">
-                    <img src="{img_url}" alt="{caption_text}" class="w-full h-auto object-cover">
+                # Determine individual image container width - Set to 1/4 as requested
+                width_class = "w-full md:w-1/4"
+                
+                caption_html = ''
+                if caption_text:
+                    caption_html = f'<p class="mt-2 text-center text-sm text-gray-300 font-medium italic">{caption_text}</p>'
+                
+                img_html = f'''
+                <div class="{width_class} group/img">
+                    <div class="aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-lg hover:shadow-[#2ecc71]/20 transition-all duration-300">
+                        <img src="{img_url}" alt="{caption_text or post.title}" class="w-full h-full object-cover transform group-hover/img:scale-[1.05] transition-transform duration-500">
+                    </div>
                     {caption_html}
                 </div>
-            </div>
-            '''
-            result.append(img_html)
+                '''
+                group_html += img_html
             
-    # Append any remaining images at the very end
-    if len(interleave_images) > len(paras):
-        for img in interleave_images[len(paras):]:
-            img_url = img.image.url if img.image else ''
-            caption_text = img.caption if img.caption else getattr(post, 'title', '')
+            group_html += '</div>'
+            result.append(group_html)
             
-            caption_html = ''
-            if img.caption:
-                caption_html = f'<p class="text-center text-sm text-gray-400 p-3 bg-white/5 m-0 border-t border-white/10">{img.caption}</p>'
+    # Append any remaining image groups at the very end
+    if len(image_groups) > len(paras):
+        for group in image_groups[len(paras):]:
+            group_html = '<div class="flex flex-wrap justify-center gap-4 my-2">'
+            for img in group:
+                img_url = img.image.url if img.image else ''
+                caption_text = img.caption if img.caption else ''
                 
-            img_html = f'''
-            <div class="flex justify-center my-10">
-                <div class="rounded-2xl overflow-hidden border border-white/10 shadow-xl w-full md:w-1/4 hover:shadow-[#2ecc71]/20 transition-shadow">
-                    <img src="{img_url}" alt="{caption_text}" class="w-full h-auto object-cover">
+                width_class = "w-full md:w-1/4"
+                
+                caption_html = ''
+                if caption_text:
+                    caption_html = f'<p class="mt-2 text-center text-sm text-gray-300 font-medium italic">{caption_text}</p>'
+                
+                img_html = f'''
+                <div class="{width_class} group/img">
+                    <div class="aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-lg hover:shadow-[#2ecc71]/20 transition-all duration-300">
+                        <img src="{img_url}" alt="{caption_text or post.title}" class="w-full h-full object-cover transform group-hover/img:scale-[1.05] transition-transform duration-500">
+                    </div>
                     {caption_html}
                 </div>
-            </div>
-            '''
-            result.append(img_html)
+                '''
+                group_html += img_html
+            group_html += '</div>'
+            result.append(group_html)
 
     return mark_safe('\n'.join(result))
