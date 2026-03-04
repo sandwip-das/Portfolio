@@ -23,7 +23,7 @@ load_dotenv()
 # SECURITY
 #SECRET_KEY = os.getenv("SECRET_KEY")
 SECRET_KEY = os.environ.get('SECRET_KEY')
-DEBUG = os.getenv("DEBUG", "False") == "False"
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 ALLOWED_HOSTS = ["portfolio-2ydr.onrender.com"]
 
 # Quick-start development settings - unsuitable for production
@@ -123,10 +123,8 @@ WSGI_APPLICATION = 'portfolio.wsgi.application'
 
 # For Cloud
 DATABASES = {
-    'default': dj_database_url.parse(
-        os.environ.get("DATABASE_URL"),
-        conn_max_age=600,
-        ssl_require=True
+    "default": dj_database_url.config(
+        default=os.environ.get("DATABASE_URL")
     )
 }
 
