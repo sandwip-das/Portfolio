@@ -22,7 +22,7 @@ load_dotenv()
 
 # SECURITY
 SECRET_KEY = os.getenv("SECRET_KEY")
-DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = os.getenv("DEBUG", "False") == "False"
 ALLOWED_HOSTS = ["portfolio-2ydr.onrender.com"]
 
 # Quick-start development settings - unsuitable for production
