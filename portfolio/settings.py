@@ -21,7 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv()
 
 # SECURITY
-SECRET_KEY = os.getenv("SECRET_KEY")
+#SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = os.getenv("DEBUG", "False") == "False"
 ALLOWED_HOSTS = ["portfolio-2ydr.onrender.com"]
 
