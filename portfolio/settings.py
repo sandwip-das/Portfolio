@@ -21,10 +21,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv()
 
 # SECURITY
-#SECRET_KEY = os.getenv("SECRET_KEY")
-SECRET_KEY = os.environ.get('SECRET_KEY')
+# Render secret files path
+secret_file = Path("/etc/secrets/SECRET_KEY")
+if secret_file.exists():
+    with open(secret_file) as f:
+        SECRET_KEY = f.read().strip()
+else:
+    # fallback for local dev
+    load_dotenv()  # load from .env locally
+    SECRET_KEY = os.environ.get("SECRET_KEY", "unsafe-fallback-key-for-dev")
 DEBUG = os.environ.get("DEBUG", "True") == "True"
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['portfolio-2ydr.onrender.com']
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
