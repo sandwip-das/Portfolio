@@ -9,76 +9,42 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-import os
-from pathlib import Path
-from dotenv import load_dotenv
-import dj_database_url
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Load .env
-load_dotenv(dotenv_path=BASE_DIR / '.env')
-
-SECRET_KEY = os.environ.get('SECRET_KEY')
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
 # DATABASE CONFIGURATION
-# Render uses DATABASE_URL
-DATABASE_URL = os.environ.get('DATABASE_URL')
-if DATABASE_URL:
-    DATABASES = {
-        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
-    }
-else:
-    # Local PostgreSQL
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('DB_NAME', 'myportfolio_db'),
-            'USER': os.environ.get('DB_USER', 'postgres'),
-            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-            'HOST': os.environ.get('DB_HOST', 'localhost'),
-            'PORT': os.environ.get('DB_PORT', '5432'),
-        }
-    }
 
-print("Using Database:", DATABASES['default'])
+# For Render
+import os
+import dj_database_url
+from pathlib import Path
+from dotenv import load_dotenv
+load_dotenv
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-# # For Render
-# import os
-# import dj_database_url
-# from pathlib import Path
-# from dotenv import load_dotenv
-# load_dotenv
-#
-# # Build paths inside the project like this: BASE_DIR / 'subdir'.
-# BASE_DIR = Path(__file__).resolve().parent.parent
-#
-# # SECRET_KEY
-# SECRET_KEY = os.environ.get("SECRET_KEY")
-#
-# # Debug (optional, default False in production)
-# DEBUG = os.environ.get("DEBUG", "True") == "True"
-#
-# # Allowed hosts
-# ALLOWED_HOSTS = ['127.0.0.1', 'localhost, portfolio-2ydr.onrender.com']
-#
-# # Database
-# DATABASES = {
-#     "default": dj_database_url.config(default=os.environ.get("DATABASE_URL"))
-# }
-#
-# # Email
-# EMAIL_HOST_USER = os.environ.get("EMAIL_USER")
-# EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASSWORD")
-#
-# # Social Auth
-# GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
-# GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
-# FACEBOOK_APP_ID = os.environ.get("FACEBOOK_APP_ID")
-# FACEBOOK_APP_SECRET = os.environ.get("FACEBOOK_APP_SECRET")
+# SECRET_KEY
+SECRET_KEY = os.environ.get("SECRET_KEY")
+
+# Debug (optional, default False in production)
+DEBUG = os.environ.get("DEBUG", "True") == "True"
+
+# Allowed hosts
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost, portfolio-2ydr.onrender.com']
+
+# Database
+DATABASES = {
+    "default": dj_database_url.config(default=os.environ.get("DATABASE_URL"))
+}
+
+# Email
+EMAIL_HOST_USER = os.environ.get("EMAIL_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASSWORD")
+
+# Social Auth
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
+FACEBOOK_APP_ID = os.environ.get("FACEBOOK_APP_ID")
+FACEBOOK_APP_SECRET = os.environ.get("FACEBOOK_APP_SECRET")
 
 
 # Quick-start development settings - unsuitable for production
