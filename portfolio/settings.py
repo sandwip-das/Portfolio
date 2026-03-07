@@ -10,42 +10,32 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
-# DATABASE CONFIGURATION
-
 # For Render
 import os
-import dj_database_url
 from pathlib import Path
+import dj_database_url
 from dotenv import load_dotenv
-load_dotenv
+
+# Load environment variables from .env
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECRET_KEY
-SECRET_KEY = os.environ.get("SECRET_KEY")
+# SECURITY
+SECRET_KEY = os.environ.get("SECRET_KEY", "fallback-secret-key")  # fallback only for local/dev
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-# Debug (optional, default False in production)
-DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 # Allowed hosts
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'portfolio-2ydr.onrender.com']
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "127.0.0.1,localhost,portfolio-2ydr.onrender.com").split(",")
 
 # Database
 DATABASES = {
-    "default": dj_database_url.config(default=os.environ.get("DATABASE_URL"))
+    "default": dj_database_url.config(
+        default=os.environ.get("DATABASE_URL")
+    )
 }
-
-# Email
-EMAIL_HOST_USER = os.environ.get("EMAIL_USER")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASSWORD")
-
-# Social Auth
-GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
-GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
-FACEBOOK_APP_ID = os.environ.get("FACEBOOK_APP_ID")
-FACEBOOK_APP_SECRET = os.environ.get("FACEBOOK_APP_SECRET")
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -66,7 +56,7 @@ INSTALLED_APPS = [
     'core',
     'django.contrib.humanize',
 
-    # Third party
+    # Third-party apps
     'ckeditor',
     'ckeditor_uploader',
     'nested_admin',
@@ -84,8 +74,8 @@ CKEDITOR_CONFIGS = {
         'toolbar': 'full',
         'height': 300,
         'width': '100%',
-        'uiColor': '#222222', # Darker toolbar
-        'contentsCss': ['/static/css/ckeditor_custom.css'], # Custom editing area CSS
+        'uiColor': '#222222',
+        'contentsCss': ['/static/css/ckeditor_custom.css'],
         'bodyClass': 'dark-editor',
     },
 }
@@ -190,8 +180,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv("EMAIL_USER")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASSWORD")
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Allauth Config
@@ -199,6 +189,7 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
+
 SITE_ID = 1
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
@@ -209,7 +200,7 @@ ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
 LOGIN_REDIRECT_URL = 'edit_profile'
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_LOGIN_ON_GET = True
-SOCIALACCOUNT_EMAIL_AUTHENTICATION = True # Enable matching for registered users
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 SOCIALACCOUNT_EMAIL_VERIFICATION = 'optional'
 ACCOUNT_ADAPTER = 'core.adapters.CustomAccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'core.adapters.CustomSocialAccountAdapter'
@@ -217,14 +208,14 @@ SOCIALACCOUNT_ADAPTER = 'core.adapters.CustomSocialAccountAdapter'
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
-            'client_id': os.getenv("GOOGLE_CLIENT_ID"),
-            'secret': os.getenv("GOOGLE_CLIENT_SECRET"),
+            'client_id': os.environ.get("GOOGLE_CLIENT_ID"),
+            'secret': os.environ.get("GOOGLE_CLIENT_SECRET"),
         }
     },
     'facebook': {
         'APP': {
-            'client_id': os.getenv("FACEBOOK_APP_ID"),
-            'secret': os.getenv("FACEBOOK_APP_SECRET"),
+            'client_id': os.environ.get("FACEBOOK_CLIENT_ID"),
+            'secret': os.environ.get("FACEBOOK_CLIENT_SECRET"),
         }
     }
 }
