@@ -23,8 +23,8 @@ load_dotenv()
 # SECURITY
 #SECRET_KEY = os.getenv("SECRET_KEY")
 SECRET_KEY = os.environ.get('SECRET_KEY')
-DEBUG = os.environ.get("DEBUG", "False") == "True"
-ALLOWED_HOSTS = ["portfolio-2ydr.onrender.com"]
+DEBUG = os.environ.get("DEBUG", "True") == "True"
+ALLOWED_HOSTS = ['*']
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
