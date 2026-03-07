@@ -23,12 +23,12 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY
-SECRET_KEY = os.environ.get("SECRET_KEY", "fallback-secret-key")  # fallback only for local/dev
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-
-# Allowed hosts
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "127.0.0.1,localhost,portfolio-2ydr.onrender.com").split(",")
+# Allowed Hosts (Linked Environment Group থেকে)
+ALLOWED_HOSTS = os.environ.get(
+    "ALLOWED_HOSTS", "127.0.0.1,localhost,portfolio-2ydr.onrender.com"
+).split(",")
 
 # Database
 DATABASES = {
