@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 # Allowed hosts
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost, portfolio-2ydr.onrender.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'portfolio-2ydr.onrender.com']
 
 # Database
 DATABASES = {
@@ -136,13 +136,6 @@ WSGI_APPLICATION = 'portfolio.wsgi.application'
 #         'PORT': os.getenv("DB_PORT"),
 #     }
 # }
-
-# For Cloud
-DATABASES = {
-    "default": dj_database_url.config(
-        default=os.environ.get("DATABASE_URL")
-    )
-}
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
