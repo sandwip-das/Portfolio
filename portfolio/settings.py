@@ -40,7 +40,13 @@ DATABASES = {
         conn_max_age=600,
     )
 }
-
+# # To Create Superuser
+# DATABASES = {
+#     "default": dj_database_url.config(
+#         default=os.getenv("DATABASE_URL"),
+#         conn_max_age=600
+#     )
+# }
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
