@@ -15,6 +15,7 @@ import os
 from pathlib import Path
 import dj_database_url
 from dotenv import load_dotenv
+import cloudinary
 
 # Load environment variables from .env
 load_dotenv()
@@ -65,6 +66,8 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'core',
     'django.contrib.humanize',
+    'cloudinary',
+    'cloudinary_storage',
 
     # Third-party apps
     'ckeditor',
@@ -183,7 +186,14 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+# Cloudinary storage
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
