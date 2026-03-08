@@ -1,45 +1,68 @@
-/* Custom CSS - Merged */
+/* ===============================
+   GLOBAL STYLE
+================================ */
 
 body {
     font-family: 'Raleway', sans-serif;
+    scroll-behavior: smooth;
 }
 
+/* ===============================
+   GRADIENT TEXT
+================================ */
+
 .gradient-text {
-    background: linear-gradient(to right, #f97316, #ec4899);
+    background: linear-gradient(90deg, #f97316, #ec4899);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
+/* ===============================
+   GLASSMORPHISM CARD
+================================ */
+
 .glass-card {
-    background: rgba(30, 41, 59, 0.7);
-    /* Dark Mode Background */
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(30, 41, 59, 0.65);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.4s ease;
+    border-radius: 1.5rem;
+
+    /* floating animation */
+    animation: float 6s ease-in-out infinite;
 }
 
-/* Nav Link Hover Effect */
+/* Hover improvement */
+.glass-card:hover {
+    background: rgba(30, 41, 59, 0.8);
+    border-color: rgba(249, 115, 22, 0.35);
+    box-shadow: 0 20px 60px rgba(249, 115, 22, 0.15);
+}
+
+/* ===============================
+   NAVBAR LINKS
+================================ */
+
 .nav-link {
     position: relative;
     color: #e2e8f0;
-    /* text-gray-200 */
     transition: color 0.3s ease;
 }
 
 .nav-link:hover {
     color: #f97316;
-    /* text-primary */
 }
 
+/* underline animation */
 .nav-link::after {
     content: '';
     position: absolute;
     width: 0;
     height: 2px;
-    bottom: 0;
+    bottom: -4px;
     left: 0;
-    background: linear-gradient(to right, #f97316, #ec4899);
-    /* Orange to Pink */
+    background: linear-gradient(90deg, #f97316, #ec4899);
     transition: width 0.3s ease-in-out;
 }
 
@@ -47,7 +70,10 @@ body {
     width: 100%;
 }
 
-/* Hide native datepicker placeholders when empty */
+/* ===============================
+   DATE INPUT FIX
+================================ */
+
 input[type="date"] {
     color: transparent;
 }
@@ -57,16 +83,86 @@ input[type="date"]:focus {
     color: inherit;
 }
 
-/* Universal Interactive Animations for Icons */
-a:hover i.fas, a:hover i.fab, a:hover i.far,
-button:hover i.fas, button:hover i.fab, button:hover i.far,
-button:hover svg, a:hover svg {
+/* ===============================
+   ICON INTERACTION ANIMATION
+================================ */
+
+a:hover i.fas,
+a:hover i.fab,
+a:hover i.far,
+button:hover i.fas,
+button:hover i.fab,
+button:hover i.far,
+button:hover svg,
+a:hover svg {
+
     transform: scale(1.15) translateY(-2px);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-a:active i.fas, a:active i.fab, a:active i.far,
-button:active i.fas, button:active i.fab, button:active i.far,
-button:active svg, a:active svg {
-    transform: scale(0.95) translateY(0);
+a:active i.fas,
+a:active i.fab,
+a:active i.far,
+button:active i.fas,
+button:active i.fab,
+button:active i.far,
+button:active svg,
+a:active svg {
+
+    transform: scale(0.95);
+}
+
+/* ===============================
+   BLOG CARD ANIMATION
+================================ */
+
+.blog-card {
+    transition: all 0.4s ease;
+
+    /* floating animation */
+    animation: float 6s ease-in-out infinite;
+}
+
+.blog-card:hover {
+    transform: translateY(-12px) scale(1.02);
+}
+
+/* Image zoom effect */
+.blog-card:hover img {
+    transform: scale(1.08);
+}
+
+/* glass-card shadow on blog-card hover */
+.blog-card:hover .glass-card {
+    box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+}
+
+/* ===============================
+   SCROLLBAR HIDE (Optional)
+================================ */
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.4);
+}
+
+/* ===============================
+   FLOAT ANIMATION
+================================ */
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
 }
