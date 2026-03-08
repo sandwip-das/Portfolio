@@ -1,6 +1,6 @@
 {% load core_tags %}
 <!-- Skill Card - Auto-colored from image - ENLARGED -->
-<div class="group relative w-full aspect-square">
+<div class="group relative w-full aspect-[4/5]">
     <div class="absolute inset-0 rounded-2xl p-2 flex flex-col items-center justify-center text-center border transition-all duration-500 hover:-translate-y-2 hover:shadow-xl backdrop-blur-sm"
         style="background: linear-gradient(135deg, {{ skill.dominant_color|default:'#1a1f35' }}30, {{ skill.dominant_color|default:'#0f1420' }}18, #0f142090); border-color: {{ skill.dominant_color|default:'#374151' }}40;"
         onmouseover="this.style.borderColor='{{ skill.dominant_color|default:'#f97316' }}90'; this.style.boxShadow='0 10px 30px {{ skill.dominant_color|default:'#f97316' }}30';"
