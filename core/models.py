@@ -2,7 +2,7 @@ from django.utils import timezone
 import datetime
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-from ckeditor.fields import RichTextField
+from django_ckeditor_5.fields import CKEditor5Field
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
@@ -427,7 +427,7 @@ class BlogPost(models.Model):
     settings = models.ForeignKey(HomeSettings, on_delete=models.CASCADE, default=1, related_name='blog_posts')
     title = models.CharField(max_length=200)
     category = models.CharField(max_length=100)
-    content = RichTextField()
+    content = CKEditor5Field('Text', config_name='extends')
     views = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(unique=True, blank=True)

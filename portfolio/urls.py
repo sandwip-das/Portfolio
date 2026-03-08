@@ -14,7 +14,7 @@ urlpatterns = [
 
     path('', home, name='home'),
     path('blog/<slug:slug>/', blog_detail, name='blog_detail'),
-    path('ckeditor/', include('ckeditor_uploader.urls')),
+    path("ckeditor5/", include('django_ckeditor_5.urls'), name="ck_editor_5_upload_file"),
     path('_nested_admin/', include('nested_admin.urls')),
     
     # Custom Auth Overrides
