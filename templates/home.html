@@ -3,28 +3,20 @@
 
 {% block content %}
 
-
 {% for menu in settings.navbar_menus.all|dictsort:"order" %}
-{% if menu.section_id == 'home' %}
-{% include 'partials/sections/_home.html' with section_title=menu.name %}
-{% elif menu.section_id == 'about' %}
-{% include 'partials/sections/_about.html' with section_title=menu.name %}
-{% elif menu.section_id == 'experience' %}
-{% include 'partials/sections/_experience.html' with section_title=menu.name %}
-{% elif menu.section_id == 'skills' %}
-{% include 'partials/sections/_skills.html' with section_title=menu.name %}
-{% elif menu.section_id == 'projects' %}
-{% include 'partials/sections/_projects.html' with section_title=menu.name %}
-{% elif menu.section_id == 'service' %}
-{% include 'partials/sections/_service.html' with section_title=menu.name %}
-{% elif menu.section_id == 'blog' %}
-{% include 'partials/sections/_blog.html' with section_title=menu.name %}
-{% elif menu.section_id == 'contact' %}
-{% include 'partials/sections/_contact.html' with section_title=menu.name %}
+{% if menu.section_id == 'home' %}{% include 'partials/sections/_home.html' with section_title=menu.name %}
+{% elif menu.section_id == 'about' %}{% include 'partials/sections/_about.html' with section_title=menu.name %}
+{% elif menu.section_id == 'experience' %}{% include 'partials/sections/_experience.html' with section_title=menu.name
+%}
+{% elif menu.section_id == 'skills' %}{% include 'partials/sections/_skills.html' with section_title=menu.name %}
+{% elif menu.section_id == 'projects' %}{% include 'partials/sections/_projects.html' with section_title=menu.name %}
+{% elif menu.section_id == 'service' %}{% include 'partials/sections/_service.html' with section_title=menu.name %}
+{% elif menu.section_id == 'blog' %}{% include 'partials/sections/_blog.html' with section_title=menu.name %}
+{% elif menu.section_id == 'contact' %}{% include 'partials/sections/_contact.html' with section_title=menu.name %}
 {% else %}
 <section id="{{ menu.section_id }}"
     class="py-16 bg-gradient-to-r from-[#1a1a2e] via-[#2e1a3d] to-[#4a3526] scroll-mt-12 md:scroll-mt-14 min-h-screen flex items-center justify-center border-b border-white/5 relative">
-    <div class="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 text-center z-10 w-full">
+    <div class="max-w-7xl mx-auto px-[42px] sm:px-[58px] lg:px-[74px] text-center z-10 w-full">
         <h2 class="text-3xl md:text-5xl font-bold mb-4 text-white">{{ menu.name }}</h2>
         <div class="w-24 h-1 bg-gradient-to-r from-indigo-500 to-pink-500 mx-auto rounded-full mb-8"></div>
         <div class="p-12 border border-white/10 rounded-2xl bg-white/5 backdrop-blur-md shadow-2xl">

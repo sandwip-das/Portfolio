@@ -9,7 +9,7 @@
         class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[120px] pointer-events-none">
     </div>
 
-    <div class="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 relative z-10">
+    <div class="max-w-7xl mx-auto px-[42px] sm:px-[58px] lg:px-[74px] relative z-10">
         <div class="text-center mb-6">
             <h2 class="text-3xl md:text-4xl font-bold mb-4">
                 <a href="{% if user.is_authenticated %}{% url 'my_blog' %}{% else %}{% url 'account_signup' %}{% endif %}"
@@ -134,70 +134,33 @@
 </section>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener('DOMContentLoaded', function () {
         const blogCards = Array.from(document.querySelectorAll('.blog-card-item'));
         const prevBtn = document.getElementById('blogPaginationPrev');
         const nextBtn = document.getElementById('blogPaginationNext');
         const searchInput = document.getElementById('blogSearchInput');
         const label = document.getElementById('blogPaginationLabel');
-        const cardsPerPage = window.innerWidth >= 1024 ? 3 : (window.innerWidth >= 768 ? 2 : 1);
+        let cardsPerPage = window.innerWidth >= 1024 ? 3 : (window.innerWidth >= 768 ? 2 : 1);
         let currentIndex = 0;
         let visibleCards = [...blogCards];
 
         function renderPagination(isInitial = false) {
-            blogCards.forEach(card => {
-                card.style.display = 'none';
-                card.classList.remove('animate-fade-in');
-            });
-
-            if (visibleCards.length === 0) {
-                label.textContent = `(0/0)`;
-                return;
-            }
-
+            blogCards.forEach(card => { card.style.display = 'none'; card.classList.remove('animate-fade-in'); });
+            if (!visibleCards.length) { label.textContent = '(0/0)'; return; }
             const total = visibleCards.length;
             if (currentIndex >= total) currentIndex = Math.max(0, total - 1);
-
-            let endIndex = currentIndex + cardsPerPage;
-            for (let i = currentIndex; i < Math.min(endIndex, total); i++) {
+            for (let i = currentIndex; i < Math.min(currentIndex + cardsPerPage, total); i++) {
                 visibleCards[i].style.display = 'block';
-                // Trigger reflow for animation
                 void visibleCards[i].offsetWidth;
                 visibleCards[i].classList.add('animate-fade-in');
             }
-
             label.textContent = `(${currentIndex + 1}/${total})`;
-
-            // Only scroll if not initial load to prevent jumping on page load
-            if (!isInitial) {
-                const container = document.getElementById('blogCardsContainer');
-                if (container) {
-                    container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }
-            }
+            if (!isInitial) document.getElementById('blogCardsContainer')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
-        prevBtn?.addEventListener('click', () => {
-            if (currentIndex > 0) {
-                currentIndex--;
-                renderPagination();
-            }
-        });
-
-        nextBtn?.addEventListener('click', () => {
-            if (currentIndex < visibleCards.length - 1) {
-                currentIndex++;
-                renderPagination();
-            }
-        });
-
-        window.addEventListener('resize', () => {
-            const newCardsPerPage = window.innerWidth >= 1024 ? 3 : (window.innerWidth >= 768 ? 2 : 1);
-            if (newCardsPerPage !== cardsPerPage) {
-                // Wait, modifying const is an error. Let me use JS variable updates. However this is a minor thing.
-            }
-        });
-
+        prevBtn?.addEventListener('click', () => { if (currentIndex > 0) { currentIndex--; renderPagination(); } });
+        nextBtn?.addEventListener('click', () => { if (currentIndex < visibleCards.length - 1) { currentIndex++; renderPagination(); } });
+        window.addEventListener('resize', () => { cardsPerPage = window.innerWidth >= 1024 ? 3 : (window.innerWidth >= 768 ? 2 : 1); renderPagination(); });
         searchInput?.addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase().trim();
             visibleCards = blogCards.filter(card => card.dataset.title.includes(term));

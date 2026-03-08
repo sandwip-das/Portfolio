@@ -1,16 +1,16 @@
 <!-- Navbar -->
 {% load static %}
-<nav class="fixed w-full z-50 bg-dark/90 backdrop-blur-lg border-b border-white/10">
+<nav class="fixed w-full z-50 bg-dark/90 backdrop-blur-lg border-b border-white/10" role="navigation"
+    aria-label="Main navigation">
     <div class="max-w-7xl mx-auto px-6 sm:px-10 lg:px-14">
         <div class="flex items-center justify-between h-12 md:h-14 transition-all duration-300">
-            <!-- Logo / Name -->
+
+            <!-- Logo / Site Name -->
             <div class="flex-1 flex items-center overflow-hidden mr-4">
                 <a href="{% url 'home' %}"
                     class="font-bold tracking-tight hover:text-primary transition-all duration-300 font-script group flex items-center gap-2">
-                    <img class="h-6 sm:h-8 w-auto rounded-lg"
-                        src="{% if settings.logo %}{{ settings.logo.url }}{% else %}{% static 'img/logo_placeholder.png' %}{% endif %}"
-                        alt="Logo">
-
+                    <img class="h-6 sm:h-8 w-auto rounded-lg" {% if settings.logo %}src="{{ settings.logo.url }}" {%
+                        endif %} alt="{{ settings.nav_name|default:settings.site_title|default:'Portfolio' }}">
                     <span
                         class="gradient-text group-hover:scale-105 inline-block transition transform whitespace-nowrap text-sm sm:text-lg md:text-2xl">
                         {{ settings.nav_name|default:settings.site_title }}
@@ -19,74 +19,74 @@
             </div>
 
             <!-- Desktop Menu -->
-            <div class="hidden md:block">
-                <div class="ml-6 flex items-center space-x-4 lg:space-x-6">
-                    {% if '/blog/' in request.path or '/profile/' in request.path or '/my-blog/' in request.path %}
-                    <a href="{% url 'home' %}"
-                        class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Home</a>
-                    <a href="{% url 'my_blog' %}"
-                        class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">My Blog</a>
-                    {% else %}
-                    <a href="#home"
-                        class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Home</a>
-                    <a href="#about"
-                        class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">About</a>
-                    <a href="#experience"
-                        class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Experience</a>
-                    <a href="#skills"
-                        class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Expertise</a>
-                    <a href="#projects"
-                        class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Projects</a>
-                    <a href="#service"
-                        class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Services</a>
-                    <a href="#blog"
-                        class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Blog</a>
-                    <a href="#contact"
-                        class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Contact</a>
-                    {% endif %}
-                    {% if user.is_authenticated %}
-                    {% with profile=user.profile %}
-                    <div class="relative group ml-4 h-full flex items-center">
-                        <button
-                            class="flex items-center space-x-2 text-gray-300 hover:text-white focus:outline-none h-full py-2">
-                            {% if profile.profile_picture.name != 'default_profile.png' %}
-                            <img src="{{ profile.profile_picture.url }}" alt="P"
-                                class="h-8 w-8 rounded-full object-cover border border-[#2ecc71]/50">
-                            {% else %}
-                            <div
-                                class="h-8 w-8 rounded-full bg-gradient-to-br from-[#2ecc71] to-blue-500 flex items-center justify-center text-white font-bold text-sm border border-[#2ecc71]/50">
-                                {{ user.username|slice:":1"|upper }}
-                            </div>
-                            {% endif %}
-                            <span class="font-bold text-sm truncate max-w-[100px]">
-                                {{ user.username }}
-                            </span>
-                            <i class="fas fa-chevron-down text-xs ml-1 transition-transform group-hover:rotate-180"></i>
-                        </button>
+            <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
+                {% if '/blog/' in request.path or '/profile/' in request.path or '/my-blog/' in request.path %}
+                <a href="{% url 'home' %}"
+                    class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Home</a>
+                <a href="{% url 'my_blog' %}"
+                    class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">My Blog</a>
+                {% else %}
+                <a href="#home"
+                    class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Home</a>
+                <a href="#about"
+                    class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">About</a>
+                <a href="#experience"
+                    class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Experience</a>
+                <a href="#skills"
+                    class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Expertise</a>
+                <a href="#projects"
+                    class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Projects</a>
+                <a href="#service"
+                    class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Services</a>
+                <a href="#blog"
+                    class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Blog</a>
+                <a href="#contact"
+                    class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Contact</a>
+                {% endif %}
+
+                {% if user.is_authenticated %}
+                {% with profile=user.profile %}
+                <div class="relative group ml-4 h-full flex items-center">
+                    <button
+                        class="flex items-center space-x-2 text-gray-300 hover:text-white focus:outline-none h-full py-2"
+                        aria-haspopup="true">
+                        {% if profile.profile_picture.name != 'default_profile.png' %}
+                        <img src="{{ profile.profile_picture.url }}" alt="{{ user.username }}"
+                            class="h-8 w-8 rounded-full object-cover border border-[#2ecc71]/50">
+                        {% else %}
                         <div
-                            class="absolute right-0 top-full pt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
-                            <div class="bg-dark border border-white/10 rounded-xl shadow-2xl py-2 overflow-hidden">
-                                <a href="{% url 'edit_profile' %}"
-                                    class="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-[#2ecc71] transition-colors"><i
-                                        class="fas fa-user-circle mr-2"></i> Profile</a>
-                                <form method="post" action="{% url 'account_logout' %}" class="m-0 block">
-                                    {% csrf_token %}
-                                    <button type="submit"
-                                        class="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-red-400 transition-colors"><i
-                                            class="fas fa-sign-out-alt mr-2"></i> Log Out</button>
-                                </form>
-                            </div>
+                            class="h-8 w-8 rounded-full bg-gradient-to-br from-[#2ecc71] to-blue-500 flex items-center justify-center text-white font-bold text-sm border border-[#2ecc71]/50">
+                            {{ user.username|slice:":1"|upper }}
+                        </div>
+                        {% endif %}
+                        <span class="font-bold text-sm truncate max-w-[100px]">{{ user.username }}</span>
+                        <i class="fas fa-chevron-down text-xs ml-1 transition-transform group-hover:rotate-180"></i>
+                    </button>
+                    <div
+                        class="absolute right-0 top-full pt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                        <div class="bg-dark border border-white/10 rounded-xl shadow-2xl py-2 overflow-hidden">
+                            <a href="{% url 'edit_profile' %}"
+                                class="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-[#2ecc71] transition-colors">
+                                <i class="fas fa-user-circle mr-2"></i>Profile
+                            </a>
+                            <form method="post" action="{% url 'account_logout' %}" class="m-0">
+                                {% csrf_token %}
+                                <button type="submit"
+                                    class="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-red-400 transition-colors">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>Log Out
+                                </button>
+                            </form>
                         </div>
                     </div>
-                    {% endwith %}
-                    {% endif %}
                 </div>
+                {% endwith %}
+                {% endif %}
             </div>
 
+            <!-- Mobile Menu Button -->
             <div class="flex md:hidden items-center">
-                <button type="button"
-                    class="inline-flex items-center justify-center p-2 rounded-xl text-primary hover:text-white hover:bg-white/10 focus:outline-none transition-all duration-300 border border-white/10"
-                    aria-controls="mobile-menu" aria-expanded="false" onclick="toggleMobileMenu()">
+                <button type="button" onclick="toggleMobileMenu()" aria-controls="mobile-menu" aria-expanded="false"
+                    class="inline-flex items-center justify-center p-2 rounded-xl text-primary hover:text-white hover:bg-white/10 focus:outline-none transition-all duration-300 border border-white/10">
                     <span class="sr-only">Open main menu</span>
                     <div id="menu-icon-bars" class="space-y-1.5">
                         <div class="w-6 h-0.5 bg-current transition-all duration-300"></div>
@@ -98,9 +98,9 @@
         </div>
     </div>
 
-    <!-- Mobile Menu Container -->
-    <div class="hidden md:hidden overflow-hidden transition-all duration-500 ease-in-out bg-dark/95 backdrop-blur-xl border-b border-white/10"
-        id="mobile-menu">
+    <!-- Mobile Menu -->
+    <div id="mobile-menu"
+        class="hidden md:hidden overflow-hidden transition-all duration-500 ease-in-out bg-dark/95 backdrop-blur-xl border-b border-white/10">
         <div class="px-2 pt-2 pb-4 space-y-1">
             {% if '/blog/' in request.path or '/profile/' in request.path or '/my-blog/' in request.path %}
             <a href="{% url 'home' %}"
@@ -114,7 +114,7 @@
             <a href="#about" onclick="toggleMobileMenu()"
                 class="block px-3 py-2 rounded-xl text-base font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">About</a>
             <a href="#experience" onclick="toggleMobileMenu()"
-                class="block px-3 py-2 rounded-xl text-base font-boldtext-gray-300 hover:text-primary hover:bg-white/5 transition-all">Experience</a>
+                class="block px-3 py-2 rounded-xl text-base font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">Experience</a>
             <a href="#skills" onclick="toggleMobileMenu()"
                 class="block px-3 py-2 rounded-xl text-base font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">Expertise</a>
             <a href="#projects" onclick="toggleMobileMenu()"
@@ -127,11 +127,12 @@
                 class="block px-3 py-2 rounded-xl text-base font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">Contact</a>
             {% endif %}
         </div>
+
         {% if user.is_authenticated %}
         <div class="border-t border-white/10 mt-4 pt-4">
             <div class="px-3 flex items-center space-x-3 mb-4">
                 {% if user.profile.profile_picture.name != 'default_profile.png' %}
-                <img src="{{ user.profile.profile_picture.url }}" alt="P"
+                <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}"
                     class="h-10 w-10 rounded-full object-cover border border-[#2ecc71]">
                 {% else %}
                 <div
@@ -139,18 +140,18 @@
                     {{ user.username|slice:":1"|upper }}
                 </div>
                 {% endif %}
-                <span class="font-bold text-gray-200 block truncate">
-                    {{ user.username }}
-                </span>
+                <span class="font-bold text-gray-200 truncate">{{ user.username }}</span>
             </div>
             <a href="{% url 'edit_profile' %}" onclick="toggleMobileMenu()"
-                class="block px-3 py-2 text-base font-bold text-[#2ecc71] hover:text-white hover:bg-white/5 rounded-xl transition-all"><i
-                    class="fas fa-user-circle w-6"></i> Profile</a>
-            <form method="post" action="{% url 'account_logout' %}" class="m-0 block">
+                class="block px-3 py-2 text-base font-bold text-[#2ecc71] hover:text-white hover:bg-white/5 rounded-xl transition-all">
+                <i class="fas fa-user-circle w-6"></i> Profile
+            </a>
+            <form method="post" action="{% url 'account_logout' %}" class="m-0">
                 {% csrf_token %}
                 <button type="submit"
-                    class="w-full text-left px-3 py-2 text-base font-bold text-red-400 hover:text-red-300 hover:bg-white/5 rounded-xl transition-all"><i
-                        class="fas fa-sign-out-alt w-6"></i> Log Out</button>
+                    class="w-full text-left px-3 py-2 text-base font-bold text-red-400 hover:text-red-300 hover:bg-white/5 rounded-xl transition-all">
+                    <i class="fas fa-sign-out-alt w-6"></i> Log Out
+                </button>
             </form>
         </div>
         {% endif %}
@@ -160,18 +161,10 @@
 <script>
     function toggleMobileMenu() {
         const menu = document.getElementById('mobile-menu');
-        const iconContainer = document.getElementById('menu-icon-bars');
-        const bars = iconContainer.children;
-        if (menu.classList.contains('hidden')) {
-            menu.classList.remove('hidden');
-            bars[0].style.transform = 'translateY(7px) rotate(45deg)';
-            bars[1].style.opacity = '0';
-            bars[2].style.transform = 'translateY(-7px) rotate(-45deg)';
-        } else {
-            menu.classList.add('hidden');
-            bars[0].style.transform = 'none';
-            bars[1].style.opacity = '1';
-            bars[2].style.transform = 'none';
-        }
+        const bars = document.getElementById('menu-icon-bars').children;
+        const isHidden = menu.classList.toggle('hidden');
+        bars[0].style.transform = isHidden ? 'none' : 'translateY(7px) rotate(45deg)';
+        bars[1].style.opacity = isHidden ? '1' : '0';
+        bars[2].style.transform = isHidden ? 'none' : 'translateY(-7px) rotate(-45deg)';
     }
 </script>

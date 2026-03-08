@@ -2,11 +2,12 @@
 <!-- Contact Section -->
 <section id="{% if menu %}{{ menu.section_id }}{% else %}contact{% endif %}"
     class="py-4 bg-gradient-to-r from-[#1a1a2e] via-[#2e1a3d] to-[#4a3526] relative overflow-hidden scroll-mt-12 md:scroll-mt-14">
+
     <div
-        class="absolute top-1/2 left-1/2 w-[700px] h-[500px] bg-indigo-600/10 rounded-full blur-[100px] transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+        class="absolute top-1/2 left-1/2 w-[700px] h-[500px] bg-indigo-600/10 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 pointer-events-none">
     </div>
 
-    <div class="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 relative z-10">
+    <div class="max-w-7xl mx-auto px-[42px] sm:px-[58px] lg:px-[74px] relative z-10">
         <div class="text-center mb-10">
             <h2 class="text-3xl md:text-4xl font-bold mb-4">Let's <span class="text-primary">Contact!</span></h2>
             <div class="w-24 h-1 bg-gradient-to-r from-indigo-500 to-pink-500 mx-auto rounded-full"></div>
@@ -14,37 +15,26 @@
 
         <div class="flex flex-col lg:flex-row gap-12 items-stretch">
 
-            <!-- Left side: Contact Info with Animation -->
+            <!-- Left: Info & Animation -->
             <div class="lg:w-1/2 bg-white/5 p-8 rounded-2xl border border-white/10 flex flex-col justify-between">
-
-                <!-- Text Content Wrapper -->
                 <div class="w-full">
-                    <!-- Dynamic Sub Heading -->
                     {% if settings.contact_sub_heading %}
-                    <h3 class="text-2xl font-bold mb-4 text-[#e11d48] text-left">
-                        {{ settings.contact_sub_heading }}
-                    </h3>
+                    <h3 class="text-2xl font-bold mb-4 text-[#e11d48] text-left">{{ settings.contact_sub_heading }}</h3>
                     {% endif %}
-
-                    <!-- Dynamic Text Field -->
                     {% if settings.contact_text %}
-                    <div class="text-gray-300 mb-4 text-lg leading-relaxed text-left">
-                        {{ settings.contact_text|linebreaksbr }}
+                    <div class="text-gray-300 mb-4 text-lg leading-relaxed">{{ settings.contact_text|linebreaksbr }}
                     </div>
                     {% endif %}
                 </div>
-
-                <!-- Flexible Animation Container -->
                 <div class="flex-1 w-full min-h-[200px] flex items-center justify-center overflow-hidden">
                     <lottie-player src="https://assets9.lottiefiles.com/packages/lf20_u25cckyh.json"
-                        background="transparent" speed="1"
-                        style="width: 100%; max-width: 400px; height: auto; max-height: 100%; filter: drop-shadow(0 0 12px rgba(225, 29, 72, 0.3)) saturate(1.5) hue-rotate(320deg);"
-                        loop autoplay class="transition-all duration-500"></lottie-player>
+                        background="transparent" speed="1" loop autoplay
+                        style="width:100%; max-width:400px; height:auto; filter:drop-shadow(0 0 12px rgba(225,29,72,0.3)) saturate(1.5) hue-rotate(320deg);">
+                    </lottie-player>
                 </div>
-
             </div>
 
-            <!-- Right side: Form -->
+            <!-- Right: Contact Form -->
             <div class="lg:w-1/2 bg-white/5 p-8 rounded-2xl border border-white/10">
                 <div class="text-center mb-6">
                     <h3 class="text-3xl font-bold text-white mb-3">Contact With Me</h3>
@@ -53,7 +43,6 @@
                 <form method="POST" class="space-y-4" id="contact-form-dynamic">
                     {% csrf_token %}
                     <input type="hidden" name="contact_form" value="1">
-
                     <div>
                         <label class="block text-sm font-normal text-white mb-1">Name</label>
                         {{ contact_form.name }}
@@ -74,19 +63,17 @@
                         <label class="block text-sm font-normal text-white mb-1">Message</label>
                         {{ contact_form.message }}
                     </div>
-
                     <button type="submit"
-                        class="w-full bg-gradient-to-r from-primary to-secondary text-white py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 transform hover:-translate-y-1">
+                        class="w-full bg-gradient-to-r from-primary to-secondary text-white py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 hover:-translate-y-1">
                         Send Message
                     </button>
                 </form>
             </div>
+
         </div>
     </div>
 </section>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        handleDynamicForm('contact-form-dynamic');
-    });
+    document.addEventListener('DOMContentLoaded', function () { handleDynamicForm('contact-form-dynamic'); });
 </script>
