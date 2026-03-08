@@ -70,7 +70,7 @@ INSTALLED_APPS = [
     'cloudinary_storage',
 
     # Third-party apps
-    'ckeditor',
+    'ckeditor5',
     'ckeditor_uploader',
     'nested_admin',
     'allauth',
@@ -102,7 +102,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # Allauth Middleware
+     "Allauth Middleware",
     "allauth.account.middleware.AccountMiddleware",
 ]
 
@@ -217,6 +217,14 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SITE_ID = 1
+ACCOUNT_LOGIN_METHODS = {"email", "username"}
+
+ACCOUNT_SIGNUP_FIELDS = [
+    "email*",
+    "username*",
+    "password1*",
+    "password2*",
+]
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = True
