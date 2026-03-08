@@ -9,8 +9,10 @@
             <div class="flex-1 flex items-center overflow-hidden mr-4">
                 <a href="{% url 'home' %}"
                     class="font-bold tracking-tight hover:text-primary transition-all duration-300 font-script group flex items-center gap-2">
-                    <img class="h-6 sm:h-8 w-auto rounded-lg" {% if settings.logo %}src="{{ settings.logo.url }}" {%
-                        endif %} alt="{{ settings.nav_name|default:settings.site_title|default:'Portfolio' }}">
+                    {% if settings.logo %}<img class="h-6 sm:h-8 w-auto rounded-lg" src="{{ settings.logo.url }}"
+                        alt="{{ settings.nav_name|default:settings.site_title|default:'Portfolio' }}">{% else %}<span
+                        class="sr-only">{{ settings.nav_name|default:settings.site_title|default:'Portfolio' }}</span>{%
+                    endif %}
                     <span
                         class="gradient-text group-hover:scale-105 inline-block transition transform whitespace-nowrap text-sm sm:text-lg md:text-2xl">
                         {{ settings.nav_name|default:settings.site_title }}
