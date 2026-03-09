@@ -279,7 +279,8 @@ STORAGES = {
     },
 }
 
-MEDIA_URL = 'https://res.cloudinary.com/' + os.environ.get("CLOUDINARY_CLOUD_NAME") + '/'
+cloudinary_name = os.environ.get("CLOUDINARY_CLOUD_NAME", "")
+MEDIA_URL = f'https://res.cloudinary.com/{cloudinary_name}/' if cloudinary_name else '/media/'
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get("CLOUDINARY_CLOUD_NAME"),
@@ -295,7 +296,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Email
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"  # Temporary fix to bypass Render SMTP block
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True

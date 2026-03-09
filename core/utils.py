@@ -31,4 +31,4 @@ def send_portfolio_email(subject, body, to_email=None, reply_to=None):
         to=to_email,
         reply_to=reply_to if isinstance(reply_to, list) else ([reply_to] if reply_to else None)
     )
-    return email_msg.send(fail_silently=False)
+    return email_msg.send(fail_silently=True)

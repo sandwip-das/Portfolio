@@ -303,6 +303,7 @@ def send_otp_forgot_password(request):
             subject = "Password Reset OTP"
             message = f"Your OTP for password reset is {otp}. It is valid for 2 minutes."
             send_portfolio_email(subject, message, to_email=email)
+            print(f"DEBUG: Password reset OTP for {email} is {otp}")
             return render(request, "auth/verify_otp.html", {"email": email})
         messages.error(request, "No user found with this email.")
     return render(request, "auth/send_otp.html")
@@ -404,6 +405,7 @@ Best regards,
 Sandwip Das Portfolio
 """
         send_portfolio_email(subject, body, to_email=email)
+        print(f"DEBUG: Registration OTP for {email} is {otp}")
         
         return render(request, 'account/verify_registration_otp.html', {'email': email})
 
