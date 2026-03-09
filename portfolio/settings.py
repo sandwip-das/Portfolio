@@ -269,8 +269,13 @@ cloudinary.config(
 )
 
 STORAGES = {
-    "default": {  # media files (ImageField, FileField)
+    "default": {  # media files (ImageField) → Cloudinary
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {  # static files (CSS/JS) → WhiteNoise/Render default
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        # If i need Django default :
+        # "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
     },
 }
 
@@ -313,12 +318,9 @@ ACCOUNT_SIGNUP_FIELDS = [
     "password1*",
     "password2*",
 ]
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = True
+
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
-ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
 LOGIN_REDIRECT_URL = 'edit_profile'
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_LOGIN_ON_GET = True
