@@ -34,6 +34,12 @@ DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 # ALLOWED_HOSTS
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "portfolio-2ydr.onrender.com").split(",")
+CSRF_TRUSTED_ORIGINS = [f"https://{host.strip()}" for host in ALLOWED_HOSTS if host.strip()]
+
+# Security settings for Render/HTTPS
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 
 # Database
 DATABASES = {
@@ -314,15 +320,8 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SITE_ID = 1
-ACCOUNT_LOGIN_METHODS = {"email", "username"}
-
-ACCOUNT_SIGNUP_FIELDS = [
-    "email*",
-    "username*",
-    "password1*",
-    "password2*",
-]
-
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+ACCOUNT_EMAIL_REQUIRED = False
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = False
 LOGIN_REDIRECT_URL = 'edit_profile'

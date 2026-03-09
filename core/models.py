@@ -13,6 +13,7 @@ from django.core.cache import cache
 import random
 
 from allauth.account.signals import user_signed_up
+from allauth.account.models import EmailAddress
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from django.db import connection
@@ -92,6 +93,14 @@ def create_or_save_user_profile(sender, instance, created, **kwargs):
             instance.profile.save()
         except UserProfile.DoesNotExist:
             UserProfile.objects.create(user=instance)
+    
+    # Ensure Allauth EmailAddress exists and is verified (fixes superuser login)
+    if instance.email:
+        EmailAddress.objects.get_or_create(
+            user=instance,
+            email=instance.email,
+            defaults={'verified': True, 'primary': True}
+        )
 
 class PendingRegistration(models.Model):
     created_by = models.CharField(max_length=150, null=True, blank=True)
