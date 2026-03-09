@@ -33,8 +33,19 @@ if not SECRET_KEY:
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 # ALLOWED_HOSTS
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "portfolio-2ydr.onrender.com").split(",")
-CSRF_TRUSTED_ORIGINS = [f"https://{host.strip()}" for host in ALLOWED_HOSTS if host.strip()]
+ALLOWED_HOSTS = [
+    "sandwipdas.com",
+    "www.sandwipdas.com",
+    "portfolio-2ydr.onrender.com/",
+    "localhost",
+    "127.0.0.1"
+]
+CSRF_TRUSTED_ORIGINS = [
+    "https://sandwipdas.com",
+    "https://www.sandwipdas.com"
+]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Security settings for Render/HTTPS
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
