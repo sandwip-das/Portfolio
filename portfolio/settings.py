@@ -69,8 +69,9 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'core',
     'django.contrib.humanize',
-    'cloudinary',
     'cloudinary_storage',
+    'cloudinary',
+
 
     # Third-party apps
     'django_ckeditor_5',
@@ -257,7 +258,7 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 # Cloudinary storage
 #MEDIA_URL = '/media/'
 # MEDIA_ROOT = BASE_DIR / 'media'
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
 CKEDITOR_5_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 cloudinary.config(
@@ -266,10 +267,20 @@ cloudinary.config(
     api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
     secure=True
 )
+
+STORAGES = {
+    "default": {  # media files (ImageField, FileField)
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+}
+
+MEDIA_URL = 'https://res.cloudinary.com/' + os.environ.get("CLOUDINARY_CLOUD_NAME") + '/'
+
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get("CLOUDINARY_CLOUD_NAME"),
     'API_KEY': os.environ.get("CLOUDINARY_API_KEY"),
     'API_SECRET': os.environ.get("CLOUDINARY_API_SECRET"),
+    'SECURE': True,
 }
 
 # Default primary key field type
