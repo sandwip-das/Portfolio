@@ -19,14 +19,10 @@ from django.shortcuts import render
 from .models import Hero
 
 def home(request):
-    hero = Hero.objects.first()
-    return render(request, "home.html", {"hero": hero})
-
-def home(request):
+    admin_email = get_admin_email()
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+    
     if request.method == 'POST':
-        admin_email = get_admin_email()
-        is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
-        
         if 'service_id' in request.POST:
             form = ServiceBookingForm(request.POST)
             if form.is_valid():
@@ -109,6 +105,7 @@ This email was sent automatically from your portfolio website.
                     return JsonResponse({'status': 'error', 'message': "Please fix the errors in the review form."}, status=400)
                 messages.error(request, "Please fix the errors in the review form.")
 
+    hero = Hero.objects.first()
     skills = Skill.objects.all()
     skill_categories = SkillCategory.objects.all().prefetch_related('items')
     projects = Project.objects.all().order_by('-created_at')
@@ -125,6 +122,7 @@ This email was sent automatically from your portfolio website.
     review_form = ReviewForm()
 
     context = {
+        'hero': hero,
         'skills': skills,
         'skill_categories': skill_categories,
         'projects': projects,

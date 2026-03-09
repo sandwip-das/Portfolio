@@ -16,10 +16,7 @@ import cloudinary
 import dj_database_url
 from pathlib import Path
 from django.core.exceptions import ImproperlyConfigured
-from cloudinary_storage.storage import MediaCloudinaryStorage
 
-
-# Load environment variables from .env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,20 +29,21 @@ if not SECRET_KEY:
 # DEBUG
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-# ALLOWED_HOSTS
 ALLOWED_HOSTS = [
     "sandwipdas.com",
     "www.sandwipdas.com",
-    "portfolio-2ydr.onrender.com/",
+    "portfolio-2ydr.onrender.com",
     "localhost",
-    "127.0.0.1"
-]
-CSRF_TRUSTED_ORIGINS = [
-    "https://sandwipdas.com",
-    "https://www.sandwipdas.com"
+    "127.0.0.1",
+    ".onrender.com"
 ]
 
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+CSRF_TRUSTED_ORIGINS = [
+    "https://sandwipdas.com",
+    "https://www.sandwipdas.com",
+    "https://portfolio-2ydr.onrender.com",
+    "https://*.onrender.com"
+]
 
 # Security settings for Render/HTTPS
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
@@ -276,15 +274,23 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 # CKEditor + Cloudinary
 CKEDITOR_5_FILE_STORAGE = "core.storage.CustomCloudinaryStorage"
 
-# Cloudinary config
-cloudinary.config(
-    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
-    api_key=os.environ.get("CLOUDINARY_API_KEY"),
-    api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
-    secure=True
-)
 # Default storage for media (uploads)
 DEFAULT_FILE_STORAGE = "core.storage.CustomCloudinaryStorage"
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    'API_KEY': os.environ.get("CLOUDINARY_API_KEY"),
+    'API_SECRET': os.environ.get("CLOUDINARY_API_SECRET"),
+    'SECURE': True,
+}
+
+# Cloudinary config
+cloudinary.config(
+    cloud_name=CLOUDINARY_STORAGE['CLOUD_NAME'],
+    api_key=CLOUDINARY_STORAGE['API_KEY'],
+    api_secret=CLOUDINARY_STORAGE['API_SECRET'],
+    secure=True
+)
 
 STORAGES = {
     "default": {  # media files (ImageField) → Cloudinary
@@ -300,12 +306,6 @@ STORAGES = {
 cloudinary_name = os.environ.get("CLOUDINARY_CLOUD_NAME", "")
 MEDIA_URL = f'https://res.cloudinary.com/{cloudinary_name}/' if cloudinary_name else '/media/'
 
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get("CLOUDINARY_CLOUD_NAME"),
-    'API_KEY': os.environ.get("CLOUDINARY_API_KEY"),
-    'API_SECRET': os.environ.get("CLOUDINARY_API_SECRET"),
-    'SECURE': True,
-}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
