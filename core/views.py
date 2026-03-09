@@ -15,6 +15,12 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 import random
+from django.shortcuts import render
+from .models import Hero
+
+def home(request):
+    hero = Hero.objects.first()
+    return render(request, "home.html", {"hero": hero})
 
 def home(request):
     if request.method == 'POST':

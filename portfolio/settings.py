@@ -12,15 +12,12 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 # For Render
 import os
-from pathlib import Path
-import dj_database_url
-from django.core.exceptions import ImproperlyConfigured
 import cloudinary
+from pathlib import Path
+from cloudinary_storage.storage import MediaCloudinaryStorage
 
-from dotenv import load_dotenv
 
 # Load environment variables from .env
-load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -259,14 +256,18 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 #MEDIA_URL = '/media/'
 # MEDIA_ROOT = BASE_DIR / 'media'
 
-CKEDITOR_5_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+# CKEditor + Cloudinary
+CKEDITOR_5_FILE_STORAGE = "core.storage.CustomCloudinaryStorage"
 
+# Cloudinary config
 cloudinary.config(
     cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
     api_key=os.environ.get("CLOUDINARY_API_KEY"),
     api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
     secure=True
 )
+# Default storage for media (uploads)
+DEFAULT_FILE_STORAGE = "core.storage.CustomCloudinaryStorage"
 
 STORAGES = {
     "default": {  # media files (ImageField) → Cloudinary

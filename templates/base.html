@@ -1,5 +1,10 @@
 <!DOCTYPE html>
 {% load static %}
+<section class="base">
+    {% if base.image %}
+        <img src="{{ base.image.url }}" alt="{{ base.name }}">
+    {% endif %}
+</section>
 <html lang="en" class="scroll-smooth">
 
 <head>
