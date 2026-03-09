@@ -255,7 +255,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Cloudinary storage
-# MEDIA_URL = '/media/'
+#MEDIA_URL = '/media/'
 # MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 CKEDITOR_5_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
@@ -266,6 +266,11 @@ cloudinary.config(
     api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
     secure=True
 )
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    'API_KEY': os.environ.get("CLOUDINARY_API_KEY"),
+    'API_SECRET': os.environ.get("CLOUDINARY_API_SECRET"),
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
