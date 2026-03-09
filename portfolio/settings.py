@@ -15,6 +15,7 @@ import os
 import cloudinary
 import dj_database_url
 from pathlib import Path
+from django.core.exceptions import ImproperlyConfigured
 from cloudinary_storage.storage import MediaCloudinaryStorage
 
 
