@@ -3,7 +3,7 @@ from allauth.account.adapter import DefaultAccountAdapter
 from django.contrib.auth import get_user_model
 from django.shortcuts import redirect
 from django.contrib import messages
-from allauth.exceptions import ImmediateHttpResponse
+from allauth.core.exceptions import ImmediateHttpResponse
 
 User = get_user_model()
 
