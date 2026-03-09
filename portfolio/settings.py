@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 # For Render
 import os
 import cloudinary
+import dj_database_url
 from pathlib import Path
 from cloudinary_storage.storage import MediaCloudinaryStorage
 
@@ -35,12 +36,10 @@ ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "portfolio-2ydr.onrender.com").s
 
 # Database
 DATABASES = {
-    "default": dj_database_url.config(
-        default=os.environ.get("DATABASE_URL"),
-        conn_max_age=600,
-        ssl_require=True
-    )
+    "default": dj_database_url.parse(os.environ.get("DATABASE_URL"))
 }
+
+
 # # To Create Superuser
 # DATABASES = {
 #     "default": dj_database_url.config(
