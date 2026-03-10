@@ -44,7 +44,7 @@
                                 <div class="flex flex-col gap-4">
                                     <div class="flex items-center gap-4">
                                         {% if training.image %}
-                                        <div class="w-auto h-auto flex items-center justify-center shrink-0 p-2">
+                                        <div class="w-auto h-auto flex items-center justify-center shrink-0 p-2 rounded-sm">
                                             <img src="{{ training.image.url }}" alt="{{ training.course_name }}"
                                                 class="h-20 w-auto object-contain group-hover:scale-110 transition duration-300">
                                         </div>
@@ -63,7 +63,7 @@
                                                 {% if training.certification_link %}
                                                 <a href="{{ training.certification_link }}" target="_blank"
                                                     class="inline-flex items-center justify-center px-4 py-1 rounded-full font-bold text-[10px] uppercase tracking-wider bg-gradient-to-r from-primary to-secondary text-white hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 h-7 border border-transparent">
-                                                    <i class="fas fa-certificate mr-1.5"></i> Certificate
+                                                    <i class="fas fa-certificate mr-1.5"></i> Organization Link
                                                 </a>
                                                 {% endif %}
                                             </div>
