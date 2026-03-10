@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 {% load static %}
-<section class="base">
-    {% if base.image %}
-        <img src="{{ base.image.url }}" alt="{{ base.name }}">
-    {% endif %}
-</section>
 <html lang="en" class="scroll-smooth">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ settings.site_title|default:"Portfolio" }}{% endblock %}</title>
-    <link rel="icon" type="image/png"
-        href="{% if settings.favicon %}{{ settings.favicon.url }}{% else %}{% static 'img/favicon_placeholder.png' %}{% endif %}">
+    
+    <!-- Favicon -->
+    {% if settings.favicon %}
+        <link rel="shortcut icon" href="{{ settings.favicon.url }}" type="image/x-icon">
+        <link rel="icon" href="{{ settings.favicon.url }}" type="image/x-icon">
+    {% else %}
+        <link rel="shortcut icon" href="{% static 'img/favicon_placeholder.png' %}" type="image/x-icon">
+        <link rel="icon" href="{% static 'img/favicon_placeholder.png' %}" type="image/x-icon">
+    {% endif %}
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -32,6 +34,11 @@
 </head>
 
 <body class="bg-dark text-gray-200 antialiased overflow-x-hidden min-h-screen">
+    <section class="base">
+        {% if base.image %}
+            <img src="{{ base.image.url }}" alt="{{ base.name }}">
+        {% endif %}
+    </section>
 
     {% include 'partials/_navbar.html' %}
 
