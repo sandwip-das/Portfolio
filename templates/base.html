@@ -9,11 +9,12 @@
     
     <!-- Favicon -->
     {% if settings.favicon %}
-        <link rel="shortcut icon" href="{{ settings.favicon.url }}" type="image/x-icon">
-        <link rel="icon" href="{{ settings.favicon.url }}" type="image/x-icon">
+        <link rel="icon" type="image/png" href="{{ settings.favicon.url }}?v=2">
+        <link rel="shortcut icon" type="image/png" href="{{ settings.favicon.url }}?v=2">
+        <link rel="apple-touch-icon" href="{{ settings.favicon.url }}?v=2">
     {% else %}
-        <link rel="shortcut icon" href="{% static 'img/favicon_placeholder.png' %}" type="image/x-icon">
-        <link rel="icon" href="{% static 'img/favicon_placeholder.png' %}" type="image/x-icon">
+        <link rel="icon" type="image/png" href="{% static 'img/favicon_placeholder.png' %}?v=2">
+        <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon_placeholder.png' %}?v=2">
     {% endif %}
 
     <!-- Tailwind CSS -->
