@@ -622,7 +622,7 @@ class Review(models.Model):
     picture = models.ImageField(upload_to='core/reviews/', blank=True, null=True, help_text="Optional user picture")
     rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], default=5)
     comment = models.TextField(max_length=70, help_text="Short comment about the service")
-    is_approved = models.BooleanField(default=True, help_text="Set to False to hide this review")
+    is_approved = models.BooleanField(default=False, help_text="Set to False to hide this review")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
