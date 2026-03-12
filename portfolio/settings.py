@@ -57,6 +57,13 @@ DATABASES = {
     "default": dj_database_url.parse(os.environ.get("DATABASE_URL"))
 }
 
+# Redis:
+CELERY_BROKER_URL = os.environ.get("REDIS_URL")
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'django-db'
+
 
 # # To Create Superuser
 # DATABASES = {
@@ -85,6 +92,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'cloudinary_storage',
     'cloudinary',
+    'django_celery_results',
 
 
     # Third-party apps
@@ -357,6 +365,21 @@ SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 SOCIALACCOUNT_EMAIL_VERIFICATION = 'optional'
 ACCOUNT_ADAPTER = 'core.adapters.CustomAccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'core.adapters.CustomSocialAccountAdapter'
+
+# Django Admin Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+}
 
 # SocialAuth / Allauth
 
