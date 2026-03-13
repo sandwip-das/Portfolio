@@ -34,7 +34,6 @@ DEBUG = os.environ.get("DEBUG", "False") == "True"
 ALLOWED_HOSTS = [
     "sandwipdas.com",
     "www.sandwipdas.com",
-    "portfolio-2ydr.onrender.com",
     "localhost",
     "127.0.0.1",
     ".onrender.com"
