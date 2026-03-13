@@ -12,6 +12,7 @@ admin.site.site_title = "My Portfolio administration"
 admin.site.index_title = "Welcome to My Portfolio administration"
 
 urlpatterns = [
+    path("", include("your_app.urls")), # Temporary
     path('admin/', admin.site.urls),
 
     path('', home, name='home'),

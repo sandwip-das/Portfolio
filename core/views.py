@@ -8,6 +8,10 @@ from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
+#Temporary view for render
+from django.http import HttpResponse
+from django.conf import settings
+
 import uuid
 import random
 from .models import (
@@ -20,6 +24,9 @@ from .utils import send_portfolio_email, get_admin_email
 from django.utils import timezone
 
 
+# Temporary view for render
+def test_email(request):
+    return HttpResponse(settings.EMAIL_HOST_USER)
 # ===================== Helper Functions =====================
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
