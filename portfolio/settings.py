@@ -17,8 +17,8 @@ import dj_database_url
 from pathlib import Path
 from django.core.exceptions import ImproperlyConfigured
 
-# from dotenv import load_dotenv
-# load_dotenv()  # Load .env variables automatically
+from dotenv import load_dotenv
+load_dotenv()  # Load .env variables automatically
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -56,12 +56,17 @@ DATABASES = {
     "default": dj_database_url.parse(os.environ.get("DATABASE_URL"))
 }
 
-# Redis:
+# Celery Configuration with Redis
+# # For local host
+# CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+# CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'
+
 CELERY_BROKER_URL = os.environ.get("REDIS_URL")
 
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Dhaka'
 
 
 # # To Create Superuser
@@ -289,10 +294,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
-# Cloudinary storage
-#MEDIA_URL = '/media/'
-# MEDIA_ROOT = BASE_DIR / 'media'
-
 # CKEditor + Cloudinary
 CKEDITOR_5_FILE_STORAGE = "core.storage.CustomCloudinaryStorage"
 
@@ -346,22 +347,31 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
-# Allauth Config
+# Authentication backends
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',  # Default Django backend
+    'allauth.account.auth_backends.AuthenticationBackend',  # allauth backend
 ]
 
+# Site framework
 SITE_ID = 1
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
-ACCOUNT_EMAIL_REQUIRED = False
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+# Allauth settings - updated (deprecated warnings fixed)
+ACCOUNT_LOGIN_METHODS = {'username', 'email'}
+ACCOUNT_SIGNUP_FIELDS = ['username*', 'email', 'password1*', 'password2*']
+ACCOUNT_EMAIL_VERIFICATION = 'none'  # email verification off
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = False
+
+# Login redirect
 LOGIN_REDIRECT_URL = 'edit_profile'
+
+# Social account settings
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_LOGIN_ON_GET = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 SOCIALACCOUNT_EMAIL_VERIFICATION = 'optional'
+
+# Custom adapters
 ACCOUNT_ADAPTER = 'core.adapters.CustomAccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'core.adapters.CustomSocialAccountAdapter'
 
