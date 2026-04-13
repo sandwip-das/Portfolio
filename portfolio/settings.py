@@ -16,11 +16,12 @@ import cloudinary
 import dj_database_url
 from pathlib import Path
 from django.core.exceptions import ImproperlyConfigured
-
 from dotenv import load_dotenv
-load_dotenv()  # Load .env variables automatically
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Load environment variables
+load_dotenv()
+
+# ===================== BASE =====================
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECRET_KEY
@@ -46,23 +47,19 @@ CSRF_TRUSTED_ORIGINS = [
     "https://*.onrender.com"
 ]
 
-# Security settings for Render/HTTPS
+# Security for HTTPS / Render
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 
-# Database for Render
+## ===================== DATABASE =====================
 DATABASES = {
     "default": dj_database_url.parse(os.environ.get("DATABASE_URL"))
 }
 
-# Celery Configuration with Redis
-# # For local host
-# CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
-# CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'
-
+# ===================== CELERY CONFIG =====================
 CELERY_BROKER_URL = os.environ.get("REDIS_URL")
-
+CELERY_RESULT_BACKEND = os.environ.get("REDIS_URL")
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
@@ -82,9 +79,9 @@ CELERY_TIMEZONE = 'Asia/Dhaka'
 # SECURITY WARNING: keep the secret key used in production secret!
 
 
-# Application definition
-
+# ===================== APPS =====================
 INSTALLED_APPS = [
+    # Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -92,14 +89,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'core',
     'django.contrib.humanize',
+
+    # Project apps
+    'core',
+
+    # Third-party
     'cloudinary_storage',
     'cloudinary',
     'django_celery_results',
-
-
-    # Third-party apps
     'django_ckeditor_5',
     'nested_admin',
     'allauth',
@@ -109,88 +107,45 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
 ]
 
-# CKEditor Configuration
+
+# ===================== CKEDITOR CONFIG =====================
 CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'jpg', 'png', 'gif', 'bmp', 'webp']
 CKEDITOR_5_UPLOAD_PATH = "uploads/"
+
+# Custom color palette for CKEditor tables
 customColorPalette = [
-        {
-            'color': 'hsl(4, 90%, 58%)',
-            'label': 'Red'
-        },
-        {
-            'color': 'hsl(340, 82%, 52%)',
-            'label': 'Pink'
-        },
-        {
-            'color': 'hsl(291, 64%, 42%)',
-            'label': 'Purple'
-        },
-        {
-            'color': 'hsl(262, 52%, 47%)',
-            'label': 'Deep Purple'
-        },
-        {
-            'color': 'hsl(231, 48%, 48%)',
-            'label': 'Indigo'
-        },
-        {
-            'color': 'hsl(207, 90%, 54%)',
-            'label': 'Blue'
-        },
-    ]
+    {'color': 'hsl(4, 90%, 58%)', 'label': 'Red'},
+    {'color': 'hsl(340, 82%, 52%)', 'label': 'Pink'},
+    {'color': 'hsl(291, 64%, 42%)', 'label': 'Purple'},
+    {'color': 'hsl(262, 52%, 47%)', 'label': 'Deep Purple'},
+    {'color': 'hsl(231, 48%, 48%)', 'label': 'Indigo'},
+    {'color': 'hsl(207, 90%, 54%)', 'label': 'Blue'},
+]
 
 CKEDITOR_5_CONFIGS = {
-    'default': {
-        'toolbar': ['heading', '|', 'bold', 'italic', 'link',
-                    'bulletedList', 'numberedList', 'blockQuote', 'imageUpload'],
-    },
+    'default': {'toolbar': ['heading', '|', 'bold', 'italic', 'link',
+                            'bulletedList', 'numberedList', 'blockQuote', 'imageUpload']},
     'extends': {
-        'blockToolbar': [
-            'paragraph', 'heading1', 'heading2', 'heading3',
-            '|',
-            'bulletedList', 'numberedList',
-            '|',
-            'blockQuote',
-        ],
-        'toolbar': ['heading', '|', 'outdent', 'indent', '|', 'bold', 'italic', 'link', 'underline', 'strikethrough',
-                    'code','subscript', 'superscript', 'highlight', '|', 'codeBlock', 'sourceEditing', 'insertImage',
-                    'bulletedList', 'numberedList', 'todoList', '|',  'blockQuote', 'imageUpload', '|',
-                    'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'mediaEmbed', 'removeFormat',
-                    'insertTable',],
+        'toolbar': ['heading', '|', 'bold', 'italic', 'link', 'underline', 'strikethrough',
+                    'code','subscript','superscript','highlight','|','codeBlock','sourceEditing','insertImage',
+                    'bulletedList','numberedList','todoList','|','blockQuote','imageUpload','|',
+                    'fontSize','fontFamily','fontColor','fontBackgroundColor','mediaEmbed','removeFormat','insertTable'],
         'image': {
             'toolbar': ['imageTextAlternative', '|', 'imageStyle:alignLeft',
                         'imageStyle:alignRight', 'imageStyle:alignCenter', 'imageStyle:side',  '|'],
-            'styles': [
-                'full',
-                'side',
-                'alignLeft',
-                'alignRight',
-                'alignCenter',
-            ]
+            'styles': ['full', 'side', 'alignLeft', 'alignRight', 'alignCenter']
         },
         'table': {
-            'contentToolbar': [ 'tableColumn', 'tableRow', 'mergeTableCells',
-            'tableProperties', 'tableCellProperties' ],
-            'tableProperties': {
-                'borderColors': customColorPalette,
-                'backgroundColors': customColorPalette
-            },
-            'tableCellProperties': {
-                'borderColors': customColorPalette,
-                'backgroundColors': customColorPalette
-            }
+            'contentToolbar': ['tableColumn','tableRow','mergeTableCells','tableProperties','tableCellProperties'],
+            'tableProperties': {'borderColors': customColorPalette, 'backgroundColors': customColorPalette},
+            'tableCellProperties': {'borderColors': customColorPalette, 'backgroundColors': customColorPalette},
         },
-        'heading' : {
-            'options': [
-                { 'model': 'paragraph', 'title': 'Paragraph', 'class': 'ck-heading_paragraph' },
-                { 'model': 'heading1', 'view': 'h1', 'title': 'Heading 1', 'class': 'ck-heading_heading1' },
-                { 'model': 'heading2', 'view': 'h2', 'title': 'Heading 2', 'class': 'ck-heading_heading2' },
-                { 'model': 'heading3', 'view': 'h3', 'title': 'Heading 3', 'class': 'ck-heading_heading3' }
-            ]
-        }
     }
 }
 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ===================== MIDDLEWARE =====================
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -203,10 +158,10 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
 ]
 
+
 ROOT_URLCONF = 'portfolio.urls'
 
-
-# Templates
+# ===================== TEMPLATES =====================
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -218,8 +173,6 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-
-                # add your custom processor
                 "core.context_processors.site_settings",
             ],
         },
@@ -290,6 +243,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
+
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [BASE_DIR / 'static']
@@ -321,8 +275,7 @@ STORAGES = {
     },
     "staticfiles": {  # static files (CSS/JS) → WhiteNoise/Render default
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-        # If i need Django default :
-        # "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+
     },
 }
 

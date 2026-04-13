@@ -1,16 +1,13 @@
-# views.py (Celery async email enabled)
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages
 from django.urls import reverse
-from django.db import transaction
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
-#Temporary view for render
-from django.http import HttpResponse
 from django.conf import settings
+from django.utils import timezone
 
 import uuid
 import random
@@ -21,12 +18,8 @@ from .models import (
 )
 from .forms import ServiceBookingForm, ContactForm, ReviewForm
 from .utils import send_portfolio_email, get_admin_email
-from django.utils import timezone
 
 
-# Temporary view for render
-def test_email(request):
-    return HttpResponse(settings.EMAIL_HOST_USER)
 # ===================== Helper Functions =====================
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -35,13 +28,13 @@ def get_client_ip(request):
     return request.META.get('REMOTE_ADDR')
 
 
-# ===================== Home Page =====================
+# ===================== Home Page & Forms =====================
 def home(request):
     admin_email = get_admin_email()
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
     if request.method == 'POST':
-        # ===================== Service Booking =====================
+        # --------------------- Service Booking ---------------------
         if 'service_id' in request.POST:
             form = ServiceBookingForm(request.POST)
             if form.is_valid():
@@ -58,10 +51,9 @@ def home(request):
                         booking_date = f"{booking.date_from.strftime('%d-%b-%y')} to {booking.date_to.strftime('%d-%b-%y')}"
                     booking_time = f"{booking.time_from.strftime('%I:%M %p')} to {booking.time_to.strftime('%I:%M %p')}"
 
-                    # Notify Admin
+                    # Notify Superuser
                     subject = f"New Service Booking: {service.title} from {booking.name}"
-                    body = f"""
-New booking request received:
+                    body = f"""You have received a new service booking request.
 
 Service: {service.title}
 Name: {booking.name}
@@ -71,45 +63,44 @@ Date: {booking_date}
 Time: {booking_time}
 Message: {booking.additional_message}
 
-Check admin panel: {request.build_absolute_uri(reverse('admin:core_servicebooking_changelist'))}
+Review in admin panel: {request.build_absolute_uri(reverse('admin:core_servicebooking_changelist'))}
 """
                     send_portfolio_email(subject, body, to_email=admin_email, reply_to=booking.email)
 
                     # Acknowledgment to User
                     user_subject = f"Booking Request Received: {service.title}"
-                    user_body = f"""
-Hello {booking.name},
+                    user_body = f"""Hello {booking.name},
 
 We have successfully received your booking request for '{service.title}' on {booking_date} at {booking_time}.
+
 Your request is currently under review. You will receive a confirmation email once it is approved.
 
 Best regards,
-Portfolio Team
+Sandwip Das
 """
                     send_portfolio_email(user_subject, user_body, to_email=booking.email)
 
                     if is_ajax:
-                        return JsonResponse(
-                            {'status': 'success', 'message': "Your booking request has been submitted successfully!"})
+                        return JsonResponse({'status': 'success', 'message': "Your booking request has been submitted successfully!"})
                     messages.success(request, "Your booking request has been submitted successfully!")
                     return redirect('home')
 
                 except Service.DoesNotExist:
                     if is_ajax:
-                        return JsonResponse({'status': 'error', 'message': "Selected service does not exist."},
-                                            status=400)
+                        return JsonResponse({'status': 'error', 'message': "Selected service does not exist."}, status=400)
                     messages.error(request, "Selected service does not exist.")
 
-        # ===================== Contact Form =====================
+        # --------------------- Contact Form ---------------------
         elif 'contact_form' in request.POST:
             form = ContactForm(request.POST)
             if form.is_valid():
                 contact = form.save()
-                subject = f"Portfolio Contact: {contact.subject} - from {contact.name}"
-                body = f"""
-You have received a new message from your portfolio website contact form.
 
-Sender:
+                # Email to Superuser
+                subject_admin = f"New Contact Message from {contact.name}"
+                body_admin = f"""You have received a new message from your portfolio website contact form.
+
+Sender Details:
 Name: {contact.name}
 Email: {contact.email}
 Phone: {contact.phone if contact.phone else 'Not provided'}
@@ -117,10 +108,21 @@ Subject: {contact.subject}
 
 Message:
 {contact.message}
-
-This email was sent automatically from your portfolio website.
 """
-                send_portfolio_email(subject, body, to_email=admin_email, reply_to=contact.email)
+                send_portfolio_email(subject_admin, body_admin, to_email=admin_email, reply_to=contact.email)
+
+                # Acknowledgment to User
+                subject_user = f"Thank you for contacting us, {contact.name}!"
+                body_user = f"""Hello {contact.name},
+
+Thank you for reaching out! We have successfully received your message regarding '{contact.subject}'.
+
+We will review your message and get back to you as soon as possible.
+
+Best regards,
+Sandwip Das
+"""
+                send_portfolio_email(subject_user, body_user, to_email=contact.email)
 
                 if is_ajax:
                     return JsonResponse({'status': 'success', 'message': "Your message has been sent successfully!"})
@@ -128,58 +130,39 @@ This email was sent automatically from your portfolio website.
                 return redirect('home')
             else:
                 if is_ajax:
-                    return JsonResponse({'status': 'error', 'message': "Please fix the errors in the contact form."},
-                                        status=400)
+                    return JsonResponse({'status': 'error', 'message': "Please fix the errors in the contact form."}, status=400)
                 messages.error(request, "Please fix the errors in the contact form.")
 
-        # ===================== Review Form =====================
+        # --------------------- Review Form ---------------------
         elif 'review_form' in request.POST:
             form = ReviewForm(request.POST, request.FILES)
             if form.is_valid():
                 form.save()
                 if is_ajax:
-                    return JsonResponse(
-                        {'status': 'success', 'message': "Your review has been submitted for approval."})
+                    return JsonResponse({'status': 'success', 'message': "Your review has been submitted for approval."})
                 messages.success(request, "Your review has been submitted for approval.")
                 return redirect('home')
             else:
                 if is_ajax:
-                    return JsonResponse({'status': 'error', 'message': "Please fix the errors in the review form."},
-                                        status=400)
+                    return JsonResponse({'status': 'error', 'message': "Please fix the errors in the review form."}, status=400)
                 messages.error(request, "Please fix the errors in the review form.")
 
     # ===================== Context Rendering =====================
-    hero = Hero.objects.first()
-    skills = Skill.objects.all()
-    skill_categories = SkillCategory.objects.all().prefetch_related('items')
-    projects = Project.objects.all().order_by('-created_at')
-    experiences = Experience.objects.all()
-    services = Service.objects.all()
-    academic_background = AcademicBackground.objects.all()
-    professional_trainings = ProfessionalTraining.objects.filter(category='TRAINING')
-    global_certifications = ProfessionalTraining.objects.filter(category='CERTIFICATION')
-    blog_posts = BlogPost.objects.all().order_by('-created_at')
-    reviews = Review.objects.filter(is_approved=True)
-
-    booking_form = ServiceBookingForm()
-    contact_form = ContactForm()
-    review_form = ReviewForm()
-
     context = {
-        'hero': hero,
-        'skills': skills,
-        'skill_categories': skill_categories,
-        'projects': projects,
-        'experiences': experiences,
-        'services': services,
-        'academic_background': academic_background,
-        'professional_trainings': professional_trainings,
-        'global_certifications': global_certifications,
-        'blog_posts': blog_posts,
-        'booking_form': booking_form,
-        'contact_form': contact_form,
-        'review_form': review_form,
-        'reviews': reviews,
+        'hero': Hero.objects.first(),
+        'skills': Skill.objects.all(),
+        'skill_categories': SkillCategory.objects.all().prefetch_related('items'),
+        'projects': Project.objects.all().order_by('-created_at'),
+        'experiences': Experience.objects.all(),
+        'services': Service.objects.all(),
+        'academic_background': AcademicBackground.objects.all(),
+        'professional_trainings': ProfessionalTraining.objects.filter(category='TRAINING'),
+        'global_certifications': ProfessionalTraining.objects.filter(category='CERTIFICATION'),
+        'blog_posts': BlogPost.objects.all().order_by('-created_at'),
+        'booking_form': ServiceBookingForm(),
+        'contact_form': ContactForm(),
+        'review_form': ReviewForm(),
+        'reviews': Review.objects.filter(is_approved=True),
     }
     return render(request, 'home.html', context)
 
@@ -187,135 +170,93 @@ This email was sent automatically from your portfolio website.
 # ===================== Blog Detail =====================
 def blog_detail(request, slug):
     post = get_object_or_404(BlogPost, slug=slug)
-
-    ip_address = get_client_ip(request)
-    user_agent = request.META.get('HTTP_USER_AGENT', '')
-    browsing_source = request.META.get('HTTP_REFERER', '')
-
     BlogViewTrack.objects.create(
         post=post,
         user=request.user if request.user.is_authenticated else None,
-        ip_address=ip_address,
-        user_agent=user_agent,
-        browsing_source=browsing_source,
+        ip_address=get_client_ip(request),
+        user_agent=request.META.get('HTTP_USER_AGENT', ''),
+        browsing_source=request.META.get('HTTP_REFERER', ''),
         contact_number=getattr(request.user.profile, 'contact_number', None) if request.user.is_authenticated else None
     )
-
     post.views += 1
     post.save()
     return render(request, 'blog_detail.html', {'post': post})
 
 
-# ===================== Blog Reactions =====================
+# ===================== Blog Reactions & Comments =====================
 @login_required
 def toggle_reaction(request, post_id):
-    if request.method == "POST":
-        post = get_object_or_404(BlogPost, id=post_id)
-        reaction_type = request.POST.get('reaction')
-        reaction, created = BlogReaction.objects.get_or_create(post=post, user=request.user,
-                                                               defaults={'reaction': reaction_type})
-        if not created:
-            if reaction.reaction == reaction_type:
-                reaction.delete()
-            else:
-                reaction.reaction = reaction_type
-                reaction.save()
+    post = get_object_or_404(BlogPost, id=post_id)
+    reaction_type = request.POST.get('reaction')
+    reaction, created = BlogReaction.objects.get_or_create(post=post, user=request.user, defaults={'reaction': reaction_type})
+    if not created:
+        if reaction.reaction == reaction_type:
+            reaction.delete()
+        else:
+            reaction.reaction = reaction_type
+            reaction.save()
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({'status': 'success', 'likes': post.like_count, 'dislikes': post.dislike_count})
     return redirect('blog_detail', slug=post.slug)
 
 
-# ===================== Blog Comments =====================
-@login_required
-def add_comment(request, post_id):
-    if request.method == "POST":
-        post = get_object_or_404(BlogPost, id=post_id)
-        content = request.POST.get('content')
-        parent_id = request.POST.get('parent_id')
-        parent_comment = BlogComment.objects.filter(id=parent_id).first() if parent_id else None
-        if content:
-            comment = BlogComment.objects.create(post=post, user=request.user, content=content, parent=parent_comment)
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return JsonResponse({
-                    'status': 'success',
-                    'comment_id': comment.id,
-                    'username': comment.user.username,
-                    'content': comment.content,
-                    'created_at': comment.created_at.strftime("%b %d, %Y %I:%M %p"),
-                    'total_comments': post.comment_count
-                })
-    return redirect('blog_detail', slug=post.slug)
-
-
 @login_required
 def toggle_comment_reaction(request, comment_id):
-    if request.method == "POST":
-        comment = get_object_or_404(BlogComment, id=comment_id)
-        reaction_type = request.POST.get('reaction')
-        reaction, created = CommentReaction.objects.get_or_create(comment=comment, user=request.user,
-                                                                  defaults={'reaction': reaction_type})
-        if not created:
-            if reaction.reaction == reaction_type:
-                reaction.delete()
-            else:
-                reaction.reaction = reaction_type
-                reaction.save()
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'status': 'success', 'likes': comment.like_count, 'dislikes': comment.dislike_count})
+    comment = get_object_or_404(BlogComment, id=comment_id)
+    reaction_type = request.POST.get('reaction')
+    reaction, created = CommentReaction.objects.get_or_create(comment=comment, user=request.user, defaults={'reaction': reaction_type})
+    if not created:
+        if reaction.reaction == reaction_type:
+            reaction.delete()
+        else:
+            reaction.reaction = reaction_type
+            reaction.save()
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'status': 'success', 'likes': comment.like_count, 'dislikes': comment.dislike_count})
     return redirect('blog_detail', slug=comment.post.slug)
 
 
 @login_required
+def add_comment(request, post_id):
+    post = get_object_or_404(BlogPost, id=post_id)
+    content = request.POST.get('content')
+    parent_id = request.POST.get('parent_id')
+    parent_comment = BlogComment.objects.filter(id=parent_id).first() if parent_id else None
+    if content:
+        comment = BlogComment.objects.create(post=post, user=request.user, content=content, parent=parent_comment)
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'status': 'success',
+                'comment_id': comment.id,
+                'username': comment.user.username,
+                'content': comment.content,
+                'created_at': comment.created_at.strftime("%b %d, %Y %I:%M %p"),
+                'total_comments': post.comment_count
+            })
+    return redirect('blog_detail', slug=post.slug)
+
+
+@login_required
 def edit_comment(request, comment_id):
-    comment = get_object_or_404(BlogComment, id=comment_id)
-    if request.user == comment.user or request.user.is_superuser:
-        if request.method == 'POST':
-            content = request.POST.get('content')
-            if content:
-                comment.content = content
-                comment.save()
-                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                    return JsonResponse({'status': 'success', 'content': comment.content})
+    comment = get_object_or_404(BlogComment, id=comment_id, user=request.user)
+    if request.method == 'POST':
+        content = request.POST.get('content', '').strip()
+        if content:
+            comment.content = content
+            comment.save()
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'status': 'success', 'content': comment.content})
     return redirect('blog_detail', slug=comment.post.slug)
 
 
 @login_required
 def delete_comment(request, comment_id):
-    comment = get_object_or_404(BlogComment, id=comment_id)
-    post = comment.post
-    if request.user == comment.user or request.user.is_superuser:
-        if request.method == 'POST':
-            comment.delete()
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return JsonResponse({'status': 'success', 'total_comments': post.comment_count})
-    return redirect('blog_detail', slug=post.slug)
-
-
-# ===================== User Profile =====================
-@login_required
-def edit_profile(request):
-    profile, created = UserProfile.objects.get_or_create(user=request.user)
-    if request.method == 'POST':
-        new_username = request.POST.get('username', '').strip()
-        if new_username and new_username != request.user.username:
-            if User.objects.filter(username=new_username).exclude(pk=request.user.pk).exists():
-                messages.error(request, f"The username '{new_username}' is already taken. Please choose another.")
-                return redirect('edit_profile')
-            request.user.username = new_username
-            request.user.save()
-
-        profile.contact_number = request.POST.get('contact_number', profile.contact_number)
-        profile.profession = request.POST.get('profession', profile.profession)
-        profile.organization = request.POST.get('organization', profile.organization)
-        profile.interest_field = request.POST.get('interest_field', profile.interest_field)
-        profile.highest_degree = request.POST.get('highest_degree', profile.highest_degree)
-        profile.location = request.POST.get('location', profile.location)
-        if request.FILES.get('profile_picture'):
-            profile.profile_picture = request.FILES['profile_picture']
-        profile.save()
-        messages.success(request, 'Profile updated successfully!')
-        return redirect('edit_profile')
-    return render(request, 'account/profile.html', {'profile': profile})
+    comment = get_object_or_404(BlogComment, id=comment_id, user=request.user)
+    slug = comment.post.slug
+    comment.delete()
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'status': 'success'})
+    return redirect('blog_detail', slug=slug)
 
 
 # ===================== OTP & Password Reset =====================
@@ -325,14 +266,51 @@ def send_otp_forgot_password(request):
         user = User.objects.filter(email=email).first()
         if user:
             otp = str(random.randint(100000, 999999))
-            cache.set(f"otp_{email}", otp, timeout=120)
-            subject = "Password Reset OTP"
-            message = f"Your OTP for password reset is {otp}. It is valid for 2 minutes."
+            cache.set(f"otp_{email}", otp, timeout=300)
+            subject = "Password Reset OTP — Portfolio"
+            message = f"""Hello {user.username},
+
+Your OTP code for password reset is:
+
+    {otp}
+
+This code is valid for 5 minutes. Do not share it with anyone.
+
+If you did not request a password reset, please ignore this email.
+
+Best regards,
+Sandwip Das
+"""
             send_portfolio_email(subject, message, to_email=email)
-            print(f"DEBUG: Password reset OTP for {email} is {otp}")
-            return render(request, "auth/verify_otp.html", {"email": email})
-        messages.error(request, "No user found with this email.")
+            return render(request, "auth/verify_otp.html", {"email": email, "otp_type": "forgot_password"})
+        messages.error(request, "No account found with this email address.")
     return render(request, "auth/send_otp.html")
+
+
+def resend_forgot_password_otp(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        user = User.objects.filter(email=email).first()
+        if user:
+            otp = str(random.randint(100000, 999999))
+            cache.set(f"otp_{email}", otp, timeout=300)
+            subject = "Resend: Password Reset OTP — Portfolio"
+            message = f"""Hello {user.username},
+
+Your new OTP code for password reset is:
+
+    {otp}
+
+This code is valid for 5 minutes.
+
+Best regards,
+Sandwip Das
+"""
+            send_portfolio_email(subject, message, to_email=email)
+            messages.success(request, "A new OTP has been sent to your email.")
+        else:
+            messages.error(request, "No account found with this email address.")
+    return render(request, "auth/verify_otp.html", {"email": email if 'email' in dir() else '', "otp_type": "forgot_password"})
 
 
 def verify_otp_forgot_password(request):
@@ -344,8 +322,8 @@ def verify_otp_forgot_password(request):
             cache.delete(f"otp_{email}")
             request.session['reset_email'] = email
             return redirect('reset_password_otp')
-        messages.error(request, "Invalid or expired OTP.")
-        return render(request, "auth/verify_otp.html", {"email": email})
+        messages.error(request, "Invalid or expired OTP. Please try again.")
+        return render(request, "auth/verify_otp.html", {"email": email, "otp_type": "forgot_password"})
     return redirect('send_otp')
 
 
@@ -362,14 +340,14 @@ def reset_password_otp(request):
                 user.set_password(password)
                 user.save()
                 del request.session['reset_email']
-                messages.success(request, "Password reset successfully. You can now log in.")
+                messages.success(request, "Password reset successfully! You can now log in.")
                 return redirect('account_login')
         else:
-            messages.error(request, "Passwords do not match or are too short.")
+            messages.error(request, "Passwords do not match or must be at least 8 characters.")
     return render(request, "auth/reset_password.html")
 
 
-# ===================== Custom Signup =====================
+# ===================== User Signup with OTP =====================
 def custom_signup(request):
     if request.user.is_authenticated:
         return redirect('home')
@@ -380,6 +358,7 @@ def custom_signup(request):
         password2 = request.POST.get('password2')
         profile_picture = request.FILES.get('profile_picture')
 
+        # Validation
         if not username:
             messages.error(request, "Please enter a username.")
             return render(request, 'account/signup.html', {'form_data': request.POST})
@@ -387,43 +366,47 @@ def custom_signup(request):
             messages.error(request, "Passwords do not match.")
             return render(request, 'account/signup.html', {'form_data': request.POST})
         if User.objects.filter(email=email).exists():
-            messages.error(request, "The email ID already exists. Please try with another email ID.")
+            messages.error(request, "This email is already registered. Please use another email.")
             return render(request, 'account/signup.html', {'form_data': request.POST})
 
-        # Make unique username
+        # Unique username generation
         base_username = username
         final_username = base_username
         counter = 1
-        while User.objects.filter(username=final_username).exists() or PendingRegistration.objects.filter(
-                username=final_username).exists():
+        while User.objects.filter(username=final_username).exists() or PendingRegistration.objects.filter(username=final_username).exists():
             final_username = f"{base_username}{counter}"
             counter += 1
 
+        # Save pending registration
         PendingRegistration.objects.filter(email=email).delete()
         token = str(uuid.uuid4())
         hashed_password = make_password(password1)
-        pending = PendingRegistration(username=final_username, email=email, password=hashed_password,
-                                      full_name=username, token=token)
+        pending = PendingRegistration(
+            username=final_username, email=email, password=hashed_password,
+            full_name=username, token=token
+        )
         if profile_picture:
             pending.profile_picture = profile_picture
         pending.save()
 
-        # Send OTP for verification
+        # Send OTP
         otp = str(random.randint(100000, 999999))
-        cache.set(f"reg_otp_{email}", otp, timeout=120)
-        subject = "Action Required: Verify Your Portfolio Account"
+        cache.set(f"reg_otp_{email}", otp, timeout=300)
+        subject = "Verify Your Account — Portfolio"
         body = f"""Hello {username},
 
-Thank you for registering. Your OTP for account verification is {otp}. It is valid for 2 minutes.
+Welcome! To complete your account registration, please verify your email using the OTP below:
 
-If the OTP expires, you can request a new one on the verification page.
+    {otp}
+
+This code is valid for 5 minutes. Do not share it with anyone.
+
+If you did not sign up, please ignore this email.
 
 Best regards,
-Sandwip Das Portfolio
+Sandwip Das
 """
         send_portfolio_email(subject, body, to_email=email)
-        print(f"DEBUG: Registration OTP for {email} is {otp}")
-
         return render(request, 'account/verify_registration_otp.html', {'email': email})
 
     return render(request, 'account/signup.html')
@@ -434,61 +417,95 @@ def verify_registration_otp(request):
         email = request.POST.get("email")
         otp = request.POST.get("otp")
         cached_otp = cache.get(f"reg_otp_{email}")
+
         if cached_otp and cached_otp == otp:
-            cache.delete(f"reg_otp_{email}")
-            pending = get_object_or_404(PendingRegistration, email=email)
-            with transaction.atomic():
-                user = User.objects.create(username=pending.username, email=pending.email, password=pending.password)
-                user.first_name = ""
-                user.last_name = ""
-                user.save()
-                if pending.profile_picture:
-                    user.profile.profile_picture.save(pending.profile_picture.name.split('/')[-1],
-                                                      pending.profile_picture, save=True)
-                else:
-                    user.profile.save()
+            pending = PendingRegistration.objects.filter(email=email).first()
+            if not pending:
+                messages.error(request, "Registration session expired. Please sign up again.")
+                return redirect('account_signup')
+
+            if pending.is_expired():
                 pending.delete()
-            from django.contrib.auth import login
-            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-            messages.success(request, "Registration Successful! Welcome to your blog.")
-            return redirect('my_blog')
-        messages.error(request, "Invalid or expired OTP.")
-        return render(request, "account/verify_registration_otp.html", {"email": email})
+                messages.error(request, "Registration session expired. Please sign up again.")
+                return redirect('account_signup')
+
+            from allauth.account.models import EmailAddress
+            user = User.objects.create(
+                username=pending.username,
+                email=pending.email,
+                password=pending.password,
+                first_name=pending.full_name,
+            )
+            if pending.profile_picture:
+                try:
+                    user.profile.profile_picture = pending.profile_picture
+                    user.profile.save()
+                except Exception:
+                    pass
+
+            EmailAddress.objects.get_or_create(
+                user=user, email=user.email,
+                defaults={'verified': True, 'primary': True}
+            )
+
+            cache.delete(f"reg_otp_{email}")
+            pending.delete()
+
+            messages.success(request, "Account verified successfully! You can now log in.")
+            return redirect('account_login')
+
+        messages.error(request, "Invalid or expired OTP. Please try again.")
+        return render(request, 'account/verify_registration_otp.html', {'email': email})
     return redirect('account_signup')
 
 
 def resend_registration_otp(request):
     if request.method == "POST":
         email = request.POST.get("email")
-        if PendingRegistration.objects.filter(email=email).exists():
+        pending = PendingRegistration.objects.filter(email=email).first()
+        if pending:
             otp = str(random.randint(100000, 999999))
-            cache.set(f"reg_otp_{email}", otp, timeout=120)
-            subject = "Action Required: Verify Your Portfolio Account"
-            body = f"Your new OTP for registration is {otp}. It is valid for 2 minutes."
+            cache.set(f"reg_otp_{email}", otp, timeout=300)
+            subject = "Resend: Verify Your Account — Portfolio"
+            body = f"""Hello {pending.full_name},
+
+Your new OTP for account verification is:
+
+    {otp}
+
+This code is valid for 5 minutes.
+
+Best regards,
+Sandwip Das
+"""
             send_portfolio_email(subject, body, to_email=email)
-            return JsonResponse({"status": "success", "message": "OTP resent successfully."})
-        return JsonResponse({"status": "error", "message": "Pending registration not found."}, status=400)
-    return redirect('account_signup')
+            messages.success(request, "A new OTP has been sent to your email.")
+        else:
+            messages.error(request, "Registration session not found. Please sign up again.")
+    return render(request, 'account/verify_registration_otp.html', {'email': email if 'email' in dir() else ''})
 
 
-def resend_forgot_password_otp(request):
-    if request.method == "POST":
-        email = request.POST.get("email")
-        user = User.objects.filter(email=email).first()
-        if user:
-            otp = str(random.randint(100000, 999999))
-            cache.set(f"otp_{email}", otp, timeout=120)
-            subject = "Password Reset OTP"
-            message = f"Your new OTP for password reset is {otp}. It is valid for 2 minutes."
-            send_portfolio_email(subject, message, to_email=email)
-            return JsonResponse({"status": "success", "message": "OTP resent successfully."})
-        return JsonResponse({"status": "error", "message": "Email not found."}, status=400)
-    return redirect('send_otp')
+# ===================== Profile =====================
+@login_required
+def edit_profile(request):
+    profile = request.user.profile
+    if request.method == 'POST':
+        profile.contact_number = request.POST.get('contact_number', '')
+        profile.profession = request.POST.get('profession', '')
+        profile.organization = request.POST.get('organization', '')
+        profile.interest_field = request.POST.get('interest_field', '')
+        profile.highest_degree = request.POST.get('highest_degree', '')
+        profile.location = request.POST.get('location', '')
+        if request.FILES.get('profile_picture'):
+            profile.profile_picture = request.FILES['profile_picture']
+        profile.save()
+        messages.success(request, "Profile updated successfully!")
+        return redirect('edit_profile')
+    return render(request, 'account/profile.html', {'profile': profile})
 
 
 # ===================== My Blog =====================
+@login_required
 def my_blog(request):
-    if not request.user.is_authenticated:
-        return redirect('account_signup')
-    blog_posts = BlogPost.objects.all().order_by('-created_at')
-    return render(request, 'my_blog.html', {'blog_posts': blog_posts})
+    posts = BlogPost.objects.all().order_by('-created_at')
+    return render(request, 'my_blog.html', {'posts': posts})

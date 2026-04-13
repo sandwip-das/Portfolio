@@ -1,6 +1,5 @@
 from django.urls import path
 from django.views.generic.base import RedirectView
-from .views import test_email # Temporary
 from . import views
 
 urlpatterns = [
@@ -21,5 +20,4 @@ urlpatterns = [
     path('auth/verify-registration-otp/', views.verify_registration_otp, name='verify_registration_otp'),
     path('auth/resend-registration-otp/', views.resend_registration_otp, name='resend_registration_otp'),
     path('my-blog/', views.my_blog, name='my_blog'),
-    path("test-email/", test_email), # Temporary
 ]
