@@ -19,7 +19,7 @@ from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
 # Load environment variables
-load_dotenv()
+# load_dotenv()
 
 # ===================== BASE =====================
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -54,7 +54,11 @@ CSRF_COOKIE_SECURE = not DEBUG
 
 ## ===================== DATABASE =====================
 DATABASES = {
-    "default": dj_database_url.parse(os.environ.get("DATABASE_URL"))
+    "default": dj_database_url.config(
+        default=os.environ.get("DATABASE_URL"),
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
 
 # ===================== CELERY CONFIG =====================
