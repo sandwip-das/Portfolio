@@ -254,11 +254,35 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# CKEditor + Cloudinary
-CKEDITOR_5_FILE_STORAGE = "core.storage.CustomCloudinaryStorage"
-
-# Default storage for media (uploads)
-DEFAULT_FILE_STORAGE = "core.storage.CustomCloudinaryStorage"
+# CKEditor Storage
+if DEBUG:
+    CKEDITOR_5_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+    # Default storage for media (uploads)
+    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+    
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+    MEDIA_URL = '/media/'
+else:
+    CKEDITOR_5_FILE_STORAGE = "core.storage.CustomCloudinaryStorage"
+    DEFAULT_FILE_STORAGE = "core.storage.CustomCloudinaryStorage"
+    
+    STORAGES = {
+        "default": {
+            "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
+    cloudinary_name = os.environ.get("CLOUDINARY_CLOUD_NAME", "")
+    MEDIA_URL = f'https://res.cloudinary.com/{cloudinary_name}/' if cloudinary_name else '/media/'
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get("CLOUDINARY_CLOUD_NAME"),
@@ -274,19 +298,6 @@ cloudinary.config(
     api_secret=CLOUDINARY_STORAGE['API_SECRET'],
     secure=True
 )
-
-STORAGES = {
-    "default": {  # media files (ImageField) → Cloudinary
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
-    },
-    "staticfiles": {  # static files (CSS/JS) → WhiteNoise/Render default
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-
-    },
-}
-
-cloudinary_name = os.environ.get("CLOUDINARY_CLOUD_NAME", "")
-MEDIA_URL = f'https://res.cloudinary.com/{cloudinary_name}/' if cloudinary_name else '/media/'
 
 
 # Default primary key field type
