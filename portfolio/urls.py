@@ -28,9 +28,6 @@ urlpatterns = [
     
     path('accounts/', include('allauth.urls')),
     path('core/', include('core.urls')),
-    
-    # Favicon Redirect
-    path('favicon.ico', RedirectView.as_view(url=static_tag('img/favicon_placeholder.png'))),
 ]
 
 if settings.DEBUG:

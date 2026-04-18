@@ -7,9 +7,9 @@
             <div class="flex-1 flex items-center overflow-hidden mr-4">
                 <a href="{% url 'home' %}"
                     class="font-bold tracking-tight hover:text-primary transition-all duration-300 font-script group flex items-center gap-2">
-                    <img class="h-6 sm:h-8 w-auto rounded-lg"
-                        src="{% if settings.logo %}{{ settings.logo.url }}{% else %}{% static 'img/logo_placeholder.png' %}{% endif %}"
-                        alt="Logo">
+                    {% if settings.logo %}
+                    <img class="h-6 sm:h-8 w-auto rounded-lg" src="{{ settings.logo.url }}" alt="Logo">
+                    {% endif %}
 
                     <span
                     class="gradient-text group-hover:scale-105 inline-block transition transform whitespace-nowrap text-base sm:text-xl md:text-2xl">

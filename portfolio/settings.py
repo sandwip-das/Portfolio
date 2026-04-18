@@ -70,7 +70,7 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Dhaka'
 
 
-# # To Create Superuser
+# To Create Superuser
 # DATABASES = {
 #     "default": dj_database_url.config(
 #         default=os.getenv("DATABASE_URL"),
@@ -251,6 +251,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [BASE_DIR / 'static']
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # CKEditor + Cloudinary
 CKEDITOR_5_FILE_STORAGE = "core.storage.CustomCloudinaryStorage"
