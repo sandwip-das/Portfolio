@@ -254,10 +254,12 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# Use RENDER env var to properly detect production vs local
+IS_PRODUCTION = os.environ.get("RENDER") == "true"
+
 # CKEditor Storage
-if DEBUG:
+if not IS_PRODUCTION:
     CKEDITOR_5_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-    # Default storage for media (uploads)
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
     
     STORAGES = {
@@ -282,7 +284,7 @@ else:
         },
     }
     cloudinary_name = os.environ.get("CLOUDINARY_CLOUD_NAME", "")
-    MEDIA_URL = f'https://res.cloudinary.com/{cloudinary_name}/' if cloudinary_name else '/media/'
+    MEDIA_URL = f'https://res.cloudinary.com/{cloudinary_name}/image/upload/v1/' if cloudinary_name else '/media/'
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get("CLOUDINARY_CLOUD_NAME"),
