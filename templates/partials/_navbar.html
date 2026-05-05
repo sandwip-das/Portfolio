@@ -7,12 +7,12 @@
             <div class="flex-1 flex items-center overflow-hidden mr-4">
                 <a href="{% url 'home' %}"
                     class="font-bold tracking-tight hover:text-primary transition-all duration-300 font-script group flex items-center gap-2">
-                    <img class="h-6 sm:h-8 w-auto rounded-lg"
+                    <img class="h-8 sm:h-12 w-auto rounded-lg transition-transform duration-500 hover:scale-125 hover:rotate-3"
                         src="{% if settings.logo %}{{ settings.logo.url }}{% else %}{% static 'img/logo_placeholder.png' %}{% endif %}"
                         alt="Logo">
 
                     <span
-                    class="gradient-text group-hover:scale-105 inline-block transition transform whitespace-nowrap text-base sm:text-xl md:text-2xl">
+                    class="gradient-text group-hover:scale-105 inline-block transition transform whitespace-nowrap text-xl sm:text-2xl md:text-3xl">
                         {{ settings.nav_name|default:settings.site_title }}
                     </span>
                 </a>
@@ -23,26 +23,26 @@
                 <div class="ml-6 flex items-center space-x-4 lg:space-x-6">
                     {% if '/blog/' in request.path or '/profile/' in request.path or '/my-blog/' in request.path %}
                     <a href="{% url 'home' %}"
-                        class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Home</a>
+                        class="nav-link text-sm lg:text-base font-bold hover:text-primary transition-colors">Home</a>
                     <a href="{% url 'my_blog' %}"
-                        class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">My Blog</a>
+                        class="nav-link text-sm lg:text-base font-bold hover:text-primary transition-colors">My Blog</a>
                     {% else %}
                     <a href="#home"
-                        class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Home</a>
+                        class="nav-link text-sm lg:text-base font-bold hover:text-primary transition-colors">Home</a>
                     <a href="#about"
-                        class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">About</a>
+                        class="nav-link text-sm lg:text-base font-bold hover:text-primary transition-colors">About</a>
                     <a href="#experience"
-                        class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Experience</a>
+                        class="nav-link text-sm lg:text-base font-bold hover:text-primary transition-colors">Experience</a>
                     <a href="#skills"
-                        class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Expertise</a>
+                        class="nav-link text-sm lg:text-base font-bold hover:text-primary transition-colors">Expertise</a>
                     <a href="#projects"
-                        class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Projects</a>
+                        class="nav-link text-sm lg:text-base font-bold hover:text-primary transition-colors">Projects</a>
                     <a href="#service"
-                        class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Services</a>
+                        class="nav-link text-sm lg:text-base font-bold hover:text-primary transition-colors">Services</a>
                     <a href="#blog"
-                        class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Blog</a>
+                        class="nav-link text-sm lg:text-base font-bold hover:text-primary transition-colors">Blog</a>
                     <a href="#contact"
-                        class="nav-link text-xs lg:text-sm font-bold hover:text-primary transition-colors">Contact</a>
+                        class="nav-link text-sm lg:text-base font-bold hover:text-primary transition-colors">Contact</a>
                     {% endif %}
                     {% if user.is_authenticated %}
                     {% with profile=user.profile %}
@@ -50,7 +50,7 @@
                         <button
                             class="flex items-center space-x-2 text-gray-300 hover:text-white focus:outline-none h-full py-2">
                             {% render_profile_image user "h-8 w-8" %}
-                            <span class="font-bold text-sm truncate max-w-[100px]">
+                            <span class="font-bold text-base truncate max-w-[100px]">
                                 {{ user.username }}
                             </span>
                             <i class="fas fa-chevron-down text-xs ml-1 transition-transform group-hover:rotate-180"></i>
@@ -96,27 +96,27 @@
         <div class="px-2 pt-2 pb-4 space-y-1">
             {% if '/blog/' in request.path or '/profile/' in request.path or '/my-blog/' in request.path %}
             <a href="{% url 'home' %}"
-                class="block px-3 py-2 rounded-xl text-base font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">Home</a>
+                class="block px-3 py-2 rounded-xl text-lg font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">Home</a>
             <a href="{% url 'my_blog' %}"
-                class="block px-3 py-2 rounded-xl text-base font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">My
+                class="block px-3 py-2 rounded-xl text-lg font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">My
                 Blog</a>
             {% else %}
             <a href="#home" onclick="toggleMobileMenu()"
-                class="block px-3 py-2 rounded-xl text-base font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">Home</a>
+                class="block px-3 py-2 rounded-xl text-lg font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">Home</a>
             <a href="#about" onclick="toggleMobileMenu()"
-                class="block px-3 py-2 rounded-xl text-base font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">About</a>
+                class="block px-3 py-2 rounded-xl text-lg font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">About</a>
             <a href="#experience" onclick="toggleMobileMenu()"
-                class="block px-3 py-2 rounded-xl text-base font-boldtext-gray-300 hover:text-primary hover:bg-white/5 transition-all">Experience</a>
+                class="block px-3 py-2 rounded-xl text-lg font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">Experience</a>
             <a href="#skills" onclick="toggleMobileMenu()"
-                class="block px-3 py-2 rounded-xl text-base font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">Expertise</a>
+                class="block px-3 py-2 rounded-xl text-lg font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">Expertise</a>
             <a href="#projects" onclick="toggleMobileMenu()"
-                class="block px-3 py-2 rounded-xl text-base font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">Projects</a>
+                class="block px-3 py-2 rounded-xl text-lg font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">Projects</a>
             <a href="#service" onclick="toggleMobileMenu()"
-                class="block px-3 py-2 rounded-xl text-base font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">Services</a>
+                class="block px-3 py-2 rounded-xl text-lg font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">Services</a>
             <a href="#blog" onclick="toggleMobileMenu()"
-                class="block px-3 py-2 rounded-xl text-base font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">Blog</a>
+                class="block px-3 py-2 rounded-xl text-lg font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">Blog</a>
             <a href="#contact" onclick="toggleMobileMenu()"
-                class="block px-3 py-2 rounded-xl text-base font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">Contact</a>
+                class="block px-3 py-2 rounded-xl text-lg font-bold text-gray-300 hover:text-primary hover:bg-white/5 transition-all">Contact</a>
             {% endif %}
         </div>
         {% if user.is_authenticated %}

@@ -5,12 +5,12 @@
     <div class="max-w-[1680px] mx-auto px-[47px] sm:px-[63px] lg:px-[79px]">
         <div class="text-center mb-6">
             <h2 class="text-3xl md:text-4xl font-bold mb-4">Featured <span class="text-primary">Projects</span></h2>
-            <div class="w-24 h-1 bg-gradient-to-r from-indigo-500 to-pink-500 mx-auto rounded-full mb-8"></div>
             {% if settings.projects_description %}
-            <p class="text-gray-400 text-lg mx-auto leading-relaxed break-words">
-                {{ settings.projects_description|linebreaksbr }}
-            </p>
+            <div class="max-w-4xl mx-auto">
+                <p class="text-gray-400 text-lg leading-relaxed italic">{{ settings.projects_description }}</p>
+            </div>
             {% endif %}
+            <div class="w-24 h-1 bg-gradient-to-r from-indigo-500 to-pink-500 mx-auto mt-6 rounded-full mb-8"></div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

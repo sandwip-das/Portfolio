@@ -270,6 +270,18 @@ class FooterSettings(HomeSettings):
         verbose_name = "Footer Text"
         verbose_name_plural = "Footer Text"
 
+class ProjectSectionSettings(HomeSettings):
+    class Meta:
+        proxy = True
+        verbose_name = "Featured Projects Main"
+        verbose_name_plural = "Featured Projects Main"
+
+class ServiceSectionSettings(HomeSettings):
+    class Meta:
+        proxy = True
+        verbose_name = "My Services Main"
+        verbose_name_plural = "My Services Main"
+
 # --- REAL MODELS & INLINES ---
 
 class Experience(models.Model):

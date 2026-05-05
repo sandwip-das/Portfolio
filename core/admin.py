@@ -9,7 +9,7 @@ from nested_admin import NestedModelAdmin, NestedStackedInline, NestedTabularInl
 from .models import (
     HomeSettings, NavbarSettings, HeroMainSettings, HeroSocialSettings, 
     AboutSectionSettings, ContactSectionSettings, FooterSettings,
-    TechnicalSkillsSection,
+    TechnicalSkillsSection, ProjectSectionSettings, ServiceSectionSettings,
     Project, Service, ServiceBooking, ContactMessage,
     AcademicBackground, SkillCategory, Experience, 
     ProfessionalTraining, GlobalCertificationModel, ProfessionalTrainingModel, 
@@ -199,6 +199,10 @@ class GlobalCertificationAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 # 6. Featured Projects Content
+@admin.register(ProjectSectionSettings)
+class ProjectSectionSettingsAdmin(BaseSettingsAdmin):
+    fields = ['projects_description']
+
 class ProjectImageInline(admin.TabularInline):
     model = ProjectImage
     extra = 1
@@ -219,6 +223,10 @@ class ProjectAdmin(admin.ModelAdmin):
     )
 
 # 7. My Services Content
+@admin.register(ServiceSectionSettings)
+class ServiceSectionSettingsAdmin(BaseSettingsAdmin):
+    fields = ['services_description']
+
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
     list_display = ['title', 'order']

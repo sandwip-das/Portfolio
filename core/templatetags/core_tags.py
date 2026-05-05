@@ -285,3 +285,23 @@ def render_profile_image(user, css_class="h-8 w-8"):
         'image_url': image_url,
         'css_class': css_class
     }
+
+@register.filter(name='split_to_bullets')
+def split_to_bullets(text):
+    """
+    Splits text by newlines and returns an HTML list of bullet points.
+    Used for formatting Academic and Experience text fields where each line break is a new bullet point.
+    """
+    if not text:
+        return ""
+    lines = [line.strip() for line in text.split('\n') if line.strip()]
+    if not lines:
+        return ""
+    
+    html = '<ul class="list-disc pl-5 space-y-2 text-justify text-base md:text-lg">'
+    for line in lines:
+        html += f'<li>{line}</li>'
+    html += '</ul>'
+    
+    from django.utils.safestring import mark_safe
+    return mark_safe(html)

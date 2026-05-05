@@ -22,7 +22,7 @@
                     <div>
                         <!-- Academic Background -->
                         <div>
-                            <h3 class="text-xl font-bold text-primary mb-4">Academic Background</h3>
+                            <h3 class="text-2xl font-bold text-primary mb-4">Academic Background</h3>
                             <div class="space-y-4">
                                 {% for academic in academic_background %}
                                 <div
@@ -37,7 +37,7 @@
                                         </div>
                                         {% endif %}
                                         <div class="flex-grow">
-                                            <h4 class="text-white font-bold flex items-center gap-2 text-lg">
+                                            <h4 class="text-white font-bold flex items-center gap-2 text-xl">
                                                 {% if academic.institution_link %}
                                                 <a href="{{ academic.institution_link }}" target="_blank"
                                                     class="group-hover:text-[#be2edd] transition flex items-center gap-1.5">
@@ -49,17 +49,14 @@
                                                 </span>
                                                 {% endif %}
                                             </h4>
-                                            <p
-                                                class="text-gray-400 text-sm mb-1 group-hover:text-white transition-colors duration-300 font-normal">
+                                            <p class="text-gray-400 text-base mb-1 group-hover:text-white transition-colors duration-300 font-normal">
                                                 {{ academic.degree_name }}</p>
                                             {% if academic.description_list %}
-                                            <ul
-                                                class="flex flex-wrap gap-x-5 text-xs text-gray-500 mt-2 transition-colors duration-300 group-hover:text-white">
+                                            <ul class="flex flex-col gap-y-2 text-base text-gray-500 mt-2 transition-colors duration-300 group-hover:text-white text-justify">
                                                 {% for point in academic.description_list %}
-                                                <li class="flex items-center gap-2">
-                                                    <span
-                                                        class="w-1.5 h-1.5 rounded-full bg-primary shrink-0 group-hover:bg-[#be2edd] transition-colors"></span>
-                                                    {{ point }}
+                                                <li class="flex items-start gap-2">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-1.5 group-hover:bg-[#be2edd] transition-colors"></span>
+                                                    <span>{{ point }}</span>
                                                 </li>
                                                 {% endfor %}
                                             </ul>

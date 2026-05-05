@@ -347,67 +347,55 @@ def reset_password_otp(request):
     return render(request, "auth/reset_password.html")
 
 
-# ===================== User Signup with OTP =====================
+# ===================== User Signup (Simplified) =====================
 def custom_signup(request):
     if request.user.is_authenticated:
-        return redirect('home')
+        return redirect('my_blog')
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
         email = request.POST.get('email', '').strip()
-        password1 = request.POST.get('password1')
-        password2 = request.POST.get('password2')
-        profile_picture = request.FILES.get('profile_picture')
 
         # Validation
-        if not username:
-            messages.error(request, "Please enter a username.")
+        if not username or not email:
+            messages.error(request, "Please enter both username and email.")
             return render(request, 'account/signup.html', {'form_data': request.POST})
-        if password1 != password2:
-            messages.error(request, "Passwords do not match.")
-            return render(request, 'account/signup.html', {'form_data': request.POST})
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "This email is already registered. Please use another email.")
-            return render(request, 'account/signup.html', {'form_data': request.POST})
+
+        user = User.objects.filter(email=email).first()
+        if user:
+            # If user already exists, just log them in
+            from django.contrib.auth import login
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            messages.success(request, f"Welcome back, {user.username}!")
+            return redirect('my_blog')
 
         # Unique username generation
         base_username = username
         final_username = base_username
         counter = 1
-        while User.objects.filter(username=final_username).exists() or PendingRegistration.objects.filter(username=final_username).exists():
+        while User.objects.filter(username=final_username).exists():
             final_username = f"{base_username}{counter}"
             counter += 1
 
-        # Save pending registration
-        PendingRegistration.objects.filter(email=email).delete()
-        token = str(uuid.uuid4())
-        hashed_password = make_password(password1)
-        pending = PendingRegistration(
-            username=final_username, email=email, password=hashed_password,
-            full_name=username, token=token
+        # Create user with random password
+        random_password = str(uuid.uuid4())
+        user = User.objects.create(
+            username=final_username,
+            email=email,
+            password=make_password(random_password),
+            first_name=username,
         )
-        if profile_picture:
-            pending.profile_picture = profile_picture
-        pending.save()
+        
+        # Mark email as verified for allauth
+        from allauth.account.models import EmailAddress
+        EmailAddress.objects.get_or_create(
+            user=user, email=user.email,
+            defaults={'verified': True, 'primary': True}
+        )
 
-        # Send OTP
-        otp = str(random.randint(100000, 999999))
-        cache.set(f"reg_otp_{email}", otp, timeout=300)
-        subject = "Verify Your Account — Portfolio"
-        body = f"""Hello {username},
-
-Welcome! To complete your account registration, please verify your email using the OTP below:
-
-    {otp}
-
-This code is valid for 5 minutes. Do not share it with anyone.
-
-If you did not sign up, please ignore this email.
-
-Best regards,
-Sandwip Das
-"""
-        send_portfolio_email(subject, body, to_email=email)
-        return render(request, 'account/verify_registration_otp.html', {'email': email})
+        from django.contrib.auth import login
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        messages.success(request, "Account created successfully! Welcome to the blog.")
+        return redirect('my_blog')
 
     return render(request, 'account/signup.html')
 
