@@ -238,26 +238,31 @@ def render_interleaved_content(post):
 @register.filter(name='smart_url')
 def smart_url(file_field):
     """
-    A robust way to get the Cloudinary URL.
-    Detects and fixes double-prefixing (e.g., domain/domain/path).
+    The ultimate solution: Manually construct the Cloudinary URL from the file name.
+    Bypasses Django's storage.url() entirely to prevent double-prefixing.
     """
     if not file_field:
         return ""
         
     try:
-        url = file_field.url
+        name = file_field.name
+        if not name:
+            return ""
+            
         cloud_name = "dghadnok8"
         
-        # If the domain appears more than once, it's double-prefixed
-        if url.count("res.cloudinary.com") > 1:
-            # Take everything after the LAST occurrence of the cloud name
-            if f"{cloud_name}/" in url:
-                path = url.split(f"{cloud_name}/")[-1]
-                return f"https://res.cloudinary.com/{cloud_name}/{path}"
+        # If the name is already an absolute URL, clean it first
+        if 'res.cloudinary.com' in name:
+            if f"{cloud_name}/" in name:
+                name = name.split(f"{cloud_name}/")[-1]
+            elif cloud_name in name:
+                name = name.split(cloud_name)[-1].lstrip('/')
         
-        return url
+        # Return the clean absolute URL
+        return f"https://res.cloudinary.com/{cloud_name}/{name}"
     except Exception:
         return ""
+
 
 @register.inclusion_tag('partials/tags/profile_image.html')
 def render_profile_image(user, css_class="h-8 w-8"):
