@@ -238,36 +238,27 @@ def render_interleaved_content(post):
 @register.filter(name='smart_url')
 def smart_url(file_field):
     """
-    A bulletproof way to get the Cloudinary URL.
-    Handles:
-    1. Already absolute URLs (returns as is).
-    2. Double-prefixed URLs (fixes them).
-    3. Relative paths (converts to absolute via storage).
+    A robust way to get the Cloudinary URL.
+    Detects and fixes double-prefixing (e.g., domain/domain/path).
     """
     if not file_field:
         return ""
         
     try:
-        # Get the raw name and the generated URL
-        name = file_field.name
         url = file_field.url
+        cloud_name = "dghadnok8"
         
-        if not name:
-            return ""
-            
-        # Case 1: The name itself is an absolute URL
-        if name.startswith('http'):
-            # Check for double prefix in the generated URL
-            # e.g. https://res.../https://res...
-            if url.count('https://res.cloudinary.com') > 1 or url.count('https:/res.cloudinary.com') > 1:
-                # Just return the original name (which is the full URL)
-                return name
-            return url
-            
-        # Case 2: Standard relative path
+        # If the domain appears more than once, it's double-prefixed
+        if url.count("res.cloudinary.com") > 1:
+            # Take everything after the LAST occurrence of the cloud name
+            if f"{cloud_name}/" in url:
+                path = url.split(f"{cloud_name}/")[-1]
+                return f"https://res.cloudinary.com/{cloud_name}/{path}"
+        
         return url
     except Exception:
         return ""
+
 @register.inclusion_tag('partials/tags/profile_image.html')
 def render_profile_image(user, css_class="h-8 w-8"):
     """
