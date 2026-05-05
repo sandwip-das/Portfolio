@@ -2,11 +2,7 @@
 {% load static core_tags %}
 
 {% block content %}
-<section class="hero">
-    {% if hero.image %}
-        <img src="{{ hero.image.url }}" alt="{{ hero.name }}">
-    {% endif %}
-</section>
+
 
 {% for menu in settings.navbar_menus.all|dictsort:"order" %}
 {% if menu.section_id == 'home' %}

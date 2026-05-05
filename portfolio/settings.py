@@ -270,17 +270,17 @@ cloudinary.config(
 )
 
 STORAGES = {
-    "default": {  # media files (ImageField) → Cloudinary
+    "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
-    "staticfiles": {  # static files (CSS/JS) → WhiteNoise/Render default
+    "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-
     },
 }
 
 cloudinary_name = os.environ.get("CLOUDINARY_CLOUD_NAME", "")
 MEDIA_URL = f'https://res.cloudinary.com/{cloudinary_name}/' if cloudinary_name else '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Default primary key field type

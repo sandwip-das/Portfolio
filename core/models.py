@@ -7,8 +7,6 @@ from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 
-from core.storage import CustomCloudinaryStorage
-
 from django.core.cache import cache
 import random
 
@@ -37,7 +35,6 @@ class Hero(models.Model):
     name = models.CharField(max_length=100)
     image = models.ImageField(
         upload_to='hero/',  # local folder structure অনুযায়ী
-        storage=CustomCloudinaryStorage(),
         blank=True,
         null=True
     )
