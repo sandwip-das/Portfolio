@@ -3,7 +3,7 @@ from django.views.generic.base import RedirectView
 from . import views
 
 urlpatterns = [
-    path("favicon.ico", RedirectView.as_view(url="/static/img/favicon_placeholder.png")),
+    # blog
     path('blog/<int:post_id>/reaction/', views.toggle_reaction, name='toggle_reaction'),
     path('blog/<int:post_id>/comment/', views.add_comment, name='add_comment'),
     path('comment/<int:comment_id>/reaction/', views.toggle_comment_reaction, name='toggle_comment_reaction'),

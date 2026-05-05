@@ -298,10 +298,9 @@ def split_to_bullets(text):
     if not lines:
         return ""
     
-    html = '<ul class="list-disc pl-5 space-y-2 text-justify text-base md:text-lg">'
+    html = '<ul class="list-disc pl-5 space-y-2 text-left text-base md:text-lg">'
     for line in lines:
         html += f'<li>{line}</li>'
     html += '</ul>'
     
-    from django.utils.safestring import mark_safe
     return mark_safe(html)
