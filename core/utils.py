@@ -15,13 +15,21 @@ def get_admin_email():
 
 def send_portfolio_email(subject, body, to_email=None, reply_to=None):
     """
-    Send email via Django's integrated email backend.
-    Works seamlessly with Brevo SMTP relay configured via EMAIL_* settings.
+    Send email via Django's integrated email backend in a background thread.
+    This prevents the UI from hanging if the SMTP server is slow.
     """
     if not to_email:
         logger.warning("send_portfolio_email called with no recipient.")
         return
 
+    # Use a thread to avoid blocking the request-response cycle
+    thread = threading.Thread(
+        target=_send_email_logic,
+        args=(subject, body, to_email, reply_to)
+    )
+    thread.start()
+
+def _send_email_logic(subject, body, to_email, reply_to):
     # Use DEFAULT_FROM_EMAIL from settings
     from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', settings.EMAIL_HOST_USER)
     

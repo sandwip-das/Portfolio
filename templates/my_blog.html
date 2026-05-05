@@ -14,65 +14,61 @@
     </div>
 
     <div class="max-w-[1900px] mx-auto px-[31px] sm:px-[39px] lg:px-[47px] py-6 relative z-10">
-        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
-            <div class="text-center md:text-left">
-                <h2 class="text-2xl md:text-4xl font-bold text-white">Full <span class="text-[#2ecc71]">Blog</span> Library</h2>
-                <div class="w-20 h-1 bg-gradient-to-r from-indigo-500 to-pink-500 mx-auto md:ml-0 rounded-full mt-2"></div>
-            </div>
+        <!-- Header Section: Reorganized for Left (Dropdown), Middle (Title), Right (Search) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 items-center mb-10 gap-6">
             
-            <div class="flex flex-wrap items-center justify-center md:justify-end gap-3">
-                <!-- Category Filter -->
-                <form method="GET" class="flex items-center">
+            <!-- Left: Category Filter -->
+            <div class="flex justify-start order-2 md:order-1">
+                <form method="GET" class="w-full sm:w-auto">
                     {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
                     <select name="category" onchange="this.form.submit()" 
-                        class="bg-white/5 backdrop-blur-md text-white text-sm rounded-xl px-4 py-2.5 border border-white/10 focus:outline-none focus:border-[#2ecc71] transition-all hover:bg-white/10 cursor-pointer">
+                        class="bg-white/5 backdrop-blur-md text-white text-xs sm:text-sm rounded-xl px-4 py-2 border border-white/10 focus:outline-none focus:border-[#2ecc71] transition-all hover:bg-white/10 cursor-pointer w-full sm:w-48">
                         <option value="" class="bg-[#1a1a2e]">All Categories</option>
                         {% for cat in categories %}
                         <option value="{{ cat }}" {% if category_filter == cat %}selected{% endif %} class="bg-[#1a1a2e]">{{ cat }}</option>
                         {% endfor %}
                     </select>
                 </form>
+            </div>
 
-                <!-- Search -->
-                <div class="relative group">
-                    <form method="GET" class="flex items-center gap-2" id="blog-search-form">
-                        {% if category_filter %}<input type="hidden" name="category" value="{{ category_filter }}">{% endif %}
-                        <div class="relative">
-                            <input type="text" name="q" id="blog-search-input" value="{{ query }}" placeholder="Search by title..." autocomplete="off" 
-                                class="bg-white/5 backdrop-blur-md text-white text-sm rounded-xl px-4 py-2.5 border border-white/10 focus:outline-none focus:border-[#2ecc71] w-48 sm:w-64 md:w-80 transition-all hover:bg-white/10">
-                            <div id="search-suggestions" class="absolute top-full left-0 w-full bg-[#1a1a2e]/95 backdrop-blur-xl border border-white/10 rounded-xl mt-2 z-[100] hidden shadow-2xl overflow-hidden">
-                                <!-- Suggestions populated by JS -->
-                            </div>
-                        </div>
-                        <button type="submit" class="bg-[#2ecc71] hover:bg-[#27ae60] text-white text-sm font-bold px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-[#2ecc71]/20 active:scale-95">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </form>
+            <!-- Middle: Title -->
+            <div class="text-center order-1 md:order-2">
+                <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-white whitespace-nowrap">Full <span class="text-[#2ecc71]">Blog</span> Library</h2>
+                <div class="w-16 h-1 bg-gradient-to-r from-indigo-500 to-pink-500 mx-auto rounded-full mt-2"></div>
+            </div>
+            
+            <!-- Right: Search -->
+            <div class="flex justify-center md:justify-end order-3">
+                <div class="relative w-full sm:w-auto">
+                    <div class="relative">
+                        <input type="text" id="blog-search-input" value="{{ query }}" placeholder="Search by title..." autocomplete="off" 
+                            class="bg-white/5 backdrop-blur-md text-white text-xs sm:text-sm rounded-xl pl-10 pr-4 py-2 border border-white/10 focus:outline-none focus:border-[#2ecc71] w-full sm:w-64 lg:w-80 transition-all hover:bg-white/10">
+                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs sm:text-sm"></i>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <!-- Blog Cards Grid -->
+        <div id="blog-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {% for post in posts %}
-            <div class="blog-card group h-full">
+            <div class="blog-card group h-full" data-title="{{ post.title|lower }}">
                 <a href="{% url 'blog_detail' post.slug %}"
                     class="glass-card h-full flex flex-col overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-[#ff7979]/40 border border-white/10 block rounded-3xl"
                     style="background: rgba(255, 255, 255, 0.015); backdrop-filter: blur(10px); border-radius: 1.5rem;">
 
-                    <div class="relative h-60 overflow-hidden flex overflow-x-auto snap-x snap-mandatory rounded-t-3xl"
-                        style="scrollbar-width: none;">
+                    <!-- Image Header -->
+                    <div class="relative h-56 sm:h-60 overflow-hidden flex rounded-t-3xl">
                         {% if post.image %}
                         <img src="{{ post.image.url }}" alt="{{ post.title }}"
-                            class="w-full h-full object-cover flex-shrink-0 snap-center transition-transform duration-700 group-hover:scale-110 group-hover:rotate-1">
+                            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:rotate-1">
                         {% else %}
-                        <div
-                            class="w-full h-full bg-gray-800 flex items-center justify-center flex-shrink-0 snap-center">
+                        <div class="w-full h-full bg-gray-800 flex items-center justify-center">
                             <i class="fas fa-image text-4xl text-gray-700"></i>
                         </div>
                         {% endif %}
                         <div class="absolute top-4 left-4">
-                            <span
-                                class="px-3 py-1 bg-[#2ecc71]/80 backdrop-blur-md rounded-lg text-xs font-bold text-white uppercase tracking-wider">
+                            <span class="px-3 py-1 bg-[#2ecc71]/80 backdrop-blur-md rounded-lg text-[10px] font-bold text-white uppercase tracking-wider">
                                 {{ post.category }}
                             </span>
                         </div>
@@ -80,49 +76,36 @@
 
                     <!-- Content -->
                     <div class="p-6 flex flex-col flex-grow">
-                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-[#eb4d4b] transition-colors"
-                            style="display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                        <h3 class="text-lg sm:text-xl font-bold text-white mb-2 group-hover:text-[#eb4d4b] transition-colors line-clamp-2">
                             {{ post.title }}
                         </h3>
-                        <div class="text-gray-300 text-sm mb-4 flex-grow"
-                            style="display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                            {{ post.content|striptags|truncatewords:15 }}
+                        <div class="text-gray-300 text-sm mb-4 flex-grow line-clamp-2">
+                            {{ post.content|striptags|truncatewords:12 }}
                         </div>
 
                         <!-- Footer Metrics -->
-                        <div
-                            class="mt-auto pt-3 border-t border-white/20 flex justify-between items-center overflow-x-auto text-sm">
-                            <div class="flex flex-col gap-1 text-white/70">
-                                <div class="flex items-center gap-1.5 shrink-0">
-                                    <i class="fas fa-user text-[#2ecc71] text-xs"></i>
-                                    <span class="font-medium truncate max-w-[120px] text-sm">Sandwip</span>
+                        <div class="mt-auto pt-4 border-t border-white/10 flex justify-between items-center text-xs">
+                            <div class="flex flex-col gap-1.5 text-white/60">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-user text-[#2ecc71]"></i>
+                                    <span class="font-medium">Sandwip</span>
                                 </div>
-                                <div class="flex items-center gap-1.5 shrink-0">
-                                    <i class="far fa-clock text-[#2ecc71] text-xs"></i>
-                                    <span class="font-medium whitespace-nowrap text-xs">
-                                        {{ post.created_at|date:"d M, Y, h:i A" }}
+                                <div class="flex items-center gap-2">
+                                    <i class="far fa-clock text-[#2ecc71]"></i>
+                                    <span class="font-medium">
+                                        {{ post.created_at|date:"d M, Y" }}
                                     </span>
                                 </div>
                             </div>
 
-                            <div class="flex items-center gap-1.5 shrink-0 h-full py-1">
-                                <div
-                                    class="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-white/5 hover:bg-white/5 transition-all text-gray-400 group">
-                                    <i
-                                        class="fas fa-eye text-[#2ecc71] text-xs group-hover:scale-110 transition-transform"></i>
-                                    <span class="text-xs">{{ post.view_count }}</span>
+                            <div class="flex items-center gap-3">
+                                <div class="flex items-center gap-1.5 text-gray-400">
+                                    <i class="fas fa-eye text-[#2ecc71]"></i>
+                                    <span>{{ post.view_count|default:0 }}</span>
                                 </div>
-                                <div
-                                    class="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-white/5 hover:bg-[#2ecc71]/10 transition-all text-gray-400 group">
-                                    <i
-                                        class="fas fa-thumbs-up text-[#2ecc71] text-xs group-hover:scale-110 transition-transform"></i>
-                                    <span class="text-xs">{{ post.like_count }}</span>
-                                </div>
-                                <div
-                                    class="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-white/5 hover:bg-yellow-400/10 transition-all text-gray-400 group">
-                                    <i
-                                        class="fas fa-comment text-yellow-400 text-xs group-hover:scale-110 transition-transform"></i>
-                                    <span class="text-xs">{{ post.comment_count }}</span>
+                                <div class="flex items-center gap-1.5 text-gray-400">
+                                    <i class="fas fa-thumbs-up text-[#2ecc71]"></i>
+                                    <span>{{ post.like_count|default:0 }}</span>
                                 </div>
                             </div>
                         </div>
@@ -130,12 +113,19 @@
                 </a>
             </div>
             {% empty %}
-            <div class="col-span-1 md:col-span-3 py-12 text-center glass-card border border-white/10 rounded-3xl"
+            <div class="col-span-full py-20 text-center glass-card border border-white/10 rounded-3xl"
                 style="background: rgba(255, 255, 255, 0.015); backdrop-filter: blur(10px);">
                 <i class="fas fa-newspaper text-5xl text-gray-600 mb-4 block"></i>
-                <p class="text-gray-400">No blog posts found.</p>
+                <p class="text-gray-400">No blog posts found for this category.</p>
             </div>
             {% endfor %}
+        </div>
+
+        <!-- No Results Message (Hidden by default) -->
+        <div id="no-results" class="hidden col-span-full py-20 text-center glass-card border border-white/10 rounded-3xl"
+            style="background: rgba(255, 255, 255, 0.015); backdrop-filter: blur(10px);">
+            <i class="fas fa-search text-5xl text-gray-600 mb-4 block"></i>
+            <p class="text-gray-400">No blog posts match your search title.</p>
         </div>
     </div>
 </div>
@@ -143,52 +133,32 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('blog-search-input');
-        const suggestionsBox = document.getElementById('search-suggestions');
-        let debounceTimer;
+        const blogCards = document.querySelectorAll('.blog-card');
+        const noResults = document.getElementById('no-results');
+        const blogGrid = document.getElementById('blog-grid');
 
+        // Live filtering logic
         searchInput.addEventListener('input', function() {
-            clearTimeout(debounceTimer);
-            const query = this.value.trim();
+            const query = this.value.toLowerCase().trim();
+            let visibleCount = 0;
 
-            if (query.length < 1) {
-                suggestionsBox.innerHTML = '';
-                suggestionsBox.classList.add('hidden');
-                return;
-            }
+            blogCards.forEach(card => {
+                const title = card.getAttribute('data-title');
+                if (title.includes(query)) {
+                    card.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
 
-            debounceTimer = setTimeout(() => {
-                fetch(`/core/blog-suggestions/?q=${encodeURIComponent(query)}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.length > 0) {
-                            suggestionsBox.innerHTML = data.map(item => `
-                                <div class="suggestion-item px-4 py-3 hover:bg-[#2ecc71]/10 cursor-pointer text-white text-sm transition-colors border-b border-white/5 last:border-0" data-title="${item.title}" data-slug="${item.slug}">
-                                    ${item.title.replace(new RegExp(query, 'gi'), match => `<span class="text-[#2ecc71] font-bold">${match}</span>`)}
-                                </div>
-                            `).join('');
-                            suggestionsBox.classList.remove('hidden');
-                        } else {
-                            suggestionsBox.innerHTML = '';
-                            suggestionsBox.classList.add('hidden');
-                        }
-                    });
-            }, 300);
-        });
-
-        // Click suggestion
-        suggestionsBox.addEventListener('click', function(e) {
-            const item = e.target.closest('.suggestion-item');
-            if (item) {
-                searchInput.value = item.dataset.title;
-                suggestionsBox.classList.add('hidden');
-                window.location.href = `/blog/${item.dataset.slug}/`;
-            }
-        });
-
-        // Close suggestions when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
-                suggestionsBox.classList.add('hidden');
+            // Show "No Results" if nothing matches
+            if (visibleCount === 0 && query !== '') {
+                noResults.classList.remove('hidden');
+                blogGrid.classList.add('hidden');
+            } else {
+                noResults.classList.add('hidden');
+                blogGrid.classList.remove('hidden');
             }
         });
     });
@@ -197,11 +167,14 @@
 <style>
     .blog-card:hover .glass-card {
         background: rgba(255, 255, 255, 0.03) !important;
-        border-color: rgba(255, 121, 121, 0.5) !important;
+        border-color: rgba(46, 204, 113, 0.3) !important;
         transform: translateY(-8px);
     }
-    .suggestion-item:hover {
-        background: rgba(46, 204, 113, 0.1) !important;
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 </style>
 {% endblock %}
