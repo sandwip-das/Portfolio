@@ -20,22 +20,30 @@ from django.db import connection
 def strip_cloudinary_domain_from_settings(sender, instance, **kwargs):
     """
     Prevents double-prefixing by stripping the Cloudinary domain if it's saved in the DB.
+    Handles https://, https:/, and relative paths.
     """
     fields = ['logo', 'favicon', 'hero_bg_image', 'hero_profile_image', 
               'linkedin_logo', 'facebook_logo', 'github_logo', 'instagram_logo', 'x_logo']
     for field_name in fields:
         field_file = getattr(instance, field_name)
-        if field_file and field_file.name and 'res.cloudinary.com' in field_file.name:
-            parts = field_file.name.split('dghadnok8/')
-            if len(parts) > 1:
-                field_file.name = parts[-1]
+        if field_file and field_file.name:
+            name = field_file.name
+            if 'res.cloudinary.com' in name:
+                # Look for the cloud name and take everything after it
+                if 'dghadnok8/' in name:
+                    field_file.name = name.split('dghadnok8/')[-1]
+                elif 'dghadnok8' in name:
+                    field_file.name = name.split('dghadnok8')[-1].lstrip('/')
 
 @receiver(pre_save, sender='core.UserProfile')
 def strip_cloudinary_domain_from_profile(sender, instance, **kwargs):
-    if instance.profile_picture and instance.profile_picture.name and 'res.cloudinary.com' in instance.profile_picture.name:
-        parts = instance.profile_picture.name.split('dghadnok8/')
-        if len(parts) > 1:
-            instance.profile_picture.name = parts[-1]
+    if instance.profile_picture and instance.profile_picture.name:
+        name = instance.profile_picture.name
+        if 'res.cloudinary.com' in name:
+            if 'dghadnok8/' in name:
+                instance.profile_picture.name = name.split('dghadnok8/')[-1]
+            elif 'dghadnok8' in name:
+                instance.profile_picture.name = name.split('dghadnok8')[-1].lstrip('/')
 
 @receiver(pre_delete, sender=User)
 def clean_user_data(sender, instance, **kwargs):
