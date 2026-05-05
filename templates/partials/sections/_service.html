@@ -71,7 +71,7 @@
 
         <h2 class="text-xl font-bold text-[#FF4D00] mb-3">Book a Session</h2>
 
-        <form method="POST" class="space-y-4" id="booking-form-dynamic">
+        <form method="POST" action="{% url 'home' %}" class="space-y-4" id="booking-form-dynamic">
             {% csrf_token %}
             <input type="hidden" name="service_id" id="service_id_input">
 

@@ -4,7 +4,7 @@
 {% block title %}My Blog{% endblock %}
 
 {% block content %}
-<div class="pt-[80px] min-h-screen relative overflow-hidden bg-gradient-to-r from-[#1a1a2e] via-[#2e1a3d] to-[#4a3526]">
+<div class="pt-[60px] min-h-screen relative overflow-hidden bg-gradient-to-r from-[#1a1a2e] via-[#2e1a3d] to-[#4a3526]">
     <!-- Background Accents -->
     <div
         class="absolute top-0 right-0 w-[500px] h-[500px] bg-[#eb4d4b]/5 rounded-full blur-[120px] pointer-events-none">
@@ -13,11 +13,43 @@
         class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#686de0]/5 rounded-full blur-[120px] pointer-events-none">
     </div>
 
-    <div class="max-w-[1900px] mx-auto px-[31px] sm:px-[39px] lg:px-[47px] py-12 relative z-10">
-        <div class="text-center mb-10">
-            <h2 class="text-3xl md:text-5xl font-bold mb-4 text-white">Full <span class="text-[#2ecc71]">Blog</span>
-                Library</h2>
-            <div class="w-24 h-1 bg-gradient-to-r from-indigo-500 to-pink-500 mx-auto rounded-full mb-8"></div>
+    <div class="max-w-[1900px] mx-auto px-[31px] sm:px-[39px] lg:px-[47px] py-6 relative z-10">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
+            <div class="text-center md:text-left">
+                <h2 class="text-2xl md:text-4xl font-bold text-white">Full <span class="text-[#2ecc71]">Blog</span> Library</h2>
+                <div class="w-20 h-1 bg-gradient-to-r from-indigo-500 to-pink-500 mx-auto md:ml-0 rounded-full mt-2"></div>
+            </div>
+            
+            <div class="flex flex-wrap items-center justify-center md:justify-end gap-3">
+                <!-- Category Filter -->
+                <form method="GET" class="flex items-center">
+                    {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+                    <select name="category" onchange="this.form.submit()" 
+                        class="bg-white/5 backdrop-blur-md text-white text-sm rounded-xl px-4 py-2.5 border border-white/10 focus:outline-none focus:border-[#2ecc71] transition-all hover:bg-white/10 cursor-pointer">
+                        <option value="" class="bg-[#1a1a2e]">All Categories</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat }}" {% if category_filter == cat %}selected{% endif %} class="bg-[#1a1a2e]">{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+
+                <!-- Search -->
+                <div class="relative group">
+                    <form method="GET" class="flex items-center gap-2" id="blog-search-form">
+                        {% if category_filter %}<input type="hidden" name="category" value="{{ category_filter }}">{% endif %}
+                        <div class="relative">
+                            <input type="text" name="q" id="blog-search-input" value="{{ query }}" placeholder="Search by title..." autocomplete="off" 
+                                class="bg-white/5 backdrop-blur-md text-white text-sm rounded-xl px-4 py-2.5 border border-white/10 focus:outline-none focus:border-[#2ecc71] w-48 sm:w-64 md:w-80 transition-all hover:bg-white/10">
+                            <div id="search-suggestions" class="absolute top-full left-0 w-full bg-[#1a1a2e]/95 backdrop-blur-xl border border-white/10 rounded-xl mt-2 z-[100] hidden shadow-2xl overflow-hidden">
+                                <!-- Suggestions populated by JS -->
+                            </div>
+                        </div>
+                        <button type="submit" class="bg-[#2ecc71] hover:bg-[#27ae60] text-white text-sm font-bold px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-[#2ecc71]/20 active:scale-95">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
@@ -108,11 +140,68 @@
     </div>
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('blog-search-input');
+        const suggestionsBox = document.getElementById('search-suggestions');
+        let debounceTimer;
+
+        searchInput.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            const query = this.value.trim();
+
+            if (query.length < 1) {
+                suggestionsBox.innerHTML = '';
+                suggestionsBox.classList.add('hidden');
+                return;
+            }
+
+            debounceTimer = setTimeout(() => {
+                fetch(`/core/blog-suggestions/?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length > 0) {
+                            suggestionsBox.innerHTML = data.map(item => `
+                                <div class="suggestion-item px-4 py-3 hover:bg-[#2ecc71]/10 cursor-pointer text-white text-sm transition-colors border-b border-white/5 last:border-0" data-title="${item.title}" data-slug="${item.slug}">
+                                    ${item.title.replace(new RegExp(query, 'gi'), match => `<span class="text-[#2ecc71] font-bold">${match}</span>`)}
+                                </div>
+                            `).join('');
+                            suggestionsBox.classList.remove('hidden');
+                        } else {
+                            suggestionsBox.innerHTML = '';
+                            suggestionsBox.classList.add('hidden');
+                        }
+                    });
+            }, 300);
+        });
+
+        // Click suggestion
+        suggestionsBox.addEventListener('click', function(e) {
+            const item = e.target.closest('.suggestion-item');
+            if (item) {
+                searchInput.value = item.dataset.title;
+                suggestionsBox.classList.add('hidden');
+                window.location.href = `/blog/${item.dataset.slug}/`;
+            }
+        });
+
+        // Close suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                suggestionsBox.classList.add('hidden');
+            }
+        });
+    });
+</script>
+
 <style>
     .blog-card:hover .glass-card {
         background: rgba(255, 255, 255, 0.03) !important;
         border-color: rgba(255, 121, 121, 0.5) !important;
         transform: translateY(-8px);
+    }
+    .suggestion-item:hover {
+        background: rgba(46, 204, 113, 0.1) !important;
     }
 </style>
 {% endblock %}

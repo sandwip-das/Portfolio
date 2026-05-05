@@ -1,4 +1,4 @@
-﻿{% load static core_tags %}
+{% load static core_tags %}
 <!-- Contact Section -->
 <section id="{% if menu %}{{ menu.section_id }}{% else %}contact{% endif %}"
     class="py-4 bg-gradient-to-r from-[#1a1a2e] via-[#2e1a3d] to-[#4a3526] relative overflow-hidden scroll-mt-12 md:scroll-mt-14">
@@ -50,7 +50,7 @@
                     <h3 class="text-3xl font-bold text-white mb-3">Contact With Me</h3>
                     <div class="w-16 h-1 bg-white mx-auto rounded-full"></div>
                 </div>
-                <form method="POST" class="space-y-4" id="contact-form-dynamic">
+                <form method="POST" action="{% url 'home' %}" class="space-y-4" id="contact-form-dynamic">
                     {% csrf_token %}
                     <input type="hidden" name="contact_form" value="1">
 

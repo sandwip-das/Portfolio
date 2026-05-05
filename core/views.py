@@ -84,11 +84,19 @@ Sandwip Das
                         return JsonResponse({'status': 'success', 'message': "Your booking request has been submitted successfully!"})
                     messages.success(request, "Your booking request has been submitted successfully!")
                     return redirect('home')
-
                 except Service.DoesNotExist:
                     if is_ajax:
                         return JsonResponse({'status': 'error', 'message': "Selected service does not exist."}, status=400)
                     messages.error(request, "Selected service does not exist.")
+                except Exception as e:
+                    if is_ajax:
+                        return JsonResponse({'status': 'error', 'message': f"An unexpected error occurred: {str(e)}"}, status=500)
+                    messages.error(request, f"An unexpected error occurred: {str(e)}")
+            else:
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': "Please fix the errors in the booking form.", 'errors': form.errors}, status=400)
+                messages.error(request, "Please fix the errors in the booking form.")
+
 
         # --------------------- Contact Form ---------------------
         elif 'contact_form' in request.POST:
@@ -495,5 +503,25 @@ def edit_profile(request):
 # ===================== My Blog =====================
 @login_required
 def my_blog(request):
+    query = request.GET.get('q', '')
+    category = request.GET.get('category', '')
     posts = BlogPost.objects.all().order_by('-created_at')
-    return render(request, 'my_blog.html', {'posts': posts})
+    if query:
+        posts = posts.filter(title__icontains=query)
+    if category:
+        posts = posts.filter(category=category)
+    categories = BlogPost.objects.values_list('category', flat=True).distinct()
+    return render(request, 'my_blog.html', {
+        'posts': posts,
+        'query': query,
+        'category_filter': category,
+        'categories': categories
+    })
+
+def blog_suggestions(request):
+    from django.http import JsonResponse
+    query = request.GET.get('q', '')
+    if len(query) < 1:
+        return JsonResponse([], safe=False)
+    suggestions = BlogPost.objects.filter(title__icontains=query).values('title', 'slug')[:10]
+    return JsonResponse(list(suggestions), safe=False)

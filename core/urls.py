@@ -20,4 +20,5 @@ urlpatterns = [
     path('auth/verify-registration-otp/', views.verify_registration_otp, name='verify_registration_otp'),
     path('auth/resend-registration-otp/', views.resend_registration_otp, name='resend_registration_otp'),
     path('my-blog/', views.my_blog, name='my_blog'),
+    path('blog-suggestions/', views.blog_suggestions, name='blog_suggestions'),
 ]
