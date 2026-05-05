@@ -56,10 +56,11 @@ CSRF_COOKIE_SECURE = not DEBUG
 DATABASES = {
     "default": dj_database_url.config(
         default=os.environ.get("DATABASE_URL"),
-        conn_max_age=0,
+        conn_max_age=600,
+        ssl_require=True
     )
 }
-DATABASES['default']['OPTIONS'] = {'sslmode': 'require'}
+
 
 # ===================== CELERY CONFIG =====================
 CELERY_BROKER_URL = os.environ.get("REDIS_URL")
