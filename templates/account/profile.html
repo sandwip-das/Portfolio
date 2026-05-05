@@ -43,19 +43,7 @@
             <div class="flex items-center gap-6 mb-2 border-b border-white/10 pb-2">
                 <!-- Profile Picture -->
                 <div class="relative group shrink-0">
-                    {% if user.profile.profile_picture and user.profile.profile_picture.name != 'default_profile.png' %}
-                    <img src="{{ user.profile.profile_picture.url }}" alt="Profile"
-                        class="w-24 h-24 rounded-full object-cover border-4 border-[#2ecc71]/50 group-hover:border-[#2ecc71] transition-colors">
-                    {% else %}
-                    <div
-                        class="w-24 h-24 rounded-full bg-gradient-to-br from-[#2ecc71] to-blue-500 flex items-center justify-center text-white font-bold text-3xl border-4 border-[#2ecc71]/50 group-hover:border-[#2ecc71] transition-colors">
-                        {% if user.first_name %}
-                        {{ user.first_name|make_list|first|upper }}
-                        {% else %}
-                        {{ user.username|make_list|first|upper }}
-                        {% endif %}
-                    </div>
-                    {% endif %}
+                    {% render_profile_image user "w-24 h-24 text-3xl border-4" %}
 
                     <!-- Overlay upload icon -->
                     <label

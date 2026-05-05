@@ -1,0 +1,12 @@
+{% if has_image %}
+    <img src="{{ image_url }}" alt="{{ user.username }}"
+        class="{{ css_class }} rounded-full object-cover border border-[#2ecc71]/50">
+{% else %}
+    <div class="{{ css_class }} rounded-full bg-gradient-to-br from-[#2ecc71] to-blue-500 flex items-center justify-center text-white font-bold border border-[#2ecc71]/50">
+        {% if user.first_name %}
+            {{ user.first_name|slice:":1"|upper }}
+        {% else %}
+            {{ user.username|slice:":1"|upper }}
+        {% endif %}
+    </div>
+{% endif %}

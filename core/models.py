@@ -17,33 +17,25 @@ from django.dispatch import receiver
 from django.db import connection
 
 @receiver(pre_save, sender='core.HomeSettings')
-def strip_cloudinary_domain_from_settings(sender, instance, **kwargs):
+@receiver(pre_save, sender='core.UserProfile')
+@receiver(pre_save, sender='core.BlogPost')
+@receiver(pre_save, sender='core.Experience')
+@receiver(pre_save, sender='core.Project')
+@receiver(pre_save, sender='core.Service')
+def clean_cloudinary_urls(sender, instance, **kwargs):
     """
-    Prevents double-prefixing by stripping the Cloudinary domain if it's saved in the DB.
-    Handles https://, https:/, and relative paths.
+    Consolidated pre_save signal to strip Cloudinary domains from all image/file fields.
+    Enforces DRY by using a single handler for all media-heavy models.
     """
-    fields = ['logo', 'favicon', 'hero_bg_image', 'hero_profile_image', 
-              'linkedin_logo', 'facebook_logo', 'github_logo', 'instagram_logo', 'x_logo']
-    for field_name in fields:
-        field_file = getattr(instance, field_name)
-        if field_file and field_file.name:
-            name = field_file.name
-            if 'res.cloudinary.com' in name:
-                # Look for the cloud name and take everything after it
+    for field in instance._meta.fields:
+        if isinstance(field, (models.ImageField, models.FileField)):
+            field_file = getattr(instance, field.name)
+            if field_file and field_file.name and 'res.cloudinary.com' in field_file.name:
+                name = field_file.name
                 if 'dghadnok8/' in name:
                     field_file.name = name.split('dghadnok8/')[-1]
                 elif 'dghadnok8' in name:
                     field_file.name = name.split('dghadnok8')[-1].lstrip('/')
-
-@receiver(pre_save, sender='core.UserProfile')
-def strip_cloudinary_domain_from_profile(sender, instance, **kwargs):
-    if instance.profile_picture and instance.profile_picture.name:
-        name = instance.profile_picture.name
-        if 'res.cloudinary.com' in name:
-            if 'dghadnok8/' in name:
-                instance.profile_picture.name = name.split('dghadnok8/')[-1]
-            elif 'dghadnok8' in name:
-                instance.profile_picture.name = name.split('dghadnok8')[-1].lstrip('/')
 
 @receiver(pre_delete, sender=User)
 def clean_user_data(sender, instance, **kwargs):

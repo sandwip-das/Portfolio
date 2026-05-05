@@ -235,3 +235,57 @@ def render_interleaved_content(post):
             result.append(group_html)
 
     return mark_safe('\n'.join(result))
+@register.filter(name='smart_url')
+def smart_url(file_field):
+    """
+    A bulletproof way to get the Cloudinary URL.
+    Handles:
+    1. Already absolute URLs (returns as is).
+    2. Double-prefixed URLs (fixes them).
+    3. Relative paths (converts to absolute via storage).
+    """
+    if not file_field:
+        return ""
+        
+    try:
+        # Get the raw name and the generated URL
+        name = file_field.name
+        url = file_field.url
+        
+        if not name:
+            return ""
+            
+        # Case 1: The name itself is an absolute URL
+        if name.startswith('http'):
+            # Check for double prefix in the generated URL
+            # e.g. https://res.../https://res...
+            if url.count('https://res.cloudinary.com') > 1 or url.count('https:/res.cloudinary.com') > 1:
+                # Just return the original name (which is the full URL)
+                return name
+            return url
+            
+        # Case 2: Standard relative path
+        return url
+    except Exception:
+        return ""
+@register.inclusion_tag('partials/tags/profile_image.html')
+def render_profile_image(user, css_class="h-8 w-8"):
+    """
+    Renders a user's profile image or their initials if no image is set.
+    Centralizes logic to avoid repetition across navbar and profile pages.
+    """
+    profile = getattr(user, 'profile', None)
+    has_image = False
+    image_url = ""
+    
+    if profile and profile.profile_picture and profile.profile_picture.name != 'default_profile.png':
+        has_image = True
+        # Use our existing smart_url logic internally
+        image_url = smart_url(profile.profile_picture)
+        
+    return {
+        'user': user,
+        'has_image': has_image,
+        'image_url': image_url,
+        'css_class': css_class
+    }
