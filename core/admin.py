@@ -126,14 +126,43 @@ class SkillCategoryAdmin(admin.ModelAdmin):
     change_list_template = "admin/core/skillcategory/change_list.html"
 
     def changelist_view(self, request, extra_context=None):
-        if request.method == 'POST' and 'update_technical_skills_description' in request.POST:
-            description = request.POST.get('technical_skills_description')
-            settings = HomeSettings.load()
-            settings.technical_skills_description = description
-            settings.save()
-            from django.contrib import messages
-            messages.success(request, "Technical Skills description updated successfully.")
-            return HttpResponseRedirect(request.get_full_path())
+        if request.method == 'POST':
+            if 'update_technical_skills_description' in request.POST:
+                description = request.POST.get('technical_skills_description')
+                settings = HomeSettings.load()
+                settings.technical_skills_description = description
+                settings.save()
+                from django.contrib import messages
+                messages.success(request, "Technical Skills description updated successfully.")
+                return HttpResponseRedirect(request.get_full_path())
+            
+            if 'add_skill_card' in request.POST:
+                name = request.POST.get('skill_name')
+                order = request.POST.get('skill_order', 0)
+                image = request.FILES.get('skill_image')
+                if name and image:
+                    Skill.objects.create(
+                        name=name,
+                        image=image,
+                        order=order,
+                        settings=HomeSettings.load()
+                    )
+                    from django.contrib import messages
+                    messages.success(request, f"Skill Card '{name}' added successfully.")
+                else:
+                    from django.contrib import messages
+                    messages.error(request, "Please provide both Name and Image for the Skill Card.")
+                return HttpResponseRedirect(request.get_full_path())
+            
+            if 'delete_skill_card' in request.POST:
+                card_id = request.POST.get('card_id')
+                if card_id:
+                    from django.shortcuts import get_object_or_404
+                    card = get_object_or_404(Skill, id=card_id)
+                    card.delete()
+                    from django.contrib import messages
+                    messages.success(request, "Skill Card deleted successfully.")
+                return HttpResponseRedirect(request.get_full_path())
 
         extra_context = extra_context or {}
         settings = HomeSettings.load()
@@ -147,6 +176,9 @@ class SkillAdmin(admin.ModelAdmin):
     list_editable = ('order',)
     fields = ('name', 'image', 'order')
     exclude = ['settings', 'created_by']
+
+    def has_module_permission(self, request):
+        return False
 
 # 4. My Experience Content
 @admin.register(Experience)
