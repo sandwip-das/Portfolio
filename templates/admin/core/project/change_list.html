@@ -1,0 +1,31 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls %}
+
+{% block object-tools-items %}
+{% if has_add_permission %}
+<li>
+    {% url cl.opts|admin_urlname:'add' as add_url %}
+    <a href="{% add_preserved_filters add_url is_popup to_field %}" class="addlink">
+        Add Featured Project
+    </a>
+</li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Featured Projects Section Description Editor -->
+<div
+    style="margin-bottom: 20px; padding: 20px; border: 1px solid var(--border-color, #eee); border-radius: 4px; background: var(--darkened-bg, rgba(0,0,0,0.02));">
+    <form method="post">
+        {% csrf_token %}
+        <h2 style="margin-bottom: 10px; font-size: 16px;">Featured Projects Description</h2>
+        <p style="font-size: 13px; color: var(--body-quiet-fg, #666); margin-bottom: 10px;">This text appears on the public Featured Projects section.</p>
+        <textarea name="projects_description"
+            style="width: 100%; min-height: 80px; margin-bottom: 15px; padding: 12px; border-radius: 4px; border: 1px solid var(--border-color, #ccc); background: var(--body-bg); color: var(--body-fg);"
+            placeholder="Enter description here...">{{ projects_description }}</textarea>
+        <button type="submit" name="update_projects_description" class="button" style="padding: 10px 20px;">Update Description</button>
+    </form>
+</div>
+
+{{ block.super }}
+{% endblock %}

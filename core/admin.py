@@ -9,7 +9,6 @@ from nested_admin import NestedModelAdmin, NestedStackedInline, NestedTabularInl
 from .models import (
     HomeSettings, NavbarSettings, HeroMainSettings, HeroSocialSettings, 
     AboutSectionSettings, ContactSectionSettings, FooterSettings,
-    ProjectSectionSettings,
     Project, Service, ServiceBooking, ContactMessage,
     AcademicBackground, SkillCategory, Experience, 
     ProfessionalTraining, GlobalCertificationModel, ProfessionalTrainingModel, 
@@ -109,20 +108,21 @@ class AboutSectionSettingsAdmin(BaseSettingsAdmin):
 class AcademicBackgroundAdmin(admin.ModelAdmin):
     list_display = ['institution_name', 'degree_name', 'order']
     list_editable = ['order']
-    exclude = ['settings']
+    exclude = ['settings', 'created_by']
 
 # 5. Technical Skills
 class SkillItemInline(admin.TabularInline):
     model = SkillItem
     extra = 0
     fields = ('name', 'order')
+    exclude = ['created_by']
 
 @admin.register(SkillCategory)
 class SkillCategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'order')
     list_editable = ('order',)
     inlines = [SkillItemInline]
-    exclude = ['settings']
+    exclude = ['settings', 'created_by']
     change_list_template = "admin/core/skillcategory/change_list.html"
 
     def changelist_view(self, request, extra_context=None):
@@ -138,13 +138,15 @@ class SkillCategoryAdmin(admin.ModelAdmin):
         extra_context = extra_context or {}
         settings = HomeSettings.load()
         extra_context['technical_skills_description'] = settings.technical_skills_description
+        extra_context['skill_cards'] = Skill.objects.all().order_by('order')
         return super().changelist_view(request, extra_context=extra_context)
 
 @admin.register(Skill)
 class SkillAdmin(admin.ModelAdmin):
     list_display = ('name', 'order')
     list_editable = ('order',)
-    exclude = ['settings']
+    fields = ('name', 'image', 'order')
+    exclude = ['settings', 'created_by']
 
 # 4. My Experience Content
 @admin.register(Experience)
@@ -152,6 +154,7 @@ class ExperienceAdmin(admin.ModelAdmin):
     list_display = ('company_name', 'designation', 'start_date', 'end_description')
     list_filter = ('is_current', 'start_date')
     search_fields = ('company_name', 'designation')
+    exclude = ['created_by']
 
     def end_description(self, obj):
         return "Present" if obj.is_current or not obj.end_date else obj.end_date
@@ -163,7 +166,7 @@ class ProfessionalTrainingAdmin(admin.ModelAdmin):
     list_display = ['course_name', 'organization_name', 'mode', 'order']
     list_editable = ['order']
     list_filter = ['mode']
-    exclude = ['category', 'settings']
+    exclude = ['category', 'settings', 'created_by']
 
     def get_queryset(self, request):
         return super().get_queryset(request).filter(category='TRAINING')
@@ -177,7 +180,7 @@ class GlobalCertificationAdmin(admin.ModelAdmin):
     list_display = ['course_name', 'organization_name', 'mode', 'order']
     list_editable = ['order']
     list_filter = ['mode']
-    exclude = ['category', 'settings']
+    exclude = ['category', 'settings', 'created_by']
 
     def get_queryset(self, request):
         return super().get_queryset(request).filter(category='CERTIFICATION')
@@ -187,14 +190,18 @@ class GlobalCertificationAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 # 6. Featured Projects
-class ProjectImageInline(NestedTabularInline):
+class ProjectImageInline(admin.TabularInline):
     model = ProjectImage
     extra = 0
+    exclude = ['created_by']
 
-class ProjectInline(NestedStackedInline):
-    model = Project
-    extra = 0
+@admin.register(Project)
+class ProjectAdmin(admin.ModelAdmin):
+    list_display = ('title', 'tech_stack', 'created_at')
     inlines = [ProjectImageInline]
+    exclude = ['settings', 'created_by']
+    change_list_template = "admin/core/project/change_list.html"
+    
     fieldsets = (
         (None, {
             'fields': ('title', 'description', 'image')
@@ -205,17 +212,27 @@ class ProjectInline(NestedStackedInline):
         }),
     )
 
-@admin.register(ProjectSectionSettings)
-class ProjectSectionSettingsAdmin(BaseSettingsAdmin, NestedModelAdmin):
-    fields = ['projects_description']
-    inlines = [ProjectInline]
+    def changelist_view(self, request, extra_context=None):
+        if request.method == 'POST' and 'update_projects_description' in request.POST:
+            description = request.POST.get('projects_description')
+            settings = HomeSettings.load()
+            settings.projects_description = description
+            settings.save()
+            from django.contrib import messages
+            messages.success(request, "Projects description updated successfully.")
+            return HttpResponseRedirect(request.get_full_path())
+
+        extra_context = extra_context or {}
+        settings = HomeSettings.load()
+        extra_context['projects_description'] = settings.projects_description
+        return super().changelist_view(request, extra_context=extra_context)
 
 # 7. My Services
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
     list_display = ('title', 'icon_class', 'order')
     list_editable = ('order',)
-    exclude = ['settings']
+    exclude = ['settings', 'created_by']
     change_list_template = "admin/core/service/change_list.html"
 
     def changelist_view(self, request, extra_context=None):
@@ -239,6 +256,7 @@ class BlogPostImageInline(admin.TabularInline):
     model = BlogPostImage
     extra = 1
     fields = ['image', 'caption', 'order']
+    exclude = ['created_by']
     sortable_field_name = "order"
 
 # Blog Analytics Inlines (Dashboard & Metrics)
@@ -305,7 +323,7 @@ class BlogPostAdmin(admin.ModelAdmin):
             'description': "Quick stats counter. See detailed View Tracks below."
         }),
     )
-    exclude = ['settings']
+    exclude = ['settings', 'created_by']
 
     class Media:
         js = ('js/blog_admin.js',)
@@ -376,9 +394,23 @@ class FooterSettingsAdmin(BaseSettingsAdmin):
 # User Submissions
 @admin.register(ServiceBooking)
 class ServiceBookingAdmin(admin.ModelAdmin):
-    list_display = ['name', 'service', 'formatted_date', 'formatted_time', 'conflict_check', 'booking_status']
+    list_display = ['formatted_name', 'formatted_service', 'booking_date', 'formatted_date', 'formatted_time', 'conflict_check', 'booking_status']
     list_filter = ['status', 'service', 'date_from', 'created_at']
     readonly_fields = ['created_at']
+    exclude = ['created_by']
+    
+    def formatted_name(self, obj):
+        return format_html('<span style="white-space: nowrap;">{}</span>', obj.name)
+    formatted_name.short_description = "Name"
+
+    def formatted_service(self, obj):
+        return format_html('<div style="white-space: normal; min-width: 150px;">{}</div>', obj.service)
+    formatted_service.short_description = "Service"
+
+    def booking_date(self, obj):
+        return obj.created_at.strftime('%d %b %Y, %I:%M %p')
+    booking_date.short_description = "Booking Date"
+    booking_date.admin_order_field = 'created_at'
     
     def formatted_date(self, obj):
         if obj.date_from == obj.date_to:
@@ -417,9 +449,9 @@ class ServiceBookingAdmin(admin.ModelAdmin):
             accept_url = reverse('admin:accept-booking', args=[obj.pk])
             cancel_url = reverse('admin:cancel-booking', args=[obj.pk])
             return format_html(
-                '<div style="display: flex; gap: 8px;">'
-                '<a class="status-btn" href="{}" style="background-color: #28a745; color: white; padding: 6px 14px; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 12px; box-shadow: 0 2px 4px rgba(40,167,69,0.3);"><i class="fas fa-check"></i> Accept</a>'
-                '<a class="status-btn" href="{}" style="background-color: #dc3545; color: white; padding: 6px 14px; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 12px; box-shadow: 0 2px 4px rgba(220,53,69,0.3);"><i class="fas fa-times"></i> Cancel</a>'
+                '<div style="display: flex; gap: 4px;">'
+                '<a class="status-btn" href="{}" style="background-color: #28a745; color: white; padding: 4px 8px; text-decoration: none; border-radius: 3px; font-weight: 600; font-size: 11px; box-shadow: 0 1px 2px rgba(40,167,69,0.3);"><i class="fas fa-check"></i> Accept</a>'
+                '<a class="status-btn" href="{}" style="background-color: #dc3545; color: white; padding: 4px 8px; text-decoration: none; border-radius: 3px; font-weight: 600; font-size: 11px; box-shadow: 0 1px 2px rgba(220,53,69,0.3);"><i class="fas fa-times"></i> Cancel</a>'
                 '</div>',
                 accept_url, cancel_url
             )
@@ -435,7 +467,7 @@ class ServiceBookingAdmin(admin.ModelAdmin):
         }
         
         return format_html(
-            '<span style="{} padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 11px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 6px;">'
+            '<span style="{} padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 10px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 4px;">'
             '<i class="fas {}"></i> {}</span>',
             styles.get(obj.status, ''),
             icons.get(obj.status, ''),
@@ -548,6 +580,7 @@ class ServiceBookingAdmin(admin.ModelAdmin):
 class ContactMessageAdmin(admin.ModelAdmin):
     list_display = ['name', 'subject', 'created_at']
     readonly_fields = ['created_at']
+    exclude = ['created_by']
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
@@ -555,6 +588,7 @@ class ReviewAdmin(admin.ModelAdmin):
     list_filter = ['is_approved', 'rating']
     search_fields = ['name', 'comment']
     list_editable = ['is_approved']
+    exclude = ['created_by']
     
     actions = ['approve_reviews']
 

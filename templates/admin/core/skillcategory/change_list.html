@@ -28,4 +28,61 @@
 </div>
 
 {{ block.super }}
+
+<!-- Skill Cards Section -->
+<div style="margin-top: 40px;">
+    <!-- Header with Add Button -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h2 style="margin: 0; font-size: 16px;">Skill Cards</h2>
+        <ul class="object-tools" style="margin: 0; padding: 0;">
+            {% if has_add_permission %}
+            <li>
+                <a href="{% url 'admin:core_skill_add' %}" class="addlink">
+                    Add Skill Card
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <!-- Skill Cards Table -->
+    <div class="module" id="skill-cards-list">
+        <div class="results">
+            <table id="result_list" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable column-name">
+                            <div class="text"><span>Technology Name</span></div>
+                        </th>
+                        <th scope="col" class="sortable column-image">
+                            <div class="text"><span>Image</span></div>
+                        </th>
+                        <th scope="col" class="sortable column-order">
+                            <div class="text"><span>Order</span></div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for card in skill_cards %}
+                    <tr class="{% cycle 'row1' 'row2' %}">
+                        <td class="field-name"><a href="{% url 'admin:core_skill_change' card.id %}">{{ card.name }}</a></td>
+                        <td class="field-image">
+                            {% if card.image %}
+                            <img src="{{ card.image.url }}" style="height: 30px; border-radius: 4px;" alt="icon">
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                        <td class="field-order">{{ card.order }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr class="row1">
+                        <td colspan="3" style="text-align: center; padding: 20px;">No Skill Cards found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}

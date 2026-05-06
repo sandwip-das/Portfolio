@@ -270,11 +270,7 @@ class FooterSettings(HomeSettings):
         verbose_name = "Footer Text"
         verbose_name_plural = "Footer Text"
 
-class ProjectSectionSettings(HomeSettings):
-    class Meta:
-        proxy = True
-        verbose_name = "Featured Projects"
-        verbose_name_plural = "Featured Projects"
+
 
 # --- REAL MODELS & INLINES ---
 
@@ -323,6 +319,8 @@ class Project(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+        verbose_name = "Featured Project"
+        verbose_name_plural = "Featured Projects"
     
     def __str__(self):
         return self.title
