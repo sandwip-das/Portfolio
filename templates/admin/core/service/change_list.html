@@ -6,24 +6,24 @@
 <li>
     {% url cl.opts|admin_urlname:'add' as add_url %}
     <a href="{% add_preserved_filters add_url is_popup to_field %}" class="addlink">
-        Add Technical Skill
+        Add Service
     </a>
 </li>
 {% endif %}
 {% endblock %}
 
 {% block content %}
-<!-- Technical Skills Section Description Editor -->
+<!-- Services Section Description Editor -->
 <div
     style="margin-bottom: 20px; padding: 20px; border: 1px solid var(--border-color, #eee); border-radius: 4px; background: var(--darkened-bg, rgba(0,0,0,0.02));">
     <form method="post">
         {% csrf_token %}
-        <h2 style="margin-bottom: 10px; font-size: 16px;">Technical Skills Description</h2>
-        <p style="font-size: 13px; color: var(--body-quiet-fg, #666); margin-bottom: 10px;">This text appears on the public Technical Skills section.</p>
-        <textarea name="technical_skills_description"
+        <h2 style="margin-bottom: 10px; font-size: 16px;">Services Description</h2>
+        <p style="font-size: 13px; color: var(--body-quiet-fg, #666); margin-bottom: 10px;">This text appears on the public My Services section.</p>
+        <textarea name="services_description"
             style="width: 100%; min-height: 80px; margin-bottom: 15px; padding: 12px; border-radius: 4px; border: 1px solid var(--border-color, #ccc); background: var(--body-bg); color: var(--body-fg);"
-            placeholder="Enter description here...">{{ technical_skills_description }}</textarea>
-        <button type="submit" name="update_technical_skills_description" class="button" style="padding: 10px 20px;">Update Description</button>
+            placeholder="Enter description here...">{{ services_description }}</textarea>
+        <button type="submit" name="update_services_description" class="button" style="padding: 10px 20px;">Update Description</button>
     </form>
 </div>
 

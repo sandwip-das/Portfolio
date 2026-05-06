@@ -9,7 +9,7 @@ from nested_admin import NestedModelAdmin, NestedStackedInline, NestedTabularInl
 from .models import (
     HomeSettings, NavbarSettings, HeroMainSettings, HeroSocialSettings, 
     AboutSectionSettings, ContactSectionSettings, FooterSettings,
-    TechnicalSkillsSection, ProjectSectionSettings, ServiceSectionSettings,
+    ProjectSectionSettings,
     Project, Service, ServiceBooking, ContactMessage,
     AcademicBackground, SkillCategory, Experience, 
     ProfessionalTraining, GlobalCertificationModel, ProfessionalTrainingModel, 
@@ -111,52 +111,40 @@ class AcademicBackgroundAdmin(admin.ModelAdmin):
     list_editable = ['order']
     exclude = ['settings']
 
-# 5. Technical Skills (Unified Nested Interface)
-class SkillItemInline(NestedTabularInline):
+# 5. Technical Skills
+class SkillItemInline(admin.TabularInline):
     model = SkillItem
     extra = 0
     fields = ('name', 'order')
-    sortable_field_name = "order"
 
-class SkillCategoryInline(NestedStackedInline):
-    model = SkillCategory
-    extra = 0
-    fields = ('name', 'order')
+@admin.register(SkillCategory)
+class SkillCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'order')
+    list_editable = ('order',)
     inlines = [SkillItemInline]
-    exclude = ['skills_list']
-    sortable_field_name = "order"
-
-class SkillCardInline(NestedTabularInline):
-    model = Skill
-    extra = 0
-    fields = ('image', 'name', 'order')
-    sortable_field_name = "order"
-
-@admin.register(TechnicalSkillsSection)
-class TechnicalSkillsSectionAdmin(NestedModelAdmin):
-    # Singleton Logic
-    def has_add_permission(self, request):
-        if self.model.objects.exists():
-            return False
-        return super().has_add_permission(request)
-
-    def has_delete_permission(self, request, obj=None):
-        return False
+    exclude = ['settings']
+    change_list_template = "admin/core/skillcategory/change_list.html"
 
     def changelist_view(self, request, extra_context=None):
-        if self.model.objects.exists():
-            obj = self.model.objects.first()
-            return HttpResponseRedirect(reverse(f'admin:{self.model._meta.app_label}_{self.model._meta.model_name}_change', args=[obj.pk]))
+        if request.method == 'POST' and 'update_technical_skills_description' in request.POST:
+            description = request.POST.get('technical_skills_description')
+            settings = HomeSettings.load()
+            settings.technical_skills_description = description
+            settings.save()
+            from django.contrib import messages
+            messages.success(request, "Technical Skills description updated successfully.")
+            return HttpResponseRedirect(request.get_full_path())
+
+        extra_context = extra_context or {}
+        settings = HomeSettings.load()
+        extra_context['technical_skills_description'] = settings.technical_skills_description
         return super().changelist_view(request, extra_context=extra_context)
 
-    # UI Configuration
-    fieldsets = (
-        (None, {
-            'fields': ('technical_skills_description',),
-            'description': "Manage the Technical Skills section. Add Categories, and within each Category, add Skill Items."
-        }),
-    )
-    inlines = [SkillCategoryInline, SkillCardInline]
+@admin.register(Skill)
+class SkillAdmin(admin.ModelAdmin):
+    list_display = ('name', 'order')
+    list_editable = ('order',)
+    exclude = ['settings']
 
 # 4. My Experience Content
 @admin.register(Experience)
@@ -223,22 +211,27 @@ class ProjectSectionSettingsAdmin(BaseSettingsAdmin, NestedModelAdmin):
     inlines = [ProjectInline]
 
 # 7. My Services
-class ServiceInline(NestedTabularInline):
-    model = Service
-    extra = 0
-    fields = ['title', 'icon_class', 'features', 'order']
-    verbose_name = "Service"
-    verbose_name_plural = "Services"
+@admin.register(Service)
+class ServiceAdmin(admin.ModelAdmin):
+    list_display = ('title', 'icon_class', 'order')
+    list_editable = ('order',)
+    exclude = ['settings']
+    change_list_template = "admin/core/service/change_list.html"
 
-@admin.register(ServiceSectionSettings)
-class ServiceSectionSettingsAdmin(BaseSettingsAdmin, NestedModelAdmin):
-    fieldsets = (
-        (None, {
-            'fields': ('services_description',),
-            'description': "Manage your services here. Click 'Add another Service' at the bottom to create a new one."
-        }),
-    )
-    inlines = [ServiceInline]
+    def changelist_view(self, request, extra_context=None):
+        if request.method == 'POST' and 'update_services_description' in request.POST:
+            description = request.POST.get('services_description')
+            settings = HomeSettings.load()
+            settings.services_description = description
+            settings.save()
+            from django.contrib import messages
+            messages.success(request, "Services description updated successfully.")
+            return HttpResponseRedirect(request.get_full_path())
+
+        extra_context = extra_context or {}
+        settings = HomeSettings.load()
+        extra_context['services_description'] = settings.services_description
+        return super().changelist_view(request, extra_context=extra_context)
 
 # 8. My Blog Content
 

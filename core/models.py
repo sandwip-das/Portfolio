@@ -276,12 +276,6 @@ class ProjectSectionSettings(HomeSettings):
         verbose_name = "Featured Projects"
         verbose_name_plural = "Featured Projects"
 
-class ServiceSectionSettings(HomeSettings):
-    class Meta:
-        proxy = True
-        verbose_name = "My Services"
-        verbose_name_plural = "My Services"
-
 # --- REAL MODELS & INLINES ---
 
 class Experience(models.Model):
@@ -353,6 +347,8 @@ class Service(models.Model):
 
     class Meta:
         ordering = ['order', 'title']
+        verbose_name = "My Service"
+        verbose_name_plural = "My Services"
 
     def __str__(self):
         return self.title
@@ -420,8 +416,8 @@ class SkillCategory(models.Model):
     order = models.IntegerField(default=0)
     
     class Meta:
-        verbose_name = "Skill Category Label"
-        verbose_name_plural = "Skill Category Labels"
+        verbose_name = "Technical Skill"
+        verbose_name_plural = "Technical Skills"
         ordering = ['order', 'name']
         
     def __str__(self):
@@ -494,8 +490,8 @@ class BlogPost(models.Model):
 
     class Meta:
         ordering = ['-created_at']
-        verbose_name = "Blog Site Management"
-        verbose_name_plural = "Blog Site Management"
+        verbose_name = "Blog Management"
+        verbose_name_plural = "Blog Management"
 
     def __str__(self):
         return self.title
@@ -637,12 +633,6 @@ class Skill(models.Model):
         verbose_name_plural = "Skill Cards"
 
     def __str__(self): return self.name
-
-class TechnicalSkillsSection(HomeSettings):
-    class Meta:
-        proxy = True
-        verbose_name = "Technical Skills"
-        verbose_name_plural = "Technical Skills"
 
 
 class Review(models.Model):
