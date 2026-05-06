@@ -114,7 +114,7 @@ class AcademicBackgroundAdmin(admin.ModelAdmin):
 # 5. Technical Skills (Unified Nested Interface)
 class SkillItemInline(NestedTabularInline):
     model = SkillItem
-    extra = 1
+    extra = 0
     fields = ('name', 'order')
     sortable_field_name = "order"
 
@@ -128,7 +128,7 @@ class SkillCategoryInline(NestedStackedInline):
 
 class SkillCardInline(NestedTabularInline):
     model = Skill
-    extra = 1
+    extra = 0
     fields = ('image', 'name', 'order')
     sortable_field_name = "order"
 

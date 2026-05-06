@@ -9,9 +9,9 @@
     
     <!-- Favicon -->
     {% if settings.favicon %}
-        <link rel="icon" type="image/x-icon" href="{{ settings.favicon|smart_url }}">
-        <link rel="shortcut icon" type="image/x-icon" href="{{ settings.favicon|smart_url }}">
-        <link rel="apple-touch-icon" href="{{ settings.favicon|smart_url }}">
+        <link rel="icon" href="{{ settings.favicon|smart_url }}?v=1.1">
+        <link rel="shortcut icon" href="{{ settings.favicon|smart_url }}?v=1.1">
+        <link rel="apple-touch-icon" href="{{ settings.favicon|smart_url }}?v=1.1">
     {% endif %}
 
     <!-- Tailwind CSS -->
