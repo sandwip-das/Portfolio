@@ -177,6 +177,14 @@ class SkillCategoryAdmin(admin.ModelAdmin):
                     messages.success(request, "Skill Card deleted successfully.")
                 return HttpResponseRedirect(request.get_full_path())
 
+            if 'action' in request.POST and request.POST.get('action') == 'delete_selected_skill_cards':
+                selected_ids = request.POST.getlist('_selected_action')
+                if selected_ids:
+                    deleted_count = Skill.objects.filter(id__in=selected_ids).delete()[0]
+                    from django.contrib import messages
+                    messages.success(request, f"Successfully deleted {deleted_count} skill cards.")
+                return HttpResponseRedirect(request.get_full_path())
+
         extra_context = extra_context or {}
         settings = HomeSettings.load()
         extra_context['technical_skills_description'] = settings.technical_skills_description

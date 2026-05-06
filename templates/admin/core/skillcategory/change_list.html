@@ -40,11 +40,13 @@
                     <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px;">Order</label>
                     <input type="number" name="category_order" value="0" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                 </div>
-                <div>
-                    <button type="submit" name="add_technical_skill" class="button" style="width: 100%; padding: 05px; background: #417690; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
-                        SAVE TECHNICAL SKILL
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" name="add_technical_skill" class="button" style="flex: 1; padding: 10px; background: #417690; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+                        SAVE
                     </button>
-                    <button type="button" onclick="toggleCategoryForm()" class="button" style="width: 100%; margin-top: 5px; background: #999;">CANCEL</button>
+                    <button type="button" onclick="toggleCategoryForm()" class="button" style="flex: 1; padding: 10px; background: #d63031; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+                        CANCEL
+                    </button>
                 </div>
             </form>
         </div>
@@ -56,7 +58,7 @@
 
     <!-- 2. Skill Cards Section -->
     <div style="margin-top: 50px; border-top: 2px solid #eee; padding-top: 30px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin: 0 0 10px 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 0 0 20px 0;">
             <h1 style="margin: 0; font-weight: 400; font-size: 20px;">Skill Cards</h1>
             <ul class="object-tools" style="margin: 0;">
                 <li>
@@ -84,50 +86,95 @@
                     <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px;">Order</label>
                     <input type="number" name="skill_order" value="0" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                 </div>
-                <div>
-                    <button type="submit" name="add_skill_card" class="button" style="width: 100%; padding: 10px; background: #417690; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
-                        SAVE SKILL CARD
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" name="add_skill_card" class="button" style="flex: 1; padding: 10px; background: #417690; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+                        SAVE
                     </button>
-                    <button type="button" onclick="toggleSkillCardForm()" class="button" style="width: 100%; margin-top: 5px; background: #999;">CANCEL</button>
+                    <button type="button" onclick="toggleSkillCardForm()" class="button" style="flex: 1; padding: 10px; background: #d63031; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+                        CANCEL
+                    </button>
                 </div>
             </form>
         </div>
 
-        <!-- Skill Cards Table -->
-        <div class="module" id="skill-cards-list">
-            <div class="results">
-                <table id="result_list" style="width: 100%;">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="sortable column-name">
-                                <div class="text"><span>Technology Name</span></div>
-                            </th>
-                            <th scope="col" class="sortable column-order" style="text-align: center;">
-                                <div class="text"><span>Order</span></div>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for card in skill_cards %}
-                        <tr class="{% cycle 'row1' 'row2' %}">
-                            <td class="field-name">
-                                <a href="{% url 'admin:core_skill_change' card.id %}">{{ card.name }}</a>
-                            </td>
-                            <td class="field-order" style="text-align: center;">{{ card.order }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr class="row1">
-                            <td colspan="2" style="text-align: center; padding: 20px;">No Skill Cards found.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+        <!-- Bulk Action & Table Form -->
+        <form method="post" id="skill-cards-form">
+            {% csrf_token %}
+            <div class="actions" style="background: var(--darkened-bg, #f8f8f8); padding: 10px; border: 1px solid #ddd; border-bottom: none; display: flex; align-items: center; gap: 10px;">
+                <label style="font-size: 13px;">Action:</label>
+                <select name="action" style="padding: 4px; border-radius: 4px;">
+                    <option value="">---------</option>
+                    <option value="delete_selected_skill_cards">Delete selected skill cards</option>
+                </select>
+                <button type="submit" class="button" title="Run the selected action" style="padding: 4px 12px;">Go</button>
+                <span id="selected-count" style="font-size: 13px; color: #666;">0 of {{ skill_cards|length }} selected</span>
             </div>
-        </div>
+
+            <!-- Skill Cards Table -->
+            <div class="module" id="skill-cards-list">
+                <div class="results">
+                    <table id="result_list" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="action-checkbox-column" style="width: 40px;">
+                                    <div class="text"><span><input type="checkbox" id="action-toggle-cards"></span></div>
+                                </th>
+                                <th scope="col" class="sortable column-name">
+                                    <div class="text"><span>Technology Name</span></div>
+                                </th>
+                                <th scope="col" class="sortable column-order" style="text-align: center;">
+                                    <div class="text"><span>Order</span></div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for card in skill_cards %}
+                            <tr class="{% cycle 'row1' 'row2' %}">
+                                <td class="action-checkbox">
+                                    <input type="checkbox" name="_selected_action" value="{{ card.id }}" class="action-select-card">
+                                </td>
+                                <td class="field-name">
+                                    <a href="{% url 'admin:core_skill_change' card.id %}">{{ card.name }}</a>
+                                </td>
+                                <td class="field-order" style="text-align: center;">{{ card.order }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr class="row1">
+                                <td colspan="3" style="text-align: center; padding: 20px;">No Skill Cards found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 
 <script>
+    // Toggle Select All for Skill Cards
+    const toggleAll = document.getElementById('action-toggle-cards');
+    const checkboxes = document.querySelectorAll('.action-select-card');
+    const countDisplay = document.getElementById('selected-count');
+
+    if (toggleAll) {
+        toggleAll.addEventListener('change', function() {
+            checkboxes.forEach(cb => cb.checked = toggleAll.checked);
+            updateSelectedCount();
+        });
+    }
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', updateSelectedCount);
+    });
+
+    function updateSelectedCount() {
+        const selected = document.querySelectorAll('.action-select-card:checked').length;
+        if (countDisplay) {
+            countDisplay.textContent = `${selected} of ${checkboxes.length} selected`;
+        }
+    }
+
     function toggleCategoryForm() {
         const form = document.getElementById('add-category-form');
         const btn = document.getElementById('add-category-btn');
