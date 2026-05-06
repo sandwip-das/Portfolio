@@ -227,10 +227,17 @@ class ServiceInline(NestedTabularInline):
     model = Service
     extra = 0
     fields = ['title', 'icon_class', 'features', 'order']
+    verbose_name = "Service"
+    verbose_name_plural = "Services"
 
 @admin.register(ServiceSectionSettings)
 class ServiceSectionSettingsAdmin(BaseSettingsAdmin, NestedModelAdmin):
-    fields = ['services_description']
+    fieldsets = (
+        (None, {
+            'fields': ('services_description',),
+            'description': "Manage your services here. Click 'Add another Service' at the bottom to create a new one."
+        }),
+    )
     inlines = [ServiceInline]
 
 # 8. My Blog Content
