@@ -13,6 +13,18 @@
 
 {% block content %}
 <div id="content-main">
+    <!-- Technical Skills Section Description Editor -->
+    <div style="margin-top: 40px; margin-bottom: 40px; padding: 20px; border: 1px solid var(--border-color, #eee); border-radius: 4px; background: var(--darkened-bg, rgba(0,0,0,0.02));">
+        <form method="post">
+            {% csrf_token %}
+            <h2 style="margin-bottom: 10px; font-size: 16px;">Technical Skills Header Description</h2>
+            <p style="font-size: 13px; color: var(--body-quiet-fg, #666); margin-bottom: 10px;">This text appears on the public Technical Skills section.</p>
+            <textarea name="technical_skills_description"
+                style="width: 100%; min-height: 80px; margin-bottom: 15px; padding: 12px; border-radius: 4px; border: 1px solid var(--border-color, #ccc); background: var(--body-bg); color: var(--body-fg);"
+                placeholder="Enter description here...">{{ technical_skills_description }}</textarea>
+            <button type="submit" name="update_technical_skills_description" class="button" style="padding: 10px 20px;">Update Description</button>
+        </form>
+    </div>
     <!-- 1. Technical Skills Section -->
     <div style="margin-bottom: 30px;">
         <!-- Add Technical Skill Form (Initially Hidden) -->
@@ -29,7 +41,7 @@
                     <input type="number" name="category_order" value="0" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                 </div>
                 <div>
-                    <button type="submit" name="add_technical_skill" class="button" style="width: 100%; padding: 10px; background: #417690; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+                    <button type="submit" name="add_technical_skill" class="button" style="width: 100%; padding: 05px; background: #417690; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
                         SAVE TECHNICAL SKILL
                     </button>
                     <button type="button" onclick="toggleCategoryForm()" class="button" style="width: 100%; margin-top: 5px; background: #999;">CANCEL</button>
@@ -41,18 +53,6 @@
         {{ block.super }}
     </div>
 
-    <!-- Technical Skills Section Description Editor -->
-    <div style="margin-top: 40px; margin-bottom: 40px; padding: 20px; border: 1px solid var(--border-color, #eee); border-radius: 4px; background: var(--darkened-bg, rgba(0,0,0,0.02));">
-        <form method="post">
-            {% csrf_token %}
-            <h2 style="margin-bottom: 10px; font-size: 16px;">Technical Skills Header Description</h2>
-            <p style="font-size: 13px; color: var(--body-quiet-fg, #666); margin-bottom: 10px;">This text appears on the public Technical Skills section.</p>
-            <textarea name="technical_skills_description"
-                style="width: 100%; min-height: 80px; margin-bottom: 15px; padding: 12px; border-radius: 4px; border: 1px solid var(--border-color, #ccc); background: var(--body-bg); color: var(--body-fg);"
-                placeholder="Enter description here...">{{ technical_skills_description }}</textarea>
-            <button type="submit" name="update_technical_skills_description" class="button" style="padding: 10px 20px;">Update Description</button>
-        </form>
-    </div>
 
     <!-- 2. Skill Cards Section -->
     <div style="margin-top: 50px; border-top: 2px solid #eee; padding-top: 30px;">
@@ -99,45 +99,25 @@
                 <table id="result_list" style="width: 100%;">
                     <thead>
                         <tr>
-                            <th scope="col" class="sortable">
+                            <th scope="col" class="sortable column-name">
                                 <div class="text"><span>Technology Name</span></div>
                             </th>
-                            <th scope="col" class="sortable">
-                                <div class="text"><span>Image</span></div>
-                            </th>
-                            <th scope="col" class="sortable" style="text-align: center;">
+                            <th scope="col" class="sortable column-order" style="text-align: center;">
                                 <div class="text"><span>Order</span></div>
-                            </th>
-                            <th scope="col" class="sortable" style="text-align: center;">
-                                <div class="text"><span>Action</span></div>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for card in skill_cards %}
                         <tr class="{% cycle 'row1' 'row2' %}">
-                            <td class="field-name"><a href="{% url 'admin:core_skill_change' card.id %}">{{ card.name }}</a></td>
-                            <td class="field-image">
-                                {% if card.image %}
-                                <img src="{{ card.image.url }}" style="height: 30px; border-radius: 4px;" alt="icon">
-                                {% else %}
-                                <span style="color: #999;">No image</span>
-                                {% endif %}
+                            <td class="field-name">
+                                <a href="{% url 'admin:core_skill_change' card.id %}">{{ card.name }}</a>
                             </td>
                             <td class="field-order" style="text-align: center;">{{ card.order }}</td>
-                            <td style="text-align: center;">
-                                <form method="post" style="display: inline;" onsubmit="return confirm('Are you sure?');">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="card_id" value="{{ card.id }}">
-                                    <button type="submit" name="delete_skill_card" style="background: none; border: none; color: #ba2121; cursor: pointer; font-size: 13px;">
-                                        <i class="fas fa-trash-alt"></i> Delete
-                                    </button>
-                                </form>
-                            </td>
                         </tr>
                         {% empty %}
                         <tr class="row1">
-                            <td colspan="4" style="text-align: center; padding: 20px;">No Skill Cards found.</td>
+                            <td colspan="2" style="text-align: center; padding: 20px;">No Skill Cards found.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
