@@ -74,7 +74,8 @@
                                                     </tr>
                                                 </table>
                                             </a>
-                                            <button onclick="markAsRead(event, '{{ notif.type }}', {{ notif.id }}, this)" 
+                                            <button onclick="markNotificationAsRead(event, this)" 
+                                                    data-url="{% url 'read_notification' notif.type notif.id %}"
                                                     class="absolute bottom-2 right-2 bg-[#2ecc71] hover:bg-[#27ae60] text-white px-2 py-0.5 rounded text-[10px] font-bold transition-colors shadow-sm">
                                                 Read
                                             </button>
@@ -84,52 +85,65 @@
                             </div>
                         </div>
                         <script>
-                            function markAsRead(event, type, id, btn) {
+                            function markNotificationAsRead(event, btn) {
                                 event.preventDefault();
                                 event.stopPropagation();
                                 
-                                const url = `/notification/${type}/${id}/read/`;
+                                const url = btn.getAttribute('data-url');
                                 fetch(url, {
+                                    method: 'GET',
                                     headers: {
                                         'X-Requested-With': 'XMLHttpRequest',
-                                        'X-CSRFToken': '{{ csrf_token }}'
                                     }
                                 })
                                 .then(response => response.json())
                                 .then(data => {
                                     if (data.status === 'success') {
                                         const item = btn.closest('.notif-item');
-                                        item.remove();
+                                        if (item) {
+                                            item.style.opacity = '0';
+                                            item.style.transition = 'opacity 0.3s';
+                                            setTimeout(() => {
+                                                item.remove();
+                                                updateNotificationBadges();
+                                            }, 300);
+                                        }
+                                    }
+                                })
+                                .catch(err => console.error('Error marking notification as read:', err));
+                            }
+
+                            function updateNotificationBadges() {
+                                const badges = document.querySelectorAll('#front-notif-btn, #mobile-notif-btn, #admin-notif-badge, #admin-notifications-btn');
+                                badges.forEach(badge => {
+                                    let count = parseInt(badge.textContent.trim());
+                                    if (count > 1) {
+                                        badge.textContent = count - 1;
+                                    } else {
+                                        // Hide the badge and its parent container if it's the last notification
+                                        badge.style.display = 'none';
+                                        const container = badge.closest('#front-notif-container, #mobile-notif-container');
+                                        if (container) container.style.display = 'none';
                                         
-                                        // Update badge count
-                                        const badges = document.querySelectorAll('#front-notif-btn, #mobile-notif-btn, #admin-notif-badge');
-                                        badges.forEach(badge => {
-                                            let count = parseInt(badge.textContent);
-                                            if (count > 1) {
-                                                badge.textContent = count - 1;
-                                            } else {
-                                                // If it was the last one, we might want to hide the badge or the whole container
-                                                // For now, just set to 0 or remove
-                                                badge.remove();
-                                                const container = badge.closest('#front-notif-container, #mobile-notif-container');
-                                                if (container) container.remove();
-                                            }
-                                        });
+                                        // Also hide the dropdown if open
+                                        const dropdown = document.getElementById('front-notif-dropdown') || document.getElementById('mobile-notif-dropdown');
+                                        if (dropdown) dropdown.classList.add('hidden');
                                     }
                                 });
                             }
 
-                            document.getElementById('front-notif-btn').addEventListener('click', function(e) {
-                                e.stopPropagation();
-                                var dropdown = document.getElementById('front-notif-dropdown');
-                                dropdown.classList.toggle('hidden');
-                            });
+                            const frontNotifBtn = document.getElementById('front-notif-btn');
+                            if (frontNotifBtn) {
+                                frontNotifBtn.addEventListener('click', function(e) {
+                                    e.stopPropagation();
+                                    var dropdown = document.getElementById('front-notif-dropdown');
+                                    if (dropdown) dropdown.classList.toggle('hidden');
+                                });
+                            }
+                            
                             document.addEventListener('click', function() {
                                 var dropdown = document.getElementById('front-notif-dropdown');
                                 if(dropdown) dropdown.classList.add('hidden');
-                            });
-                            document.getElementById('front-notif-dropdown').addEventListener('click', function(e) {
-                                e.stopPropagation();
                             });
                         </script>
                         {% endif %}

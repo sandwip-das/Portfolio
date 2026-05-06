@@ -34,8 +34,9 @@
                                 </tr>
                             </table>
                         </a>
-                        <button onclick="adminMarkAsRead(event, '{{ notif.type }}', {{ notif.id }}, this)" 
-                                style="position: absolute; bottom: 8px; right: 12px; background: #2ecc71; border: none; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer;">
+                        <button onclick="adminMarkAsRead(event, this)" 
+                                 data-url="{% url 'read_notification' notif.type notif.id %}"
+                                 style="position: absolute; bottom: 8px; right: 12px; background: #2ecc71; border: none; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer;">
                             Read
                         </button>
                     </div>
@@ -44,45 +45,60 @@
         </div>
     </div>
     <script>
-        function adminMarkAsRead(event, type, id, btn) {
+        function adminMarkAsRead(event, btn) {
             event.preventDefault();
             event.stopPropagation();
-            const url = `/notification/${type}/${id}/read/`;
+            const url = btn.getAttribute('data-url');
             fetch(url, {
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRFToken': '{{ csrf_token }}'
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
                     const item = btn.closest('.notif-item');
-                    item.remove();
-                    const badge = document.getElementById('admin-notifications-btn');
-                    if (badge) {
-                        let count = parseInt(badge.textContent);
-                        if (count > 1) {
-                            badge.textContent = count - 1;
-                        } else {
-                            badge.remove();
-                            document.getElementById('admin-notifications-dropdown').style.display = 'none';
-                        }
+                    if (item) {
+                        item.style.opacity = '0';
+                        item.style.transition = 'opacity 0.3s';
+                        setTimeout(() => {
+                            item.remove();
+                            updateAdminBadges();
+                        }, 300);
                     }
                 }
+            })
+            .catch(err => console.error('Error marking admin notification as read:', err));
+        }
+
+        function updateAdminBadges() {
+            const badge = document.getElementById('admin-notifications-btn');
+            if (badge) {
+                let count = parseInt(badge.textContent.trim());
+                if (count > 1) {
+                    badge.textContent = count - 1;
+                } else {
+                    // Hide the entire notification element if it was the last one
+                    const parent = badge.closest('div[style*="position: relative"]');
+                    if (parent) parent.style.display = 'none';
+                    badge.style.display = 'none';
+                    document.getElementById('admin-notifications-dropdown').style.display = 'none';
+                }
+            }
+        }
+
+        const adminNotifBtn = document.getElementById('admin-notifications-btn');
+        if (adminNotifBtn) {
+            adminNotifBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var dropdown = document.getElementById('admin-notifications-dropdown');
+                if (dropdown) dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
             });
         }
-        document.getElementById('admin-notifications-btn').addEventListener('click', function(e) {
-            e.stopPropagation();
-            var dropdown = document.getElementById('admin-notifications-dropdown');
-            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-        });
+        
         document.addEventListener('click', function() {
             var dropdown = document.getElementById('admin-notifications-dropdown');
             if(dropdown) dropdown.style.display = 'none';
-        });
-        document.getElementById('admin-notifications-dropdown').addEventListener('click', function(e) {
-            e.stopPropagation();
         });
     </script>
     {% endif %}

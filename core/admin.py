@@ -135,6 +135,19 @@ class SkillCategoryAdmin(admin.ModelAdmin):
                 from django.contrib import messages
                 messages.success(request, "Technical Skills description updated successfully.")
                 return HttpResponseRedirect(request.get_full_path())
+
+            if 'add_technical_skill' in request.POST:
+                name = request.POST.get('category_name')
+                order = request.POST.get('category_order', 0)
+                if name:
+                    SkillCategory.objects.create(
+                        name=name,
+                        order=order,
+                        settings=HomeSettings.load()
+                    )
+                    from django.contrib import messages
+                    messages.success(request, f"Technical Skill '{name}' added successfully.")
+                return HttpResponseRedirect(request.get_full_path())
             
             if 'add_skill_card' in request.POST:
                 name = request.POST.get('skill_name')
