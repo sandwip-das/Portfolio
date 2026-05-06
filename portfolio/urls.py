@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from core import views
 from core.views import home, blog_detail, custom_signup, verify_registration_otp
 from django.views.generic import RedirectView
 from django.templatetags.static import static as static_tag
