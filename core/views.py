@@ -551,19 +551,25 @@ def blog_suggestions(request):
 def read_notification(request, notif_type, notif_id):
     if request.user.is_superuser:
         from .models import ServiceBooking, ContactMessage, Review
-        if notif_type == 'booking':
-            obj = get_object_or_404(ServiceBooking, id=notif_id)
+        model_map = {
+            'booking': ServiceBooking,
+            'contact': ContactMessage,
+            'review': Review,
+        }
+        model = model_map.get(notif_type)
+        if model:
+            obj = get_object_or_404(model, id=notif_id)
             obj.is_read = True
             obj.save(update_fields=['is_read'])
-            return redirect('admin:core_servicebooking_changelist')
-        elif notif_type == 'contact':
-            obj = get_object_or_404(ContactMessage, id=notif_id)
-            obj.is_read = True
-            obj.save(update_fields=['is_read'])
-            return redirect('admin:core_contactmessage_changelist')
-        elif notif_type == 'review':
-            obj = get_object_or_404(Review, id=notif_id)
-            obj.is_read = True
-            obj.save(update_fields=['is_read'])
-            return redirect('admin:core_review_changelist')
-    return redirect('home')
+            
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'status': 'success'})
+            
+            admin_url_map = {
+                'booking': 'admin:core_servicebooking_changelist',
+                'contact': 'admin:core_contactmessage_changelist',
+                'review': 'admin:core_review_changelist',
+            }
+            return redirect(admin_url_map.get(notif_type, 'home'))
+            
+    return redirect('home')

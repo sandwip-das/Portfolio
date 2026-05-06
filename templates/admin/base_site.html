@@ -17,27 +17,61 @@
         <div id="admin-notifications-dropdown" style="display: none; position: absolute; top: 30px; right: -10px; background: white; border: 1px solid #ddd; border-radius: 6px; box-shadow: 0 6px 16px rgba(0,0,0,0.15); width: 280px; z-index: 10000; text-align: left; overflow: hidden;">
             <div style="max-height: 350px; overflow-y: auto;">
                 {% for notif in admin_notifications %}
-                    <a href="{% url 'read_notification' notif.type notif.id %}" style="display: block; padding: 12px 16px; border-bottom: 1px solid #eee; text-decoration: none; transition: background 0.2s;">
-                        <table style="width: 100%; font-size: 12px; color: #333; border-collapse: collapse; text-align: left;">
-                            <tr>
-                                <td style="padding: 2px 0; font-weight: 700; width: 55px; color: #417690;">From:</td>
-                                <td style="padding: 2px 0;">{{ notif.sender }}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 2px 0; font-weight: 700; color: #417690;">Service:</td>
-                                <td style="padding: 2px 0;">{{ notif.service }}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 2px 0; font-weight: 700; color: #417690;">Time:</td>
-                                <td style="padding: 2px 0; color: #777; font-size: 11px;">{{ notif.created_at|timesince }} ago</td>
-                            </tr>
-                        </table>
-                    </a>
+                    <div class="notif-item" style="position: relative; border-bottom: 1px solid #eee; transition: background 0.2s;">
+                        <a href="{% url 'read_notification' notif.type notif.id %}" style="display: block; padding: 12px 16px; text-decoration: none;">
+                            <table style="width: 100%; font-size: 12px; color: #333; border-collapse: collapse; text-align: left;">
+                                <tr>
+                                    <td style="padding: 2px 0; font-weight: 700; width: 55px; color: #417690;">From:</td>
+                                    <td style="padding: 2px 0;">{{ notif.sender }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 2px 0; font-weight: 700; color: #417690;">Service:</td>
+                                    <td style="padding: 2px 0;">{{ notif.service }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 2px 0; font-weight: 700; color: #417690;">Time:</td>
+                                    <td style="padding: 2px 0; color: #777; font-size: 11px;">{{ notif.created_at|timesince }} ago</td>
+                                </tr>
+                            </table>
+                        </a>
+                        <button onclick="adminMarkAsRead(event, '{{ notif.type }}', {{ notif.id }}, this)" 
+                                style="position: absolute; bottom: 8px; right: 12px; background: #2ecc71; border: none; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer;">
+                            Read
+                        </button>
+                    </div>
                 {% endfor %}
             </div>
         </div>
     </div>
     <script>
+        function adminMarkAsRead(event, type, id, btn) {
+            event.preventDefault();
+            event.stopPropagation();
+            const url = `/notification/${type}/${id}/read/`;
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const item = btn.closest('.notif-item');
+                    item.remove();
+                    const badge = document.getElementById('admin-notifications-btn');
+                    if (badge) {
+                        let count = parseInt(badge.textContent);
+                        if (count > 1) {
+                            badge.textContent = count - 1;
+                        } else {
+                            badge.remove();
+                            document.getElementById('admin-notifications-dropdown').style.display = 'none';
+                        }
+                    }
+                }
+            });
+        }
         document.getElementById('admin-notifications-btn').addEventListener('click', function(e) {
             e.stopPropagation();
             var dropdown = document.getElementById('admin-notifications-dropdown');

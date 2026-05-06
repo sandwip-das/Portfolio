@@ -57,27 +57,68 @@
                             <div id="front-notif-dropdown" class="hidden absolute top-8 -right-10 bg-white border border-gray-200 rounded-lg shadow-xl w-72 z-[10000] text-left overflow-hidden">
                                 <div class="max-h-80 overflow-y-auto">
                                     {% for notif in admin_notifications %}
-                                        <a href="{% url 'read_notification' notif.type notif.id %}" class="block p-3 border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                                            <table class="w-full text-xs text-gray-700 text-left">
-                                                <tr>
-                                                    <td class="py-0.5 font-bold text-[#417690] w-14 align-top">From:</td>
-                                                    <td class="py-0.5 align-top">{{ notif.sender }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="py-0.5 font-bold text-[#417690] align-top">Service:</td>
-                                                    <td class="py-0.5 align-top">{{ notif.service }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="py-0.5 font-bold text-[#417690] align-top">Time:</td>
-                                                    <td class="py-0.5 text-gray-500 text-[10px] align-top">{{ notif.created_at|timesince }} ago</td>
-                                                </tr>
-                                            </table>
-                                        </a>
+                                        <div class="notif-item block p-3 border-b border-gray-100 hover:bg-gray-50 transition-colors relative">
+                                            <a href="{% url 'read_notification' notif.type notif.id %}" class="block">
+                                                <table class="w-full text-xs text-gray-700 text-left">
+                                                    <tr>
+                                                        <td class="py-0.5 font-bold text-[#417690] w-14 align-top">From:</td>
+                                                        <td class="py-0.5 align-top">{{ notif.sender }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="py-0.5 font-bold text-[#417690] align-top">Service:</td>
+                                                        <td class="py-0.5 align-top">{{ notif.service }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="py-0.5 font-bold text-[#417690] align-top">Time:</td>
+                                                        <td class="py-0.5 text-gray-500 text-[10px] align-top">{{ notif.created_at|timesince }} ago</td>
+                                                    </tr>
+                                                </table>
+                                            </a>
+                                            <button onclick="markAsRead(event, '{{ notif.type }}', {{ notif.id }}, this)" 
+                                                    class="absolute bottom-2 right-2 bg-[#2ecc71] hover:bg-[#27ae60] text-white px-2 py-0.5 rounded text-[10px] font-bold transition-colors shadow-sm">
+                                                Read
+                                            </button>
+                                        </div>
                                     {% endfor %}
                                 </div>
                             </div>
                         </div>
                         <script>
+                            function markAsRead(event, type, id, btn) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                
+                                const url = `/notification/${type}/${id}/read/`;
+                                fetch(url, {
+                                    headers: {
+                                        'X-Requested-With': 'XMLHttpRequest',
+                                        'X-CSRFToken': '{{ csrf_token }}'
+                                    }
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.status === 'success') {
+                                        const item = btn.closest('.notif-item');
+                                        item.remove();
+                                        
+                                        // Update badge count
+                                        const badges = document.querySelectorAll('#front-notif-btn, #mobile-notif-btn, #admin-notif-badge');
+                                        badges.forEach(badge => {
+                                            let count = parseInt(badge.textContent);
+                                            if (count > 1) {
+                                                badge.textContent = count - 1;
+                                            } else {
+                                                // If it was the last one, we might want to hide the badge or the whole container
+                                                // For now, just set to 0 or remove
+                                                badge.remove();
+                                                const container = badge.closest('#front-notif-container, #mobile-notif-container');
+                                                if (container) container.remove();
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+
                             document.getElementById('front-notif-btn').addEventListener('click', function(e) {
                                 e.stopPropagation();
                                 var dropdown = document.getElementById('front-notif-dropdown');
@@ -180,7 +221,8 @@
                     <div id="mobile-notif-dropdown" class="hidden absolute top-10 right-0 bg-white border border-gray-200 rounded-lg shadow-xl w-[260px] z-[10000] text-left overflow-hidden">
                         <div class="max-h-72 overflow-y-auto">
                             {% for notif in admin_notifications %}
-                                <a href="{% url 'read_notification' notif.type notif.id %}" class="block p-3 border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                <div class="notif-item block p-3 border-b border-gray-100 hover:bg-gray-50 transition-colors relative">
+                                    <a href="{% url 'read_notification' notif.type notif.id %}" class="block">
                                             <table class="w-full text-xs text-gray-700 text-left">
                                                 <tr>
                                                     <td class="py-0.5 font-bold text-[#417690] w-14 align-top">From:</td>
@@ -195,7 +237,12 @@
                                                     <td class="py-0.5 text-gray-500 text-[10px] align-top">{{ notif.created_at|timesince }} ago</td>
                                                 </tr>
                                             </table>
-                                </a>
+                                    </a>
+                                    <button onclick="markAsRead(event, '{{ notif.type }}', {{ notif.id }}, this)" 
+                                            class="absolute bottom-2 right-2 bg-[#2ecc71] hover:bg-[#27ae60] text-white px-2 py-0.5 rounded text-[10px] font-bold transition-colors shadow-sm">
+                                        Read
+                                    </button>
+                                </div>
                             {% endfor %}
                         </div>
                     </div>
