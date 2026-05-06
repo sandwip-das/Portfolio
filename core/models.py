@@ -273,14 +273,14 @@ class FooterSettings(HomeSettings):
 class ProjectSectionSettings(HomeSettings):
     class Meta:
         proxy = True
-        verbose_name = "Featured Projects Main"
-        verbose_name_plural = "Featured Projects Main"
+        verbose_name = "Featured Projects"
+        verbose_name_plural = "Featured Projects"
 
 class ServiceSectionSettings(HomeSettings):
     class Meta:
         proxy = True
-        verbose_name = "My Services Main"
-        verbose_name_plural = "My Services Main"
+        verbose_name = "My Services"
+        verbose_name_plural = "My Services"
 
 # --- REAL MODELS & INLINES ---
 
@@ -320,6 +320,7 @@ class Project(models.Model):
     tech_stack = models.CharField(max_length=200, help_text="Comma separated technologies")
     live_link = models.URLField(blank=True)
     repo_link = models.URLField(blank=True)
+    settings = models.ForeignKey(HomeSettings, on_delete=models.CASCADE, default=1, related_name='project_items')
     created_at = models.DateTimeField(auto_now_add=True)
     
     @property
@@ -347,6 +348,7 @@ class Service(models.Model):
     title = models.CharField(max_length=100)
     icon_class = models.CharField(max_length=50, default="fas fa-layer-group", help_text="Font Awesome class")
     features = models.TextField(help_text="One feature per line")
+    settings = models.ForeignKey(HomeSettings, on_delete=models.CASCADE, default=1, related_name='service_items')
     order = models.IntegerField(default=0)
 
     class Meta:

@@ -198,19 +198,14 @@ class GlobalCertificationAdmin(admin.ModelAdmin):
         obj.category = 'CERTIFICATION'
         super().save_model(request, obj, form, change)
 
-# 6. Featured Projects Content
-@admin.register(ProjectSectionSettings)
-class ProjectSectionSettingsAdmin(BaseSettingsAdmin):
-    fields = ['projects_description']
-
-class ProjectImageInline(admin.TabularInline):
+# 6. Featured Projects
+class ProjectImageInline(NestedTabularInline):
     model = ProjectImage
-    extra = 1
+    extra = 0
 
-@admin.register(Project)
-class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('title', 'tech_stack', 'created_at')
-    search_fields = ('title', 'tech_stack')
+class ProjectInline(NestedStackedInline):
+    model = Project
+    extra = 0
     inlines = [ProjectImageInline]
     fieldsets = (
         (None, {
@@ -222,16 +217,21 @@ class ProjectAdmin(admin.ModelAdmin):
         }),
     )
 
-# 7. My Services Content
-@admin.register(ServiceSectionSettings)
-class ServiceSectionSettingsAdmin(BaseSettingsAdmin):
-    fields = ['services_description']
+@admin.register(ProjectSectionSettings)
+class ProjectSectionSettingsAdmin(BaseSettingsAdmin, NestedModelAdmin):
+    fields = ['projects_description']
+    inlines = [ProjectInline]
 
-@admin.register(Service)
-class ServiceAdmin(admin.ModelAdmin):
-    list_display = ['title', 'order']
-    list_editable = ['order']
+# 7. My Services
+class ServiceInline(NestedTabularInline):
+    model = Service
+    extra = 0
     fields = ['title', 'icon_class', 'features', 'order']
+
+@admin.register(ServiceSectionSettings)
+class ServiceSectionSettingsAdmin(BaseSettingsAdmin, NestedModelAdmin):
+    fields = ['services_description']
+    inlines = [ServiceInline]
 
 # 8. My Blog Content
 

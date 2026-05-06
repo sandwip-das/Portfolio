@@ -30,7 +30,7 @@ urlpatterns = [
     path('core/', include('core.urls')),
     
     # Favicon Redirect
-    path('favicon.ico', RedirectView.as_view(url='/static/favicon.ico')),
+    path('favicon.ico', views.favicon_view, name='favicon'),
 ]
 
 if settings.DEBUG:

@@ -18,6 +18,17 @@ from .models import (
 )
 from .forms import ServiceBookingForm, ContactForm, ReviewForm
 from .utils import send_portfolio_email, get_admin_email
+from .templatetags.core_tags import smart_url
+
+def favicon_view(request):
+    """
+    Dynamic favicon view to satisfy browsers (like Edge) that hard-code 
+    requests to /favicon.ico.
+    """
+    settings_obj = HomeSettings.load()
+    if settings_obj.favicon:
+        return redirect(smart_url(settings_obj.favicon))
+    return redirect('/static/favicon.ico')
 
 
 # ===================== Helper Functions =====================
