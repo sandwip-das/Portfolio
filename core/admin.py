@@ -189,6 +189,7 @@ class SkillCategoryAdmin(admin.ModelAdmin):
         settings = HomeSettings.load()
         extra_context['technical_skills_description'] = settings.technical_skills_description
         extra_context['skill_cards'] = Skill.objects.all().order_by('order')
+        extra_context['skill_cards_count'] = extra_context['skill_cards'].count()
         return super().changelist_view(request, extra_context=extra_context)
 
 @admin.register(Skill)
