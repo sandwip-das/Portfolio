@@ -127,49 +127,22 @@
                 </div>
             </div>
 
-            <!-- Row 2: Technical Skills & Skill Cards -->
-            <div class="flex flex-col lg:flex-row gap-[50px] pb-4">
-                <!-- Left Div: Technical Skills -->
-                <div class="lg:w-1/2 flex flex-col">
-                    <h3 class="text-2xl md:text-3xl font-bold mb-4 text-white">Technical <span
-                            class="text-primary">Skills</span></h3>
-                    <div class="text-gray-300 leading-relaxed text-lg mb-6 break-words">
+            <!-- Row 2: Skill Cards (Main Section) -->
+            <div class="flex flex-col gap-8 pb-4">
+                <div class="text-center max-w-4xl mx-auto">
+                    <h3 class="text-2xl md:text-3xl font-bold mb-4 text-white">Technical <span class="text-primary">Expertise</span></h3>
+                    <div class="text-gray-300 leading-relaxed text-lg mb-8">
                         {% if settings.technical_skills_description %}
                         {{ settings.technical_skills_description|safe }}
                         {% else %}
                         I possess a diverse set of technical skills for building robust applications.
                         {% endif %}
                     </div>
-
-                    <div class="border border-white/20 rounded-2xl bg-white/5 backdrop-blur-sm p-6 space-y-6">
-                        {% for category in skill_categories %}
-                        <div class="space-y-3">
-                            <h4 class="text-lg font-bold text-white flex items-center mb-3">
-                                <span
-                                    class="w-1.5 h-5 bg-gradient-to-b from-primary to-secondary rounded-full mr-3"></span>
-                                {{ category.name }}
-                            </h4>
-                            <div class="flex flex-wrap gap-2">
-                                {% for item in category.items.all %}
-                                <span
-                                    class="px-4 py-2 bg-transparent text-gray-300 rounded-lg text-sm font-medium transition-all duration-300 border border-gray-600 hover:border-primary hover:text-white hover:bg-white/5 hover:shadow-lg hover:shadow-primary/20 cursor-default hover:-translate-y-0.5 whitespace-nowrap">
-                                    {{ item }}
-                                </span>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        {% if not forloop.last %}
-                        <div class="h-px bg-white/10 w-full"></div>
-                        {% endif %}
-                        {% empty %}
-                        <p class="text-gray-500 italic">Add skill categories in admin panel.</p>
-                        {% endfor %}
-                    </div>
                 </div>
 
                 <!-- Right Div: Skill Cards -->
-                <div class="lg:w-1/2 border border-white/20 rounded-2xl bg-white/5 backdrop-blur-sm p-6">
-                    <div class="grid grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-3">
+                <div class="w-full border border-white/20 rounded-2xl bg-white/5 backdrop-blur-sm p-8">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
                         {% for skill in skills %}
                         {% include 'partials/_skill_card.html' %}
                         {% empty %}
