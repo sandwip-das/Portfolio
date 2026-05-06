@@ -104,9 +104,10 @@ Sandwip Das
             if form.is_valid():
                 contact = form.save()
 
-                # Email to Superuser
-                subject_admin = f"New Contact Message from {contact.name}"
-                body_admin = f"""You have received a new message from your portfolio website contact form.
+                try:
+                    # Email to Superuser
+                    subject_admin = f"New Contact Message from {contact.name}"
+                    body_admin = f"""You have received a new message from your portfolio website contact form.
 
 Sender Details:
 Name: {contact.name}
@@ -117,11 +118,11 @@ Subject: {contact.subject}
 Message:
 {contact.message}
 """
-                send_portfolio_email(subject_admin, body_admin, to_email=admin_email, reply_to=contact.email)
+                    send_portfolio_email(subject_admin, body_admin, to_email=admin_email, reply_to=contact.email)
 
-                # Acknowledgment to User
-                subject_user = f"Thank you for contacting us, {contact.name}!"
-                body_user = f"""Hello {contact.name},
+                    # Acknowledgment to User
+                    subject_user = f"Thank you for contacting us, {contact.name}!"
+                    body_user = f"""Hello {contact.name},
 
 Thank you for reaching out! We have successfully received your message regarding '{contact.subject}'.
 
@@ -130,26 +131,34 @@ We will review your message and get back to you as soon as possible.
 Best regards,
 Sandwip Das
 """
-                send_portfolio_email(subject_user, body_user, to_email=contact.email)
+                    send_portfolio_email(subject_user, body_user, to_email=contact.email)
 
-                if is_ajax:
-                    return JsonResponse({'status': 'success', 'message': "Your message has been sent successfully!"})
-                messages.success(request, "Your message has been sent successfully!")
-                return redirect('home')
+                    if is_ajax:
+                        return JsonResponse({'status': 'success', 'message': "Your message has been sent successfully!"})
+                    messages.success(request, "Your message has been sent successfully!")
+                    return redirect('home')
+                except Exception as e:
+                    if is_ajax:
+                        return JsonResponse({'status': 'error', 'message': f"An unexpected error occurred: {str(e)}"}, status=500)
+                    messages.error(request, f"An unexpected error occurred: {str(e)}")
             else:
                 if is_ajax:
                     return JsonResponse({'status': 'error', 'message': "Please fix the errors in the contact form."}, status=400)
                 messages.error(request, "Please fix the errors in the contact form.")
 
-        # --------------------- Review Form ---------------------
         elif 'review_form' in request.POST:
             form = ReviewForm(request.POST, request.FILES)
             if form.is_valid():
-                form.save()
-                if is_ajax:
-                    return JsonResponse({'status': 'success', 'message': "Your review has been submitted for approval."})
-                messages.success(request, "Your review has been submitted for approval.")
-                return redirect('home')
+                try:
+                    form.save()
+                    if is_ajax:
+                        return JsonResponse({'status': 'success', 'message': "Your review has been submitted for approval."})
+                    messages.success(request, "Your review has been submitted for approval.")
+                    return redirect('home')
+                except Exception as e:
+                    if is_ajax:
+                        return JsonResponse({'status': 'error', 'message': f"An unexpected error occurred: {str(e)}"}, status=500)
+                    messages.error(request, f"An unexpected error occurred: {str(e)}")
             else:
                 if is_ajax:
                     return JsonResponse({'status': 'error', 'message': "Please fix the errors in the review form."}, status=400)
