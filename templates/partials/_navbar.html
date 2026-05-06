@@ -49,6 +49,50 @@
                     {% if user.is_authenticated %}
                     {% with profile=user.profile %}
                     <div class="relative group ml-4 h-full flex items-center">
+                        {% if user.is_superuser and admin_unread_count > 0 %}
+                        <div class="relative mr-3" id="front-notif-container">
+                            <div id="front-notif-btn" class="cursor-pointer bg-[#ff4757] text-white rounded-full w-5 h-5 flex items-center justify-center font-bold text-[11px] shadow-md">
+                                {{ admin_unread_count }}
+                            </div>
+                            <div id="front-notif-dropdown" class="hidden absolute top-8 -right-10 bg-white border border-gray-200 rounded-lg shadow-xl w-72 z-[10000] text-left overflow-hidden">
+                                <div class="max-h-80 overflow-y-auto">
+                                    {% for notif in admin_notifications %}
+                                        <a href="{% url 'read_notification' notif.type notif.id %}" class="block p-3 border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                            <table class="w-full text-xs text-gray-700 text-left">
+                                                <tr>
+                                                    <td class="py-0.5 font-bold text-[#417690] w-14 align-top">From:</td>
+                                                    <td class="py-0.5 align-top">{{ notif.sender }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-0.5 font-bold text-[#417690] align-top">Service:</td>
+                                                    <td class="py-0.5 align-top">{{ notif.service }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-0.5 font-bold text-[#417690] align-top">Time:</td>
+                                                    <td class="py-0.5 text-gray-500 text-[10px] align-top">{{ notif.created_at|timesince }} ago</td>
+                                                </tr>
+                                            </table>
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <script>
+                            document.getElementById('front-notif-btn').addEventListener('click', function(e) {
+                                e.stopPropagation();
+                                var dropdown = document.getElementById('front-notif-dropdown');
+                                dropdown.classList.toggle('hidden');
+                            });
+                            document.addEventListener('click', function() {
+                                var dropdown = document.getElementById('front-notif-dropdown');
+                                if(dropdown) dropdown.classList.add('hidden');
+                            });
+                            document.getElementById('front-notif-dropdown').addEventListener('click', function(e) {
+                                e.stopPropagation();
+                            });
+                        </script>
+                        {% endif %}
+
                         <button
                             class="flex items-center space-x-2 text-gray-300 hover:text-white focus:outline-none h-full py-2">
                             {% render_profile_image user "h-8 w-8" %}
@@ -125,9 +169,52 @@
         <div class="border-t border-white/10 mt-4 pt-4">
             <div class="px-3 flex items-center space-x-3 mb-4">
                 {% render_profile_image user "h-10 w-10" %}
-                <span class="font-bold text-gray-200 block truncate">
+                <span class="font-bold text-gray-200 block truncate flex-1">
                     {{ user.username }}
                 </span>
+                {% if user.is_superuser and admin_unread_count > 0 %}
+                <div class="relative" id="mobile-notif-container">
+                    <div id="mobile-notif-btn" class="cursor-pointer bg-[#ff4757] text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs shadow-md">
+                        {{ admin_unread_count }}
+                    </div>
+                    <div id="mobile-notif-dropdown" class="hidden absolute top-10 right-0 bg-white border border-gray-200 rounded-lg shadow-xl w-[260px] z-[10000] text-left overflow-hidden">
+                        <div class="max-h-72 overflow-y-auto">
+                            {% for notif in admin_notifications %}
+                                <a href="{% url 'read_notification' notif.type notif.id %}" class="block p-3 border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                            <table class="w-full text-xs text-gray-700 text-left">
+                                                <tr>
+                                                    <td class="py-0.5 font-bold text-[#417690] w-14 align-top">From:</td>
+                                                    <td class="py-0.5 align-top">{{ notif.sender }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-0.5 font-bold text-[#417690] align-top">Service:</td>
+                                                    <td class="py-0.5 align-top">{{ notif.service }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-0.5 font-bold text-[#417690] align-top">Time:</td>
+                                                    <td class="py-0.5 text-gray-500 text-[10px] align-top">{{ notif.created_at|timesince }} ago</td>
+                                                </tr>
+                                            </table>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    document.getElementById('mobile-notif-btn').addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        var dropdown = document.getElementById('mobile-notif-dropdown');
+                        dropdown.classList.toggle('hidden');
+                    });
+                    document.addEventListener('click', function() {
+                        var dropdown = document.getElementById('mobile-notif-dropdown');
+                        if(dropdown) dropdown.classList.add('hidden');
+                    });
+                    document.getElementById('mobile-notif-dropdown').addEventListener('click', function(e) {
+                        e.stopPropagation();
+                    });
+                </script>
+                {% endif %}
             </div>
             <a href="{% url 'edit_profile' %}" onclick="toggleMobileMenu()"
                 class="block px-3 py-2 text-base font-bold text-[#2ecc71] hover:text-white hover:bg-white/5 rounded-xl transition-all"><i

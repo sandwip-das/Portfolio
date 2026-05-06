@@ -1,0 +1,56 @@
+{% extends "admin/base.html" %}
+
+{% load i18n %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></h1>
+{% endblock %}
+
+{% block welcome-msg %}
+    {% if admin_unread_count and admin_unread_count > 0 %}
+    <div style="display: inline-block; position: relative; margin-right: 15px; vertical-align: middle;">
+        <div id="admin-notifications-btn" style="cursor: pointer; background: #ff4757; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+            {{ admin_unread_count }}
+        </div>
+        <div id="admin-notifications-dropdown" style="display: none; position: absolute; top: 30px; right: -10px; background: white; border: 1px solid #ddd; border-radius: 6px; box-shadow: 0 6px 16px rgba(0,0,0,0.15); width: 280px; z-index: 10000; text-align: left; overflow: hidden;">
+            <div style="max-height: 350px; overflow-y: auto;">
+                {% for notif in admin_notifications %}
+                    <a href="{% url 'read_notification' notif.type notif.id %}" style="display: block; padding: 12px 16px; border-bottom: 1px solid #eee; text-decoration: none; transition: background 0.2s;">
+                        <table style="width: 100%; font-size: 12px; color: #333; border-collapse: collapse; text-align: left;">
+                            <tr>
+                                <td style="padding: 2px 0; font-weight: 700; width: 55px; color: #417690;">From:</td>
+                                <td style="padding: 2px 0;">{{ notif.sender }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 2px 0; font-weight: 700; color: #417690;">Service:</td>
+                                <td style="padding: 2px 0;">{{ notif.service }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 2px 0; font-weight: 700; color: #417690;">Time:</td>
+                                <td style="padding: 2px 0; color: #777; font-size: 11px;">{{ notif.created_at|timesince }} ago</td>
+                            </tr>
+                        </table>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('admin-notifications-btn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            var dropdown = document.getElementById('admin-notifications-dropdown');
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        });
+        document.addEventListener('click', function() {
+            var dropdown = document.getElementById('admin-notifications-dropdown');
+            if(dropdown) dropdown.style.display = 'none';
+        });
+        document.getElementById('admin-notifications-dropdown').addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    </script>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}

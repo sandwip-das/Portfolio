@@ -161,7 +161,8 @@ Sandwip Das
             form = ReviewForm(request.POST, request.FILES)
             if form.is_valid():
                 try:
-                    form.save()
+                    review = form.save()
+                    
                     if is_ajax:
                         return JsonResponse({'status': 'success', 'message': "Your review has been submitted for approval."})
                     messages.success(request, "Your review has been submitted for approval.")
@@ -544,4 +545,25 @@ def blog_suggestions(request):
     if len(query) < 1:
         return JsonResponse([], safe=False)
     suggestions = BlogPost.objects.filter(title__icontains=query).values('title', 'slug')[:10]
-    return JsonResponse(list(suggestions), safe=False)
+    return JsonResponse(list(suggestions), safe=False)
+
+@login_required
+def read_notification(request, notif_type, notif_id):
+    if request.user.is_superuser:
+        from .models import ServiceBooking, ContactMessage, Review
+        if notif_type == 'booking':
+            obj = get_object_or_404(ServiceBooking, id=notif_id)
+            obj.is_read = True
+            obj.save(update_fields=['is_read'])
+            return redirect('admin:core_servicebooking_changelist')
+        elif notif_type == 'contact':
+            obj = get_object_or_404(ContactMessage, id=notif_id)
+            obj.is_read = True
+            obj.save(update_fields=['is_read'])
+            return redirect('admin:core_contactmessage_changelist')
+        elif notif_type == 'review':
+            obj = get_object_or_404(Review, id=notif_id)
+            obj.is_read = True
+            obj.save(update_fields=['is_read'])
+            return redirect('admin:core_review_changelist')
+    return redirect('home')

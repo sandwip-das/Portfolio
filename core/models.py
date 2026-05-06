@@ -372,6 +372,7 @@ class ServiceBooking(models.Model):
         ('cancelled', 'Cancelled'),
     ]
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -607,6 +608,7 @@ class ContactMessage(models.Model):
     phone = models.CharField(max_length=20, blank=True, null=True)
     subject = models.CharField(max_length=200)
     message = models.TextField()
+    is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -643,6 +645,7 @@ class Review(models.Model):
     rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], default=5)
     comment = models.TextField(max_length=70, help_text="Short comment about the service")
     is_approved = models.BooleanField(default=False, help_text="Set to False to hide this review")
+    is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

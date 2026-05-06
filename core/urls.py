@@ -21,4 +21,5 @@ urlpatterns = [
     path('auth/resend-registration-otp/', views.resend_registration_otp, name='resend_registration_otp'),
     path('my-blog/', views.my_blog, name='my_blog'),
     path('blog-suggestions/', views.blog_suggestions, name='blog_suggestions'),
+    path('notification/<str:notif_type>/<int:notif_id>/read/', views.read_notification, name='read_notification'),
 ]
