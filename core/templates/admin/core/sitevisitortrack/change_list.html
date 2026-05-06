@@ -1,0 +1,48 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block content_title %}
+    <h1>Site Viewer Tracking & Analytics</h1>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    {% if analytics %}
+    <!-- Analytics Summary Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        <!-- Total Sessions -->
+        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-left: 5px solid #3498db;">
+            <h3 style="margin: 0; color: #7f8c8d; font-size: 0.9rem; text-transform: uppercase;">Total Sessions</h3>
+            <p style="margin: 10px 0 0; font-size: 2rem; font-weight: bold; color: #2c3e50;">{{ analytics.total_sessions }}</p>
+        </div>
+        
+        <!-- Unique Visitors -->
+        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-left: 5px solid #1abc9c;">
+            <h3 style="margin: 0; color: #7f8c8d; font-size: 0.9rem; text-transform: uppercase;">Unique Visitors (IP)</h3>
+            <p style="margin: 10px 0 0; font-size: 2rem; font-weight: bold; color: #2c3e50;">{{ analytics.unique_visitors }}</p>
+        </div>
+        
+        <!-- Today's Visits -->
+        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-left: 5px solid #f1c40f;">
+            <h3 style="margin: 0; color: #7f8c8d; font-size: 0.9rem; text-transform: uppercase;">Today's Visits</h3>
+            <p style="margin: 10px 0 0; font-size: 2rem; font-weight: bold; color: #2c3e50;">{{ analytics.today_visits }}</p>
+        </div>
+        
+        <!-- Top Pages Card -->
+        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-left: 5px solid #e67e22;">
+            <h3 style="margin: 0; color: #7f8c8d; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 10px;">Top 5 Pages</h3>
+            <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.85rem;">
+                {% for page in analytics.top_pages %}
+                <li style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #f1f1f1;">
+                    <span style="color: #34495e; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 140px;" title="{{ page.path }}">{{ page.path }}</span>
+                    <span style="font-weight: bold; color: #2c3e50;">{{ page.count }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+
+    {{ block.super }}
+</div>
+{% endblock %}

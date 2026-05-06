@@ -14,7 +14,7 @@ from .models import (
     ProfessionalTraining, GlobalCertificationModel, ProfessionalTrainingModel, 
     BlogPost, ProjectImage, Skill, SkillItem, Review, NavbarMenu,
     BlogPostImage, BlogComment, BlogReaction, BlogViewTrack,
-    UserProfile, UserManagement
+    UserProfile, UserManagement, SiteVisitorTrack
 )
 
 # Global Monkey-Patch to automatically set 'created_by' on all models when created via Admin
@@ -576,6 +576,59 @@ class ServiceBookingAdmin(admin.ModelAdmin):
         }),
     )
 
+@admin.register(SiteVisitorTrack)
+class SiteVisitorTrackAdmin(admin.ModelAdmin):
+    change_list_template = 'admin/core/sitevisitortrack/change_list.html'
+    list_display = ['get_visitor', 'get_path', 'browsing_source', 'visited_at', 'last_activity', 'get_duration']
+    list_filter = ['visited_at', 'last_activity', 'path']
+    search_fields = ['name', 'email', 'ip_address', 'user_agent', 'browsing_source', 'path']
+    readonly_fields = [
+        'user', 'ip_address', 'user_agent', 'browsing_source', 'path', 
+        'session_key', 'name', 'email', 'contact_number', 'visited_at', 'last_activity'
+    ]
+    
+    def get_visitor(self, obj):
+        name = obj.name or "Anonymous"
+        email = f" ({obj.email})" if obj.email else ""
+        return format_html('<b>{}</b><br><small>{}</small>', f"{name}{email}", obj.ip_address)
+    get_visitor.short_description = 'Visitor Details'
+    
+    def get_path(self, obj):
+        return format_html('<code style="color: #2980b9;">{}</code>', obj.path)
+    get_path.short_description = 'Visited Path'
+
+    def get_duration(self, obj):
+        return obj.duration
+    get_duration.short_description = 'Duration'
+
+    def changelist_view(self, request, extra_context=None):
+        from django.db.models import Count
+        from django.utils import timezone
+        
+        # Summary Statistics
+        total_sessions = SiteVisitorTrack.objects.count()
+        unique_ips = SiteVisitorTrack.objects.values('ip_address').distinct().count()
+        today = timezone.now().date()
+        today_visits = SiteVisitorTrack.objects.filter(visited_at__date=today).count()
+        
+        # Top 5 Visited Pages
+        top_pages = SiteVisitorTrack.objects.values('path').annotate(
+            count=Count('path')).order_by('-count')[:5]
+            
+        extra_context = extra_context or {}
+        extra_context.update({
+            'analytics': {
+                'total_sessions': total_sessions,
+                'unique_visitors': unique_ips,
+                'today_visits': today_visits,
+                'top_pages': top_pages,
+            },
+            'title': "Site Viewer Tracking & Analytics"
+        })
+        return super().changelist_view(request, extra_context=extra_context)
+
+    def has_add_permission(self, request):
+        return False
 @admin.register(ContactMessage)
 class ContactMessageAdmin(admin.ModelAdmin):
     list_display = ['name', 'subject', 'created_at']

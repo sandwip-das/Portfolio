@@ -601,6 +601,44 @@ class BlogViewTrack(models.Model):
         return f"View by {user_info}"
 
 
+class SiteVisitorTrack(models.Model):
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(null=True, blank=True)
+    browsing_source = models.CharField(max_length=500, null=True, blank=True, verbose_name="Browsing Source")
+    path = models.CharField(max_length=500)
+    session_key = models.CharField(max_length=100, null=True, blank=True)
+    
+    # Visitor Details
+    name = models.CharField(max_length=150, null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
+    contact_number = models.CharField(max_length=20, null=True, blank=True)
+    
+    # Time-related
+    visited_at = models.DateTimeField(auto_now_add=True, verbose_name="From")
+    last_activity = models.DateTimeField(auto_now=True, verbose_name="To")
+    
+    class Meta:
+        verbose_name = "Site Viewer Track"
+        verbose_name_plural = "Site Viewer Tracking"
+        ordering = ['-last_activity']
+
+    def __str__(self):
+        return f"Visitor {self.name or self.ip_address} - {self.path}"
+
+    @property
+    def duration(self):
+        diff = self.last_activity - self.visited_at
+        total_seconds = int(diff.total_seconds())
+        minutes, seconds = divmod(total_seconds, 60)
+        hours, minutes = divmod(minutes, 60)
+        if hours > 0:
+            return f"{hours}h {minutes}m {seconds}s"
+        elif minutes > 0:
+            return f"{minutes}m {seconds}s"
+        return f"{seconds}s"
+
+
 class ContactMessage(models.Model):
     created_by = models.CharField(max_length=150, null=True, blank=True)
     name = models.CharField(max_length=100)
