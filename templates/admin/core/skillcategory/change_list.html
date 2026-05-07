@@ -61,45 +61,36 @@
 
 
     <!-- 2. Skill Cards Section -->
-    <div style="margin-top: 50px; border-top: 2px solid #eee; padding-top: 30px; position: relative;">
-        <!-- Header container to keep elements within frame -->
-        <div style="margin-bottom: 20px; display: block; overflow: hidden;">
-            <div style="float: left;">
-                <h1 style="margin: 0; font-weight: 400; font-size: 24px; color: #417690; display: inline-block;">Skill Cards</h1>
-                <span style="font-size: 14px; font-weight: bold; color: #666; background: #eee; padding: 4px 10px; border-radius: 20px; margin-left: 10px; vertical-align: middle;">
-                    Total: {{ skill_cards_count }}
-                </span>
-            </div>
-            <div style="float: right;">
-                <a href="javascript:void(0)" onclick="toggleSkillCardForm()" class="addlink" id="add-skill-card-btn" style="background: #417690; padding: 10px 20px; color: white; border-radius: 4px; font-weight: bold; text-decoration: none; display: inline-block;">
-                    ADD SKILL CARD
-                </a>
-            </div>
-            <div style="clear: both;"></div>
+    <div style="margin-top: 60px; border-top: 2px solid #eee; padding-top: 40px; position: relative;">
+        <!-- Add Skill Card Button -->
+        <div style="margin-bottom: 20px; text-align: left;">
+            <a href="javascript:void(0)" onclick="toggleSkillCardForm()" class="addlink" id="add-skill-card-btn" style="display: inline-block; background: #417690; padding: 10px 20px; color: white; border-radius: 4px; font-weight: bold; text-decoration: none; font-size: 14px; text-transform: uppercase; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                ADD SKILL CARD
+            </a>
         </div>
 
         <!-- Add Skill Card Form (Initially Hidden) -->
-        <div id="add-skill-card-form" style="display: none; background: var(--darkened-bg, #f9f9f9); padding: 20px; border-radius: 6px; border: 1px solid #ccc; margin-bottom: 20px;">
-            <h2 style="margin-top: 0; font-size: 15px; color: #417690;">Add New Skill Card</h2>
-            <form method="post" enctype="multipart/form-data" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
+        <div id="add-skill-card-form" style="display: none; background: #fdfdfd; padding: 25px; border-radius: 4px; border: 1px solid #ddd; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+            <h2 style="margin-top: 0; font-size: 16px; color: #417690; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">Add New Skill Card</h2>
+            <form method="post" enctype="multipart/form-data" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; align-items: end;">
                 {% csrf_token %}
                 <div>
-                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px;">Technology Name*</label>
-                    <input type="text" name="skill_name" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                    <label style="display: block; font-size: 11px; font-weight: bold; color: #666; text-transform: uppercase; margin-bottom: 8px;">Technology Name</label>
+                    <input type="text" name="skill_name" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
                 </div>
                 <div>
-                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px;">Image*</label>
-                    <input type="file" name="skill_image" required style="width: 100%; font-size: 12px;">
+                    <label style="display: block; font-size: 11px; font-weight: bold; color: #666; text-transform: uppercase; margin-bottom: 8px;">Image</label>
+                    <input type="file" name="skill_image" required style="width: 100%; font-size: 12px; padding: 5px 0;">
                 </div>
                 <div>
-                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px;">Order</label>
-                    <input type="number" name="skill_order" value="0" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                    <label style="display: block; font-size: 11px; font-weight: bold; color: #666; text-transform: uppercase; margin-bottom: 8px;">Order</label>
+                    <input type="number" name="skill_order" value="0" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
                 </div>
-                <div style="display: flex; gap: 10px;">
-                    <button type="submit" name="add_skill_card" class="button" style="flex: 1; padding: 10px; background: #417690; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+                <div style="display: flex; gap: 12px;">
+                    <button type="submit" name="add_skill_card" class="button" style="flex: 1; padding: 10px; background: #417690; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px;">
                         SAVE
                     </button>
-                    <button type="button" onclick="toggleSkillCardForm()" class="button" style="flex: 1; padding: 10px; background: #d63031; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+                    <button type="button" onclick="toggleSkillCardForm()" class="button" style="flex: 1; padding: 10px; background: #d63031; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px;">
                         CANCEL
                     </button>
                 </div>
@@ -109,49 +100,50 @@
         <!-- Bulk Action & Table Form -->
         <form method="post" id="skill-cards-form">
             {% csrf_token %}
-            <div class="actions" style="background: var(--darkened-bg, #f8f8f8); padding: 10px; border: 1px solid #ddd; border-bottom: none; display: flex; align-items: center; gap: 10px;">
-                <label style="font-size: 13px;">Action:</label>
-                <select name="skill_card_action" style="padding: 4px; border-radius: 4px;">
+            <!-- Action Bar (Mirroring Image) -->
+            <div class="actions" style="background: transparent; padding: 15px 0; border: none; display: flex; align-items: center; gap: 10px; color: #666; font-size: 13px;">
+                <span>Action:</span>
+                <select name="skill_card_action" style="padding: 3px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; min-width: 150px;">
                     <option value="">---------</option>
                     <option value="delete_selected">Delete selected skill cards</option>
                 </select>
-                <button type="submit" name="run_skill_card_action" class="button" title="Run the selected action" style="padding: 4px 12px;">Go</button>
-                <span id="selected-count" style="font-size: 13px; color: #666;">0 of {{ skill_cards|length }} selected</span>
+                <button type="submit" name="run_skill_card_action" class="button" style="padding: 4px 15px; background: #eee; color: #333; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; cursor: pointer;">Run</button>
+                <span id="selected-count" style="margin-left: 10px;">0 of {{ skill_cards|length }} selected</span>
             </div>
 
             <!-- Skill Cards Table -->
-            <div class="module" id="skill-cards-list">
+            <div class="module" id="skill-cards-list" style="margin: 0; border: none; background: transparent;">
                 <div class="results">
-                    <table id="result_list" style="width: 100%;">
+                    <table id="result_list" style="width: 100%; border-collapse: collapse; background: white; border: 1px solid #eee;">
                         <thead>
-                            <tr>
-                                <th scope="col" class="action-checkbox-column" style="width: 40px;">
+                            <tr style="background: #f3f3f3; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd;">
+                                <th scope="col" class="action-checkbox-column" style="width: 40px; padding: 12px;">
                                     <div class="text"><span><input type="checkbox" id="action-toggle-cards"></span></div>
                                 </th>
-                                <th scope="col" class="sortable column-name">
-                                    <div class="text"><span>Technology Name</span></div>
+                                <th scope="col" class="sortable column-name" style="padding: 12px; text-align: left;">
+                                    <div class="text" style="text-transform: uppercase; font-size: 11px; font-weight: bold; color: #666; letter-spacing: 0.5px;"><span>Name</span></div>
                                 </th>
-                                <th scope="col" class="sortable column-order" style="text-align: center; width: 100px;">
-                                    <div class="text"><span>Order</span></div>
+                                <th scope="col" class="sortable column-order" style="padding: 12px; text-align: left; width: 150px;">
+                                    <div class="text" style="text-transform: uppercase; font-size: 11px; font-weight: bold; color: #666; letter-spacing: 0.5px;"><span>Order</span></div>
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for card in skill_cards %}
-                            <tr class="{% cycle 'row1' 'row2' %}">
-                                <td class="action-checkbox">
+                            <tr class="{% cycle 'row1' 'row2' %}" style="border-bottom: 1px solid #f9f9f9;">
+                                <td class="action-checkbox" style="padding: 12px;">
                                     <input type="checkbox" name="_selected_skill_card" value="{{ card.id }}" class="action-select-card">
                                 </td>
-                                <td class="field-name">
-                                    <a href="{% url 'admin:core_skill_change' card.id %}">{{ card.name }}</a>
+                                <td class="field-name" style="padding: 12px;">
+                                    <a href="{% url 'admin:core_skill_change' card.id %}" style="color: #417690; font-weight: 500; text-decoration: none;">{{ card.name }}</a>
                                 </td>
-                                <td class="field-order" style="text-align: center;">
-                                    <input type="number" name="order_{{ card.id }}" value="{{ card.order }}" style="width: 60px; text-align: center; padding: 2px;">
+                                <td class="field-order" style="padding: 12px;">
+                                    <input type="number" name="order_{{ card.id }}" value="{{ card.order }}" style="width: 80px; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
                                 </td>
                             </tr>
                             {% empty %}
                             <tr class="row1">
-                                <td colspan="3" style="text-align: center; padding: 20px;">No Skill Cards found.</td>
+                                <td colspan="3" style="text-align: center; padding: 30px; color: #999;">No Skill Cards found.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -159,19 +151,21 @@
                 </div>
             </div>
 
-            <!-- Save button on the right for this section -->
-            <div style="text-align: right; margin-top: 15px; padding: 12px 0;">
-                <button type="submit" name="save_skill_cards_order" class="button" style="background: #417690; padding: 10px 30px; font-weight: bold; color: white; border: none; border-radius: 4px; cursor: pointer;">SAVE</button>
+            <!-- Footer & Save Button (Mirroring Image) -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 10px 0;">
+                <div style="font-size: 13px; color: #666; font-style: italic;">
+                    {{ skill_cards|length }} Skill Cards
+                </div>
+                <button type="submit" name="save_skill_cards_order" class="button" style="background: #245269; padding: 10px 35px; font-weight: bold; color: white; border: none; border-radius: 4px; cursor: pointer; text-transform: capitalize; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">Save</button>
             </div>
         </form>
     </div>
 </div>
 
 <style>
-    /* Ensure Django's main save button is on the right */
-    .submit-row { text-align: right !important; padding: 12px 0 !important; background: transparent !important; border: none !important; }
-    /* Remove text on the right if any (breadcrumbs etc. are standard, but let's hide specific custom elements) */
-    .far-right-text { display: none; }
+    /* Global Overrides for this page */
+    .submit-row { text-align: right !important; padding: 15px 0 !important; background: transparent !important; border: none !important; }
+    .addlink { float: none !important; }
 </style>
 
 <script>
