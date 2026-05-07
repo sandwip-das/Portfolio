@@ -12,7 +12,7 @@ from django.utils import timezone
 import uuid
 import random
 from .models import (
-    HomeSettings, Skill, Project, Experience, Service, ServiceBooking,
+    HomeSettings, Skill, Project, SkillCategory, Experience, Service, ServiceBooking,
     ContactMessage, AcademicBackground, ProfessionalTraining, BlogPost, Review, BlogViewTrack,
     BlogReaction, BlogComment, UserProfile, CommentReaction, PendingRegistration, Hero
 )
@@ -179,7 +179,8 @@ Sandwip Das
     # ===================== Context Rendering =====================
     context = {
         'hero': Hero.objects.first(),
-        'skills': Skill.objects.all().order_by('order'),
+        'skills': Skill.objects.all(),
+        'skill_categories': SkillCategory.objects.all().prefetch_related('items'),
         'projects': Project.objects.all().order_by('-created_at'),
         'experiences': Experience.objects.all(),
         'services': Service.objects.all(),

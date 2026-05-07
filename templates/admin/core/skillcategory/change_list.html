@@ -1,0 +1,214 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls %}
+
+{% block object-tools-items %}
+<!-- Standard tools removed to be placed manually for layout control -->
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <!-- 1. Technical Skills Section -->
+    <div style="margin-bottom: 40px;">
+        <div style="margin-bottom: 15px;">
+            <a href="javascript:void(0)" onclick="toggleCategoryForm()" class="addlink" id="add-category-btn" style="float: none; display: inline-block; background: #417690; padding: 10px 20px; color: white; border-radius: 4px; font-weight: bold; text-decoration: none;">
+                ADD TECHNICAL SKILL
+            </a>
+        </div>
+
+        <!-- Add Technical Skill Form (Initially Hidden) -->
+        <div id="add-category-form" style="display: none; background: var(--darkened-bg, #f9f9f9); padding: 20px; border-radius: 6px; border: 1px solid #ccc; margin-bottom: 20px;">
+            <h2 style="margin-top: 0; font-size: 15px; color: #417690;">Add New Technical Skill</h2>
+            <form method="post" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
+                {% csrf_token %}
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px;">Category Name*</label>
+                    <input type="text" name="category_name" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px;">Order</label>
+                    <input type="number" name="category_order" value="0" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" name="add_technical_skill" class="button" style="flex: 1; padding: 10px; background: #417690; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+                        SAVE
+                    </button>
+                    <button type="button" onclick="toggleCategoryForm()" class="button" style="flex: 1; padding: 10px; background: #d63031; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+                        CANCEL
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Technical Skills List (Standard Django Table) -->
+        <div style="position: relative;">
+            {{ block.super }}
+        </div>
+    </div>
+
+    <!-- Technical Skills Section Description Editor -->
+    <div style="margin-top: 40px; margin-bottom: 40px; padding: 20px; border: 1px solid var(--border-color, #eee); border-radius: 4px; background: var(--darkened-bg, rgba(0,0,0,0.02));">
+        <form method="post">
+            {% csrf_token %}
+            <h2 style="margin-bottom: 10px; font-size: 16px;">Technical Skills Header Description</h2>
+            <textarea name="technical_skills_description"
+                style="width: 100%; min-height: 80px; margin-bottom: 15px; padding: 12px; border-radius: 4px; border: 1px solid var(--border-color, #ccc); background: var(--body-bg); color: var(--body-fg);"
+                placeholder="Enter description here...">{{ technical_skills_description }}</textarea>
+            <div style="text-align: right;">
+                <button type="submit" name="update_technical_skills_description" class="button" style="padding: 10px 20px;">Update Description</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 2. Skill Cards Section -->
+    <div style="margin-top: 50px; border-top: 2px solid #eee; padding-top: 30px;">
+        <h1 style="margin: 0 0 15px 0; font-weight: 400; font-size: 24px; color: #417690;">Skill Cards</h1>
+        
+        <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
+            <a href="javascript:void(0)" onclick="toggleSkillCardForm()" class="addlink" id="add-skill-card-btn" style="float: none; display: inline-block; background: #417690; padding: 10px 20px; color: white; border-radius: 4px; font-weight: bold; text-decoration: none;">
+                ADD SKILL CARD
+            </a>
+            <span style="font-size: 14px; font-weight: bold; color: #666;">Total: {{ skill_cards_count }} Skill Cards</span>
+        </div>
+
+        <!-- Add Skill Card Form (Initially Hidden) -->
+        <div id="add-skill-card-form" style="display: none; background: var(--darkened-bg, #f9f9f9); padding: 20px; border-radius: 6px; border: 1px solid #ccc; margin-bottom: 20px;">
+            <h2 style="margin-top: 0; font-size: 15px; color: #417690;">Add New Skill Card</h2>
+            <form method="post" enctype="multipart/form-data" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
+                {% csrf_token %}
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px;">Technology Name*</label>
+                    <input type="text" name="skill_name" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px;">Image*</label>
+                    <input type="file" name="skill_image" required style="width: 100%; font-size: 12px;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px;">Order</label>
+                    <input type="number" name="skill_order" value="0" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" name="add_skill_card" class="button" style="flex: 1; padding: 10px; background: #417690; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+                        SAVE
+                    </button>
+                    <button type="button" onclick="toggleSkillCardForm()" class="button" style="flex: 1; padding: 10px; background: #d63031; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+                        CANCEL
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Bulk Action & Table Form -->
+        <form method="post" id="skill-cards-form">
+            {% csrf_token %}
+            <div class="actions" style="background: var(--darkened-bg, #f8f8f8); padding: 10px; border: 1px solid #ddd; border-bottom: none; display: flex; align-items: center; gap: 10px;">
+                <label style="font-size: 13px;">Action:</label>
+                <select name="action" style="padding: 4px; border-radius: 4px;">
+                    <option value="">---------</option>
+                    <option value="delete_selected_skill_cards">Delete selected skill cards</option>
+                </select>
+                <button type="submit" class="button" title="Run the selected action" style="padding: 4px 12px;">Go</button>
+                <span id="selected-count" style="font-size: 13px; color: #666;">0 of {{ skill_cards|length }} selected</span>
+            </div>
+
+            <!-- Skill Cards Table -->
+            <div class="module" id="skill-cards-list">
+                <div class="results">
+                    <table id="result_list" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="action-checkbox-column" style="width: 40px;">
+                                    <div class="text"><span><input type="checkbox" id="action-toggle-cards"></span></div>
+                                </th>
+                                <th scope="col" class="sortable column-name">
+                                    <div class="text"><span>Technology Name</span></div>
+                                </th>
+                                <th scope="col" class="sortable column-order" style="text-align: center;">
+                                    <div class="text"><span>Order</span></div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for card in skill_cards %}
+                            <tr class="{% cycle 'row1' 'row2' %}">
+                                <td class="action-checkbox">
+                                    <input type="checkbox" name="_selected_action" value="{{ card.id }}" class="action-select-card">
+                                </td>
+                                <td class="field-name">
+                                    <a href="{% url 'admin:core_skill_change' card.id %}">{{ card.name }}</a>
+                                </td>
+                                <td class="field-order" style="text-align: center;">{{ card.order }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr class="row1">
+                                <td colspan="3" style="text-align: center; padding: 20px;">No Skill Cards found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Ensure Django's main save button is on the right */
+    .submit-row { text-align: right !important; padding: 12px 0 !important; background: transparent !important; border: none !important; }
+    /* Remove text on the right if any (breadcrumbs etc. are standard, but let's hide specific custom elements) */
+    .far-right-text { display: none; }
+</style>
+
+<script>
+    // Toggle Select All for Skill Cards
+    const toggleAll = document.getElementById('action-toggle-cards');
+    const checkboxes = document.querySelectorAll('.action-select-card');
+    const countDisplay = document.getElementById('selected-count');
+
+    if (toggleAll) {
+        toggleAll.addEventListener('change', function() {
+            checkboxes.forEach(cb => cb.checked = toggleAll.checked);
+            updateSelectedCount();
+        });
+    }
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', updateSelectedCount);
+    });
+
+    function updateSelectedCount() {
+        const selected = document.querySelectorAll('.action-select-card:checked').length;
+        if (countDisplay) {
+            countDisplay.textContent = `${selected} of ${checkboxes.length} selected`;
+        }
+    }
+
+    function toggleCategoryForm() {
+        const form = document.getElementById('add-category-form');
+        const btn = document.getElementById('add-category-btn');
+        if (form.style.display === 'none') {
+            form.style.display = 'block';
+            btn.textContent = 'HIDE FORM';
+            btn.style.background = '#999';
+        } else {
+            form.style.display = 'none';
+            btn.textContent = 'ADD TECHNICAL SKILL';
+            btn.style.background = '#417690';
+        }
+    }
+
+    function toggleSkillCardForm() {
+        const form = document.getElementById('add-skill-card-form');
+        const btn = document.getElementById('add-skill-card-btn');
+        if (form.style.display === 'none') {
+            form.style.display = 'block';
+            btn.textContent = 'HIDE FORM';
+            btn.style.background = '#999';
+        } else {
+            form.style.display = 'none';
+            btn.textContent = 'ADD SKILL CARD';
+            btn.style.background = '#417690';
+        }
+    }
+</script>
+{% endblock %}

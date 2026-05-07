@@ -407,6 +407,37 @@ class AcademicBackground(models.Model):
     def description_list(self):
         return [line.strip() for line in self.description.split('\n') if line.strip()]
 
+class SkillCategory(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    created_by = models.CharField(max_length=150, null=True, blank=True)
+    settings = models.ForeignKey(HomeSettings, on_delete=models.CASCADE, default=1, related_name='skill_categories')
+    name = models.CharField(max_length=100)
+    order = models.IntegerField(default=0)
+    
+    class Meta:
+        verbose_name = "Technical Skill"
+        verbose_name_plural = "Technical Skills"
+        ordering = ['order', 'name']
+        
+    def __str__(self):
+        return self.name
+
+
+class SkillItem(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    created_by = models.CharField(max_length=150, null=True, blank=True)
+    category = models.ForeignKey(SkillCategory, related_name='items', on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    order = models.IntegerField(default=0)
+    
+    class Meta:
+        ordering = ['order', 'name']
+        verbose_name = "Skill Item"
+        verbose_name_plural = "Skill Items"
+        
+    def __str__(self):
+        return self.name
+
 
 class ProfessionalTraining(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)

@@ -10,9 +10,9 @@ from .models import (
     HomeSettings, NavbarSettings, HeroMainSettings, HeroSocialSettings, 
     AboutSectionSettings, ContactSectionSettings, FooterSettings,
     Project, Service, ServiceBooking, ContactMessage,
-    AcademicBackground, Experience, 
+    AcademicBackground, SkillCategory, Experience, 
     ProfessionalTraining, GlobalCertificationModel, ProfessionalTrainingModel, 
-    BlogPost, ProjectImage, Skill, Review, NavbarMenu,
+    BlogPost, ProjectImage, Skill, SkillItem, Review, NavbarMenu,
     BlogPostImage, BlogComment, BlogReaction, BlogViewTrack,
     UserProfile, UserManagement, SiteVisitorTrack
 )
@@ -111,13 +111,20 @@ class AcademicBackgroundAdmin(admin.ModelAdmin):
     exclude = ['settings', 'created_by']
 
 
-@admin.register(Skill)
-class SkillAdmin(admin.ModelAdmin):
+# 5. Technical Skills
+class SkillItemInline(admin.TabularInline):
+    model = SkillItem
+    extra = 0
+    fields = ('name', 'order')
+    exclude = ['created_by']
+
+@admin.register(SkillCategory)
+class SkillCategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'order')
     list_editable = ('order',)
-    fields = ('name', 'image', 'order')
+    inlines = [SkillItemInline]
     exclude = ['settings', 'created_by']
-    change_list_template = "admin/core/skill/change_list.html"
+    change_list_template = "admin/core/skillcategory/change_list.html"
 
     def changelist_view(self, request, extra_context=None):
         if request.method == 'POST':
@@ -128,6 +135,19 @@ class SkillAdmin(admin.ModelAdmin):
                 settings.save()
                 from django.contrib import messages
                 messages.success(request, "Technical Skills description updated successfully.")
+                return HttpResponseRedirect(request.get_full_path())
+
+            if 'add_technical_skill' in request.POST:
+                name = request.POST.get('category_name')
+                order = request.POST.get('category_order', 0)
+                if name:
+                    SkillCategory.objects.create(
+                        name=name,
+                        order=order,
+                        settings=HomeSettings.load()
+                    )
+                    from django.contrib import messages
+                    messages.success(request, f"Technical Skill '{name}' added successfully.")
                 return HttpResponseRedirect(request.get_full_path())
             
             if 'add_skill_card' in request.POST:
@@ -151,8 +171,19 @@ class SkillAdmin(admin.ModelAdmin):
         extra_context = extra_context or {}
         settings = HomeSettings.load()
         extra_context['technical_skills_description'] = settings.technical_skills_description
-        extra_context['skill_cards_count'] = Skill.objects.count()
+        extra_context['skill_cards'] = Skill.objects.all().order_by('order')
+        extra_context['skill_cards_count'] = extra_context['skill_cards'].count()
         return super().changelist_view(request, extra_context=extra_context)
+
+@admin.register(Skill)
+class SkillAdmin(admin.ModelAdmin):
+    list_display = ('name', 'order')
+    list_editable = ('order',)
+    fields = ('name', 'image', 'order')
+    exclude = ['settings', 'created_by']
+
+    def has_module_permission(self, request):
+        return False
 
 # 4. My Experience Content
 @admin.register(Experience)
