@@ -150,6 +150,31 @@ class SkillCategoryAdmin(admin.ModelAdmin):
                     messages.success(request, f"Technical Skill '{name}' added successfully.")
                 return HttpResponseRedirect(request.get_full_path())
             
+            if 'run_skill_card_action' in request.POST:
+                action = request.POST.get('skill_card_action')
+                selected_ids = request.POST.getlist('_selected_skill_card')
+                if action == 'delete_selected' and selected_ids:
+                    count = Skill.objects.filter(id__in=selected_ids).delete()[0]
+                    from django.contrib import messages
+                    messages.success(request, f"Successfully deleted {count} skill cards.")
+                return HttpResponseRedirect(request.get_full_path())
+
+            if 'save_skill_cards_order' in request.POST:
+                updated_count = 0
+                for key, value in request.POST.items():
+                    if key.startswith('order_'):
+                        try:
+                            card_id = key.split('_')[1]
+                            order_val = int(value)
+                            Skill.objects.filter(id=card_id).update(order=order_val)
+                            updated_count += 1
+                        except (ValueError, IndexError):
+                            continue
+                if updated_count > 0:
+                    from django.contrib import messages
+                    messages.success(request, f"Successfully updated order for {updated_count} skill cards.")
+                return HttpResponseRedirect(request.get_full_path())
+
             if 'add_skill_card' in request.POST:
                 name = request.POST.get('skill_name')
                 order = request.POST.get('skill_order', 0)
