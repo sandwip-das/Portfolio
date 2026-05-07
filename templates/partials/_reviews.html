@@ -20,10 +20,10 @@
         </div>
 
         {% if reviews %}
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 items-stretch">
             {% for review in reviews %}
-            <div class="group relative h-full">
-                <div class="relative rounded-[1.5rem] p-5 w-full aspect-[3/5] flex flex-col items-center text-center border border-white/10 transition-all duration-700 hover:-translate-y-2 hover:shadow-2xl backdrop-blur-xl overflow-hidden"
+            <div class="group relative flex h-full">
+                <div class="relative rounded-[1.5rem] p-6 w-full flex flex-col items-center text-center border border-white/10 transition-all duration-700 hover:-translate-y-2 hover:shadow-2xl backdrop-blur-xl overflow-hidden"
                     style="background: linear-gradient(145deg, rgba(20, 184, 166, 0.12), rgba(45, 212, 191, 0.05));"
                     onmouseover="this.style.borderColor='rgba(45, 212, 191, 0.4)'; this.style.boxShadow='0 20px 40px -12px rgba(20, 184, 166, 0.2)';"
                     onmouseout="this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.boxShadow='none';">
