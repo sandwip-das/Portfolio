@@ -61,16 +61,21 @@
 
 
     <!-- 2. Skill Cards Section -->
-    <div style="margin-top: 50px; border-top: 2px solid #eee; padding-top: 30px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1 style="margin: 0; font-weight: 400; font-size: 24px; color: #417690;">Skill Cards</h1>
-            <a href="javascript:void(0)" onclick="toggleSkillCardForm()" class="addlink" id="add-skill-card-btn" style="background: #417690; padding: 10px 20px; color: white; border-radius: 4px; font-weight: bold; text-decoration: none;">
-                ADD SKILL CARD
-            </a>
-        </div>
-        
-        <div style="margin-bottom: 15px; font-size: 14px; font-weight: bold; color: #666;">
-            Total: {{ skill_cards_count }} Skill Cards
+    <div style="margin-top: 50px; border-top: 2px solid #eee; padding-top: 30px; position: relative;">
+        <!-- Header container to keep elements within frame -->
+        <div style="margin-bottom: 20px; display: block; overflow: hidden;">
+            <div style="float: left;">
+                <h1 style="margin: 0; font-weight: 400; font-size: 24px; color: #417690; display: inline-block;">Skill Cards</h1>
+                <span style="font-size: 14px; font-weight: bold; color: #666; background: #eee; padding: 4px 10px; border-radius: 20px; margin-left: 10px; vertical-align: middle;">
+                    Total: {{ skill_cards_count }}
+                </span>
+            </div>
+            <div style="float: right;">
+                <a href="javascript:void(0)" onclick="toggleSkillCardForm()" class="addlink" id="add-skill-card-btn" style="background: #417690; padding: 10px 20px; color: white; border-radius: 4px; font-weight: bold; text-decoration: none; display: inline-block;">
+                    ADD SKILL CARD
+                </a>
+            </div>
+            <div style="clear: both;"></div>
         </div>
 
         <!-- Add Skill Card Form (Initially Hidden) -->

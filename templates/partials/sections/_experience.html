@@ -10,27 +10,27 @@
             {% for exp in experiences %}
             <div
                 class="p-6 border border-gray-700 rounded-2xl bg-gray-900/50 hover:bg-gray-800/80 transition duration-300 transform hover:-translate-y-1 group text-left">
-                <div class="flex items-center space-x-4 mb-4">
+                <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 mb-6">
                     <div class="flex-shrink-0">
                         {% if exp.company_logo %}
                         <div
-                            class="w-20 h-20 rounded-lg bg-white overflow-hidden flex items-center justify-center p-1 border border-gray-600">
+                            class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white overflow-hidden flex items-center justify-center p-2 border-2 border-white/10 shadow-xl group-hover:scale-105 transition-transform duration-500">
                             <img src="{{ exp.company_logo.url }}" alt="{{ exp.company_name }}"
                                 class="max-w-full max-h-full object-contain">
                         </div>
                         {% else %}
                         <div
-                            class="w-20 h-20 rounded-lg bg-gray-700 flex items-center justify-center text-gray-400 border border-gray-700">
+                            class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gray-700 flex items-center justify-center text-gray-400 border-2 border-white/10 shadow-xl group-hover:scale-105 transition-transform duration-500">
                             <i class="fas fa-building text-3xl"></i>
                         </div>
                         {% endif %}
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <h3 class="text-2xl font-bold text-white group-hover:text-primary transition truncate">
+                    <div class="flex-1 min-w-0 text-center sm:text-left">
+                        <h3 class="text-xl sm:text-2xl font-bold text-white group-hover:text-primary transition-colors duration-300">
                             {{ exp.company_name }}
                         </h3>
-                        <h4 class="text-xl text-gray-300 truncate">{{ exp.designation }}</h4>
-                        <div class="mt-1 text-base font-medium text-primary/80">
+                        <h4 class="text-lg sm:text-xl text-gray-300 font-medium">{{ exp.designation }}</h4>
+                        <div class="mt-2 inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-bold border border-primary/20">
                             {{ exp.duration_string }}
                         </div>
                     </div>

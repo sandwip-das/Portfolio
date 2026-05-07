@@ -41,21 +41,21 @@
                                 style="background: linear-gradient(135deg, rgba(26,31,53,0.3), rgba(15,20,32,0.18), rgba(15,20,32,0.9)); border-color: rgba(55,65,81,0.4);"
                                 onmouseover="this.style.borderColor='rgba(249,115,22,0.9)'; this.style.boxShadow='0 10px 30px rgba(249,115,22,0.3)';"
                                 onmouseout="this.style.borderColor='rgba(55,65,81,0.4)'; this.style.boxShadow='none';">
-                                <div class="flex flex-col gap-4">
-                                    <div class="flex items-center gap-4">
+                                <div class="flex flex-col gap-4 h-full">
+                                    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5">
                                         {% if training.image %}
-                                        <div class="w-auto h-auto flex items-center justify-center shrink-0 p-2 rounded-lg">
+                                        <div class="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center shrink-0 p-2 rounded-xl bg-white/5 border border-white/5">
                                             <img src="{{ training.image.url }}" alt="{{ training.course_name }}"
-                                                class="h-20 w-auto object-contain group-hover:scale-110 transition duration-300">
+                                                class="h-full w-full object-contain group-hover:scale-110 transition duration-300">
                                         </div>
                                         {% endif %}
-                                        <div class="flex-grow">
+                                        <div class="flex-grow text-center sm:text-left">
                                             <h4
-                                                class="text-lg font-bold text-gray-200 group-hover:text-white transition duration-300 mb-1 leading-tight">
+                                                class="text-lg font-bold text-gray-200 group-hover:text-white transition duration-300 mb-2 leading-tight">
                                                 {{ training.course_name }}
                                             </h4>
-                                            <p class="text-gray-400 text-sm mb-2">{{ training.organization_name }}</p>
-                                            <div class="flex items-center gap-2">
+                                            <p class="text-gray-400 text-sm mb-4">{{ training.organization_name }}</p>
+                                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-3">
                                                 <span
                                                     class="inline-flex items-center justify-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border h-7 {% if training.mode == 'Online' %}bg-blue-500/10 text-blue-400 border-blue-500/10{% else %}bg-green-500/10 text-green-400 border-green-500/10{% endif %}">
                                                     {{ training.mode }}
@@ -90,20 +90,20 @@
                                 style="background: linear-gradient(135deg, rgba(26,31,53,0.3), rgba(15,20,32,0.18), rgba(15,20,32,0.9)); border-color: rgba(55,65,81,0.4);"
                                 onmouseover="this.style.borderColor='rgba(249,115,22,0.9)'; this.style.boxShadow='0 10px 30px rgba(249,115,22,0.3)';"
                                 onmouseout="this.style.borderColor='rgba(55,65,81,0.4)'; this.style.boxShadow='none';">
-                                <div class="flex flex-col gap-4">
-                                    <div class="flex items-center gap-4">
+                                <div class="flex flex-col gap-4 h-full">
+                                    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5">
                                         {% if cert.image %}
-                                        <div class="w-auto h-auto flex items-center justify-center shrink-0 p-2">
+                                        <div class="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center shrink-0 p-2 rounded-xl bg-white/5 border border-white/5">
                                             <img src="{{ cert.image.url }}" alt="{{ cert.course_name }}"
-                                                class="h-20 w-auto object-contain group-hover:scale-110 transition duration-300">
+                                                class="h-full w-full object-contain group-hover:scale-110 transition duration-300">
                                         </div>
                                         {% endif %}
-                                        <div class="flex-grow">
+                                        <div class="flex-grow text-center sm:text-left">
                                             <h4
-                                                class="text-lg font-bold text-gray-200 group-hover:text-white transition duration-300 mb-1 leading-tight">
+                                                class="text-lg font-bold text-gray-200 group-hover:text-white transition duration-300 mb-2 leading-tight">
                                                 {{ cert.course_name }}</h4>
-                                            <p class="text-gray-400 text-sm mb-2">{{ cert.organization_name }}</p>
-                                            <div class="flex items-center gap-2">
+                                            <p class="text-gray-400 text-sm mb-4">{{ cert.organization_name }}</p>
+                                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-3">
                                                 <span
                                                     class="inline-flex items-center justify-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border h-7 {% if cert.mode == 'Online' %}bg-blue-500/10 text-blue-400 border-blue-500/10{% else %}bg-green-500/10 text-green-400 border-green-500/10{% endif %}">
                                                     {{ cert.mode }}
@@ -168,8 +168,8 @@
                 </div>
 
                 <!-- Right Div: Skill Cards -->
-                <div class="lg:w-1/2 border border-white/20 rounded-2xl bg-white/5 backdrop-blur-sm p-6">
-                    <div class="grid grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-3">
+                <div class="lg:w-1/2 border border-white/20 rounded-2xl bg-white/5 backdrop-blur-sm p-4 sm:p-6">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         {% for skill in skills %}
                         {% include 'partials/_skill_card.html' %}
                         {% empty %}
