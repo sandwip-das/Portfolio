@@ -215,9 +215,36 @@ class SkillCategoryAdmin(admin.ModelAdmin):
                     messages.error(request, "Please provide both Name and Image for the Skill Card.")
                 return HttpResponseRedirect(request.get_full_path())
 
+            if 'run_technical_skill_action' in request.POST:
+                action = request.POST.get('technical_skill_action')
+                selected_ids = request.POST.getlist('_selected_technical_skill')
+                if action == 'delete_selected' and selected_ids:
+                    count = SkillCategory.objects.filter(id__in=selected_ids).delete()[0]
+                    from django.contrib import messages
+                    messages.success(request, f"Successfully deleted {count} technical skills.")
+                return HttpResponseRedirect(request.get_full_path())
+
+            if 'save_technical_skills_order' in request.POST:
+                updated_count = 0
+                for key, value in request.POST.items():
+                    if key.startswith('tech_order_'):
+                        try:
+                            cat_id = key.split('_')[2]
+                            order_val = int(value)
+                            SkillCategory.objects.filter(id=cat_id).update(order=order_val)
+                            updated_count += 1
+                        except (ValueError, IndexError):
+                            continue
+                if updated_count > 0:
+                    from django.contrib import messages
+                    messages.success(request, f"Successfully updated order for {updated_count} technical skills.")
+                return HttpResponseRedirect(request.get_full_path())
+
         extra_context = extra_context or {}
         settings = HomeSettings.load()
         extra_context['technical_skills_description'] = settings.technical_skills_description
+        extra_context['technical_skills'] = SkillCategory.objects.all().order_by('order')
+        extra_context['technical_skills_count'] = extra_context['technical_skills'].count()
         extra_context['skill_cards'] = Skill.objects.all().order_by('order')
         extra_context['skill_cards_count'] = extra_context['skill_cards'].count()
         return super().changelist_view(request, extra_context=extra_context)

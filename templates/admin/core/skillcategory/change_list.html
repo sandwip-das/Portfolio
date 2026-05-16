@@ -63,10 +63,68 @@
             </form>
         </div>
 
-        <!-- Technical Skills List (Standard Django Table) -->
-        <div style="position: relative;">
-            {{ block.super }}
-        </div>
+        <!-- Bulk Action & Table Form for Technical Skills -->
+        <form method="post" id="technical-skills-form">
+            {% csrf_token %}
+            <!-- Action Bar -->
+            <div class="actions" style="background: transparent; padding: 15px 0; border: none; display: flex; align-items: center; gap: 10px; color: #666; font-size: 13px;">
+                <span>Action:</span>
+                <select name="technical_skill_action" style="padding: 3px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; min-width: 150px;">
+                    <option value="">---------</option>
+                    <option value="delete_selected">Delete selected technical skills</option>
+                </select>
+                <button type="submit" name="run_technical_skill_action" class="button" style="padding: 4px 15px; background: #eee; color: #333; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; cursor: pointer;">Run</button>
+                <span id="tech-selected-count" style="margin-left: 10px;">0 of {{ technical_skills|length }} selected</span>
+            </div>
+
+            <!-- Technical Skills Table -->
+            <div class="module" id="technical-skills-list" style="margin: 0; border: none; background: transparent;">
+                <div class="results">
+                    <table style="width: 100%; border-collapse: collapse; background: white; border: 1px solid #eee;">
+                        <thead>
+                            <tr style="background: #f3f3f3; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd;">
+                                <th scope="col" style="width: 40px; padding: 12px;">
+                                    <div class="text"><span><input type="checkbox" id="action-toggle-tech"></span></div>
+                                </th>
+                                <th scope="col" style="padding: 12px; text-align: left;">
+                                    <div class="text" style="text-transform: uppercase; font-size: 11px; font-weight: bold; color: #666; letter-spacing: 0.5px;"><span>Name</span></div>
+                                </th>
+                                <th scope="col" style="padding: 12px; text-align: left; width: 150px;">
+                                    <div class="text" style="text-transform: uppercase; font-size: 11px; font-weight: bold; color: #666; letter-spacing: 0.5px;"><span>Order</span></div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tech in technical_skills %}
+                            <tr class="{% cycle 'row1' 'row2' %}" style="border-bottom: 1px solid #f9f9f9;">
+                                <td style="padding: 12px;">
+                                    <input type="checkbox" name="_selected_technical_skill" value="{{ tech.id }}" class="action-select-tech">
+                                </td>
+                                <td style="padding: 12px;">
+                                    <a href="{% url 'admin:core_skillcategory_change' tech.id %}" style="color: #417690; font-weight: 500; text-decoration: none;">{{ tech.name }}</a>
+                                </td>
+                                <td style="padding: 12px;">
+                                    <input type="number" name="tech_order_{{ tech.id }}" value="{{ tech.order }}" style="width: 80px; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr class="row1">
+                                <td colspan="3" style="text-align: center; padding: 30px; color: #999;">No Technical Skills found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Footer & Save Button -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 10px 0;">
+                <span style="font-size: 13px; color: #666; font-weight: bold;">{{ technical_skills_count }} Technical Skills</span>
+                <button type="submit" name="save_technical_skills_order" class="button" style="padding: 10px 20px; background: #417690; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+                    Save Technical Skills Order
+                </button>
+            </div>
+        </form>
     </div>
 
 
@@ -180,6 +238,29 @@
 
 <script>
     (function() {
+        // Toggle Select All for Technical Skills
+        const toggleTechAll = document.getElementById('action-toggle-tech');
+        const techCheckboxes = document.querySelectorAll('.action-select-tech');
+        const techCountDisplay = document.getElementById('tech-selected-count');
+
+        if (toggleTechAll) {
+            toggleTechAll.addEventListener('change', function() {
+                techCheckboxes.forEach(cb => cb.checked = toggleTechAll.checked);
+                updateTechSelectedCount();
+            });
+        }
+
+        techCheckboxes.forEach(cb => {
+            cb.addEventListener('change', updateTechSelectedCount);
+        });
+
+        function updateTechSelectedCount() {
+            const selected = document.querySelectorAll('.action-select-tech:checked').length;
+            if (techCountDisplay) {
+                techCountDisplay.textContent = `${selected} of ${techCheckboxes.length} selected`;
+            }
+        }
+
         // Toggle Select All for Skill Cards
         const toggleAll = document.getElementById('action-toggle-cards');
         const myCheckboxes = document.querySelectorAll('.action-select-card');
