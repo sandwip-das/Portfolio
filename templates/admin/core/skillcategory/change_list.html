@@ -35,12 +35,18 @@
             <form method="post" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
                 {% csrf_token %}
                 <div>
-                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px;">Category Name*</label>
-                    <input type="text" name="category_name" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px;">Category Name (New)</label>
+                    <input type="text" name="category_name" placeholder="Enter new category name..." style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 5px;">
+                    <select name="existing_category" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                        <option value="">-- OR Select Saved Technical Skill --</option>
+                        {% for cat in cl.result_list %}
+                        <option value="{{ cat.id }}">{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <div>
                     <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px;">Items (comma separated)</label>
-                    <input type="text" name="category_items" placeholder="e.g. HTML, CSS, JS" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                    <input type="text" name="category_items" placeholder="e.g. HTML, CSS, JS" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" required>
                 </div>
                 <div>
                     <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px;">Order</label>

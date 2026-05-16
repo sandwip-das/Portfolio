@@ -139,24 +139,37 @@ class SkillCategoryAdmin(admin.ModelAdmin):
 
             if 'add_technical_skill' in request.POST:
                 name = request.POST.get('category_name')
+                existing_category_id = request.POST.get('existing_category')
                 order = request.POST.get('category_order', 0)
                 items_str = request.POST.get('category_items', '')
-                if name:
+                
+                category = None
+                if existing_category_id:
+                    category = SkillCategory.objects.get(id=existing_category_id)
+                elif name:
                     category = SkillCategory.objects.create(
                         name=name,
                         order=order,
                         settings=HomeSettings.load()
                     )
-                    if items_str:
-                        items = [item.strip() for item in items_str.split(',') if item.strip()]
-                        for idx, item_name in enumerate(items):
-                            SkillItem.objects.create(
-                                category=category,
-                                name=item_name,
-                                order=idx
-                            )
-                    from django.contrib import messages
-                    messages.success(request, f"Technical Skill '{name}' added successfully.")
+                
+                if category and items_str:
+                    items = [item.strip() for item in items_str.split(',') if item.strip()]
+                    # get max order of existing items
+                    max_order = category.items.aggregate(models.Max('order'))['order__max']
+                    start_order = (max_order + 1) if max_order is not None else 0
+                    for idx, item_name in enumerate(items):
+                        SkillItem.objects.create(
+                            category=category,
+                            name=item_name,
+                            order=start_order + idx
+                        )
+                
+                from django.contrib import messages
+                if existing_category_id:
+                    messages.success(request, f"Items added to existing Technical Skill '{category.name}' successfully.")
+                elif name:
+                    messages.success(request, "New Technical Skill added successfully.")
                 return HttpResponseRedirect(request.get_full_path())
             
             if 'run_skill_card_action' in request.POST:
