@@ -173,28 +173,30 @@
 </style>
 
 <script>
-    // Toggle Select All for Skill Cards
-    const toggleAll = document.getElementById('action-toggle-cards');
-    const checkboxes = document.querySelectorAll('.action-select-card');
-    const countDisplay = document.getElementById('selected-count');
+    (function() {
+        // Toggle Select All for Skill Cards
+        const toggleAll = document.getElementById('action-toggle-cards');
+        const myCheckboxes = document.querySelectorAll('.action-select-card');
+        const countDisplay = document.getElementById('selected-count');
 
-    if (toggleAll) {
-        toggleAll.addEventListener('change', function() {
-            checkboxes.forEach(cb => cb.checked = toggleAll.checked);
-            updateSelectedCount();
-        });
-    }
-
-    checkboxes.forEach(cb => {
-        cb.addEventListener('change', updateSelectedCount);
-    });
-
-    function updateSelectedCount() {
-        const selected = document.querySelectorAll('.action-select-card:checked').length;
-        if (countDisplay) {
-            countDisplay.textContent = `${selected} of ${checkboxes.length} selected`;
+        if (toggleAll) {
+            toggleAll.addEventListener('change', function() {
+                myCheckboxes.forEach(cb => cb.checked = toggleAll.checked);
+                updateSelectedCount();
+            });
         }
-    }
+
+        myCheckboxes.forEach(cb => {
+            cb.addEventListener('change', updateSelectedCount);
+        });
+
+        function updateSelectedCount() {
+            const selected = document.querySelectorAll('.action-select-card:checked').length;
+            if (countDisplay) {
+                countDisplay.textContent = `${selected} of ${myCheckboxes.length} selected`;
+            }
+        }
+    })();
 
     function toggleCategoryForm() {
         const form = document.getElementById('add-category-form');
