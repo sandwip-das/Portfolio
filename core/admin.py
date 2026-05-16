@@ -140,12 +140,21 @@ class SkillCategoryAdmin(admin.ModelAdmin):
             if 'add_technical_skill' in request.POST:
                 name = request.POST.get('category_name')
                 order = request.POST.get('category_order', 0)
+                items_str = request.POST.get('category_items', '')
                 if name:
-                    SkillCategory.objects.create(
+                    category = SkillCategory.objects.create(
                         name=name,
                         order=order,
                         settings=HomeSettings.load()
                     )
+                    if items_str:
+                        items = [item.strip() for item in items_str.split(',') if item.strip()]
+                        for idx, item_name in enumerate(items):
+                            SkillItem.objects.create(
+                                category=category,
+                                name=item_name,
+                                order=idx
+                            )
                     from django.contrib import messages
                     messages.success(request, f"Technical Skill '{name}' added successfully.")
                 return HttpResponseRedirect(request.get_full_path())
