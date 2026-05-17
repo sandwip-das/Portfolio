@@ -4,6 +4,30 @@
 {% block title %}{{ post.slug }}{% endblock %}
 
 {% block content %}
+<style>
+    /* Force blog content text to be white, overriding WYSIWYG defaults or inline styles */
+    .content-renderer p, 
+    .content-renderer h1, 
+    .content-renderer h2, 
+    .content-renderer h3, 
+    .content-renderer h4, 
+    .content-renderer h5, 
+    .content-renderer h6, 
+    .content-renderer li, 
+    .content-renderer span, 
+    .content-renderer strong, 
+    .content-renderer em {
+        color: white !important;
+    }
+    .content-renderer a {
+        color: #00a8ff !important;
+        text-decoration: underline !important;
+    }
+    .content-renderer blockquote {
+        color: #d1d5db !important; /* gray-300 */
+        border-left-color: #2ecc71 !important;
+    }
+</style>
 <div class="pt-24 min-h-screen relative bg-gradient-to-r from-[#0f0f1f] via-[#1f0f2f] to-[#3f2f1f]">
 
     {% if not user.is_authenticated %}
@@ -124,7 +148,7 @@
 
             <!-- Interspersed Content & Remaining Images -->
             <div
-                class="prose prose-sm sm:prose-base md:prose-lg lg:prose-xl 2xl:prose-2xl max-w-none !text-white prose-p:my-2 content-renderer leading-relaxed transition-all duration-300">
+                class="prose prose-invert prose-headings:text-white prose-p:text-white prose-a:text-[#00a8ff] prose-strong:text-white prose-li:text-white prose-blockquote:text-gray-300 prose-sm sm:prose-base md:prose-lg lg:prose-xl 2xl:prose-2xl max-w-none !text-white prose-p:my-2 content-renderer leading-relaxed transition-all duration-300">
                 {% if post.images.count > 2 %}
                 {{ post|render_interleaved_content }}
                 {% else %}
