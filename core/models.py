@@ -17,21 +17,7 @@ from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 from django.db import connection
 
-@receiver(pre_save, sender='core.HomeSettings')
-@receiver(pre_save, sender='core.UserProfile')
-@receiver(pre_save, sender='core.BlogPost')
-@receiver(pre_save, sender='core.Experience')
-@receiver(pre_save, sender='core.Project')
-@receiver(pre_save, sender='core.Service')
-class ProjectImage(models.Model):
-    project_name = models.CharField(max_length=100)
 
-    image = CloudinaryField('image')
-
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.project_name
 
 @receiver(pre_delete, sender=User)
 def clean_user_data(sender, instance, **kwargs):
