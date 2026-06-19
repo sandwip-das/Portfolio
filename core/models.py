@@ -6,6 +6,7 @@ from django_ckeditor_5.fields import CKEditor5Field
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from cloudinary.models import CloudinaryField
 
 from django.core.cache import cache
 import random
@@ -22,20 +23,15 @@ from django.db import connection
 @receiver(pre_save, sender='core.Experience')
 @receiver(pre_save, sender='core.Project')
 @receiver(pre_save, sender='core.Service')
-def clean_cloudinary_urls(sender, instance, **kwargs):
-    """
-    Consolidated pre_save signal to strip Cloudinary domains from all image/file fields.
-    Enforces DRY by using a single handler for all media-heavy models.
-    """
-    for field in instance._meta.fields:
-        if isinstance(field, (models.ImageField, models.FileField)):
-            field_file = getattr(instance, field.name)
-            if field_file and field_file.name and 'res.cloudinary.com' in field_file.name:
-                name = field_file.name
-                if 'dghadnok8/' in name:
-                    field_file.name = name.split('dghadnok8/')[-1]
-                elif 'dghadnok8' in name:
-                    field_file.name = name.split('dghadnok8')[-1].lstrip('/')
+class ProjectImage(models.Model):
+    project_name = models.CharField(max_length=100)
+
+    image = CloudinaryField('image')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.project_name
 
 @receiver(pre_delete, sender=User)
 def clean_user_data(sender, instance, **kwargs):
@@ -694,3 +690,5 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.rating} Stars"
+
+

@@ -9,6 +9,10 @@ from django.contrib.auth.hashers import make_password
 from django.conf import settings
 from django.utils import timezone
 
+import cloudinary.uploader
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
 import uuid
 import random
 from .models import (
@@ -19,6 +23,24 @@ from .models import (
 from .forms import ServiceBookingForm, ContactForm, ReviewForm
 from .utils import send_portfolio_email, get_admin_email
 from .templatetags.core_tags import smart_url
+
+# Cloudinary setup
+@csrf_exempt
+def upload_image(request):
+    if request.method == "POST":
+
+        file = request.FILES['image']
+        project = request.POST.get('project_name')
+
+        result = cloudinary.uploader.upload(
+            file,
+            folder=f"projects/{project}"
+        )
+
+        return JsonResponse({
+            "url": result['secure_url'],
+            "folder": result['folder']
+        })
 
 def favicon_view(request):
     """
