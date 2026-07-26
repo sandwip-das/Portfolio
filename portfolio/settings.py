@@ -35,17 +35,22 @@ DEBUG = os.environ.get("DEBUG", "False") == "True"
 ALLOWED_HOSTS = [
     "sandwipdas.com",
     "www.sandwipdas.com",
+    ".sandwipdas.com",
     "localhost",
     "127.0.0.1",
-    ".onrender.com"
+    ".onrender.com",
+    "*"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
     "https://sandwipdas.com",
     "https://www.sandwipdas.com",
     "https://portfolio-2ydr.onrender.com",
     "https://*.onrender.com"
 ]
+
 
 # Security for HTTPS / Render
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
