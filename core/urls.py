@@ -1,14 +1,10 @@
 from django.urls import path
-from django.views.generic.base import RedirectView
 from . import views
 from .views import upload_image
 
 urlpatterns = [
-    path('upload/', upload_image),
-]
+    path('upload/', upload_image, name='upload_image'),
 
-
-urlpatterns = [
     # blog
     path('blog/<int:post_id>/reaction/', views.toggle_reaction, name='toggle_reaction'),
     path('blog/<int:post_id>/comment/', views.add_comment, name='add_comment'),

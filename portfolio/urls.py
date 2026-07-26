@@ -4,8 +4,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 from core import views
 from core.views import home, blog_detail, custom_signup, verify_registration_otp
-from django.views.generic import RedirectView
-from django.templatetags.static import static as static_tag
 
 # Admin Customization
 admin.site.site_header = "My Portfolio administration"
@@ -13,8 +11,8 @@ admin.site.site_title = "My Portfolio administration"
 admin.site.index_title = "Welcome to My Portfolio administration"
 
 urlpatterns = [
-    path("test/", include("core.urls")), # Temporary
     path('admin/', admin.site.urls),
+
 
     path('', home, name='home'),
     path('blog/<slug:slug>/', blog_detail, name='blog_detail'),

@@ -54,12 +54,12 @@ CSRF_COOKIE_SECURE = not DEBUG
 
 ## ===================== DATABASE =====================
 DATABASES = {
-    "default": dj_database_url.config(
-        default=os.environ.get("DATABASE_URL"),
-        conn_max_age=600,
-        ssl_require=True
-    )
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
 }
+
 
 
 # ===================== CELERY CONFIG =====================
@@ -71,13 +71,6 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Dhaka'
 
 
-# # To Create Superuser
-# DATABASES = {
-#     "default": dj_database_url.config(
-#         default=os.getenv("DATABASE_URL"),
-#         conn_max_age=600
-#     )
-# }
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
@@ -148,7 +141,6 @@ CKEDITOR_5_CONFIGS = {
     }
 }
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ===================== MIDDLEWARE =====================
 MIDDLEWARE = [
@@ -191,29 +183,7 @@ WSGI_APPLICATION = 'portfolio.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-# # For testing Detect if running on Render
-# RENDER = os.environ.get("RENDER") == "true"
-#
-# if RENDER:
-#     # Production DB (Render PostgreSQL)
-#     DATABASES = {
-#         "default": dj_database_url.config(
-#             default=os.environ.get("DATABASE_URL"),
-#             conn_max_age=600,
-#         )
-#     }
-# else:
-#     # Local DB
-#     DATABASES = {
-#         "default": {
-#             "ENGINE": "django.db.backends.postgresql",
-#             "NAME": os.environ.get("DB_NAME", "myportfolio_db"),
-#             "USER": os.environ.get("DB_USER", "postgres"),
-#             "PASSWORD": os.environ.get("DB_PASSWORD", ""),
-#             "HOST": os.environ.get("DB_HOST", "localhost"),
-#             "PORT": os.environ.get("DB_PORT", "5432"),
-#         }
-#     }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -277,9 +247,12 @@ STORAGES = {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
+
+WHITENOISE_MANIFEST_STRICT = False
+
 
 cloudinary_name = os.environ.get("CLOUDINARY_CLOUD_NAME", "")
 

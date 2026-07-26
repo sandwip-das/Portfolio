@@ -8,10 +8,13 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.conf import settings
 from django.utils import timezone
+from django.contrib.auth import login
+from allauth.account.models import EmailAddress
 
 import cloudinary.uploader
-from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+
+
 
 import uuid
 import random
@@ -414,7 +417,6 @@ def custom_signup(request):
         user = User.objects.filter(email=email).first()
         if user:
             # If user already exists, just log them in
-            from django.contrib.auth import login
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request, f"Welcome back, {user.username}!")
             return redirect('my_blog')
@@ -437,13 +439,11 @@ def custom_signup(request):
         )
         
         # Mark email as verified for allauth
-        from allauth.account.models import EmailAddress
         EmailAddress.objects.get_or_create(
             user=user, email=user.email,
             defaults={'verified': True, 'primary': True}
         )
 
-        from django.contrib.auth import login
         login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         messages.success(request, "Account created successfully! Welcome to the blog.")
         return redirect('my_blog')
@@ -562,7 +562,6 @@ def my_blog(request):
     })
 
 def blog_suggestions(request):
-    from django.http import JsonResponse
     query = request.GET.get('q', '')
     if len(query) < 1:
         return JsonResponse([], safe=False)
@@ -572,7 +571,6 @@ def blog_suggestions(request):
 @login_required
 def read_notification(request, notif_type, notif_id):
     if request.user.is_superuser:
-        from .models import ServiceBooking, ContactMessage, Review
         model_map = {
             'booking': ServiceBooking,
             'contact': ContactMessage,

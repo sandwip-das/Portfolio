@@ -82,7 +82,6 @@ def populate_profile(request, user, **kwargs):
         profile.profile_picture = request.FILES['profile_picture']
         profile.save()
 
-from django.db.models.signals import post_save
 
 @receiver(post_save, sender=User)
 def create_or_save_user_profile(sender, instance, created, **kwargs):
@@ -113,8 +112,6 @@ class PendingRegistration(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def is_expired(self):
-        from django.utils import timezone
-        import datetime
         return timezone.now() > self.created_at + datetime.timedelta(minutes=2)
 
     def __str__(self):
